@@ -59,7 +59,7 @@ async function fetchSurveyData() {
       "anthropic-beta": "mcp-client-2025-04-04"
     },
     body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-4-6",
       max_tokens: 3000,
       system: SM_PROMPT,
       messages: [{ role: "user", content: "Retrieve and aggregate all demographic response data from the 4 Child Friendly Penang v3 surveys now." }],
