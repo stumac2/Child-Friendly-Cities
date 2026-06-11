@@ -7,14 +7,6 @@ const TOTAL_TARGET = 2200;
 const EMAIL_TO     = ["yancheng.tan@thinkcity.com.my", "hana.zulkifli@thinkcity.com.my"];
 const SM_API       = "https://api.surveymonkey.com/v3";
 
-// Hardcoded survey IDs (from analyze URLs, URL-decoded)
-const SURVEYS = {
-  "English":  "ltOB3go+VJQjGOhjxV3+Ig4PXOnjU/lboh6F7XxyF9E=",
-  "Malay":    "P35z+EdzAaQc+S9li1ll1V9NodZdk/Yjc33QKomFwVY=",
-  "Mandarin": "KUF1n4s51EsHgnOrqh10aXXRu+ESOYWwM4ifMYJAoro=",
-  "Tamil":    "P35z+EdzAaQc+S9li1ll1YSmal06yEPEZG4bJediBII=",
-};
-
 const Q1 = {
   district:  { "Timur Laut":450, "Barat Daya":425, "SP Utara":425, "SP Tengah":450, "SP Selatan":450 },
   ethnicity: { Malay:625, Chinese:625, Indian:575, Others:375 },
@@ -53,19 +45,34 @@ async function smGet(path) {
 }
 
 async function fetchSurveyData() {
-  // First test: list surveys to verify token works
   console.log("Testing SM API connection...");
   const list = await smGet("/surveys?per_page=10");
   console.log(`SM API OK - found ${list.total} surveys`);
+
+  // Find surveys by title
+  const SURVEYS = {};
+  let page = 1;
+  while (true) {
+    const data = await smGet(`/surveys?per_page=50&page=${page}`);
+    for (const s of data.data || []) {
+      if (s.title.includes("Child Friendly Penang v3")) {
+        const lang = s.title.match(/\(([^)]+)\)/)?.[1] || s.title;
+        SURVEYS[lang] = s.id;
+        console.log(`Found: ${s.title} → ID ${s.id}`);
+      }
+    }
+    if (!data.links?.next) break;
+    page++;
+  }
+  console.log(`Located ${Object.keys(SURVEYS).length} surveys`);
 
   let allResponses = [], startedTotal = 0;
   const byLanguage = {};
 
   for (const [lang, id] of Object.entries(SURVEYS)) {
     try {
-      const encId = encodeURIComponent(id);
-      const completed = await smGet(`/surveys/${encId}/responses/bulk?per_page=100&status=completed`);
-      const started = await smGet(`/surveys/${encId}/responses/bulk?per_page=1`);
+      const completed = await smGet(`/surveys/${id}/responses/bulk?per_page=100&status=completed`);
+      const started = await smGet(`/surveys/${id}/responses/bulk?per_page=1`);
       byLanguage[lang] = { started: started.total || 0, completed: completed.total || 0 };
       startedTotal += started.total || 0;
       allResponses = allResponses.concat((completed.data || []).map(r => ({ ...r, _lang: lang })));
@@ -158,7 +165,7 @@ async function sendEmail(subject, body) {
   const transporter = nodemailer.createTransport({
     host: "smtp.office365.com", port: 587, secure: false,
     auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-    tls: { ciphers: "SSLv3" }
+    tls: { rejectUnauthorized: false }
   });
   await transporter.sendMail({ from: `"CFP Monitor" <${process.env.SMTP_USER}>`, to: EMAIL_TO.join(", "), subject, text: body });
 }
