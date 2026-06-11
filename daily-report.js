@@ -62,6 +62,7 @@ async function fetchSurveyData() {
         'Child Friendly Penang v3 (Mandarin)': 'Mandarin',
         'Child Friendly Penang v3 (Tamil)': 'Tamil',
       };
+      if (page === 1) console.log("  API title: " + JSON.stringify(s.title));
       if (CFP_TITLES[s.title]) {
         const lang = CFP_TITLES[s.title];
         SURVEYS[lang] = s.id;
