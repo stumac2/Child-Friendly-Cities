@@ -72,7 +72,7 @@ async function fetchSurveyData() {
     })
   });
 
-  if (!res.ok) throw new Error(`Anthropic API error: ${res.status}`);
+  if (!res.ok) { const errBody = await res.text(); throw new Error(`Anthropic API error: ${res.status} - ${errBody}`); }
   const result = await res.json();
   const text = result.content.filter(b => b.type === "text").map(b => b.text).join("");
   const match = text.match(/\{[\s\S]*\}/);
