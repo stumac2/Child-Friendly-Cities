@@ -55,7 +55,7 @@ async function fetchSurveyData() {
   while (true) {
     const data = await smGet(`/surveys?per_page=50&page=${page}`);
     for (const s of data.data || []) {
-      if (s.title.includes("Child Friendly Penang v3")) {
+      console.log(`Survey: "${s.title}"`); if (s.title.toLowerCase().includes("child friendly") || s.title.toLowerCase().includes("cfp")) {
         const lang = s.title.match(/\(([^)]+)\)/)?.[1] || s.title;
         SURVEYS[lang] = s.id;
         console.log(`Found: ${s.title} → ID ${s.id}`);
