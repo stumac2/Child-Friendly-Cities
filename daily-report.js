@@ -53,6 +53,7 @@ async function fetchSurveyData() {
   const SURVEYS = {};
   let page = 1;
   while (true) {
+    console.log(`Searching page ${page}...`);
     const data = await smGet(`/surveys?per_page=50&page=${page}`);
     for (const s of data.data || []) {
       const CFP_TITLES = {
