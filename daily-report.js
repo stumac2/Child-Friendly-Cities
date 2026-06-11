@@ -1,5 +1,5 @@
 // CFP Survey – Daily Report Scheduler
-const nodemailer = require("nodemailer");
+// Email via SendGrid REST API (no extra dependencies needed)
 
 const START_DATE   = new Date("2026-06-15");
 const END_DATE     = new Date("2026-07-20");
@@ -55,8 +55,14 @@ async function fetchSurveyData() {
   while (true) {
     const data = await smGet(`/surveys?per_page=50&page=${page}`);
     for (const s of data.data || []) {
-      console.log(`Survey: "${s.title}"`); if (s.title.toLowerCase().includes("child friendly") || s.title.toLowerCase().includes("cfp")) {
-        const lang = s.title.match(/\(([^)]+)\)/)?.[1] || s.title;
+      const CFP_TITLES = {
+        'Child Friendly Penang v3 (English)': 'English',
+        'Child Friendly Penang v3 (Malay)': 'Malay',
+        'Child Friendly Penang v3 (Mandarin)': 'Mandarin',
+        'Child Friendly Penang v3 (Tamil)': 'Tamil',
+      };
+      if (CFP_TITLES[s.title]) {
+        const lang = CFP_TITLES[s.title];
         SURVEYS[lang] = s.id;
         console.log(`Found: ${s.title} → ID ${s.id}`);
       }
@@ -162,12 +168,21 @@ function buildEmail(data) {
 }
 
 async function sendEmail(subject, body) {
-  const transporter = nodemailer.createTransport({
-    host: "smtp.office365.com", port: 587, secure: false,
-    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-    tls: { rejectUnauthorized: false }
+  const res = await fetch('https://api.sendgrid.com/v3/mail/send', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      personalizations: [{ to: EMAIL_TO.map(e => ({ email: e })) }],
+      from: { email: process.env.SENDGRID_FROM_EMAIL, name: 'CFP Monitor' },
+      subject,
+      content: [{ type: 'text/plain', value: body }]
+    })
   });
-  await transporter.sendMail({ from: `"CFP Monitor" <${process.env.SMTP_USER}>`, to: EMAIL_TO.join(", "), subject, text: body });
+  if (!res.ok) { const e = await res.text(); throw new Error(`SendGrid error: ${res.status} - ${e}`); }
+  console.log('Email sent via SendGrid');
 }
 
 (async () => {
