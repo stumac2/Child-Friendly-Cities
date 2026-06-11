@@ -1,0 +1,12 @@
+{
+  "name": "cfp-survey-scheduler",
+  "version": "1.0.0",
+  "description": "Child Friendly Penang – automated daily survey report",
+  "main": "daily-report.js",
+  "scripts": {
+    "start": "node daily-report.js"
+  },
+  "dependencies": {
+    "nodemailer": "^6.9.13"
+  }
+}
