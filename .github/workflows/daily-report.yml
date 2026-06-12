@@ -2,7 +2,6 @@ name: CFP Daily Survey Report
 
 on:
   schedule:
-    # 01:00 UTC = 09:00 MYT (UTC+8)
     - cron: "0 1 * * *"
   workflow_dispatch: # allows manual trigger from GitHub UI
 
@@ -12,12 +11,12 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: "20"
+          node-version: "24"
 
       - name: Install dependencies
         run: npm install
@@ -25,7 +24,7 @@ jobs:
       - name: Run daily report
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          SM_ACCESS_TOKEN:      ${{ secrets.SM_ACCESS_TOKEN }}
+          SM_MCP_TOKEN:      ${{ secrets.SM_MCP_TOKEN }}
           SMTP_USER:         ${{ secrets.SMTP_USER }}
           SMTP_PASS:         ${{ secrets.SMTP_PASS }}
         run: node daily-report.js
