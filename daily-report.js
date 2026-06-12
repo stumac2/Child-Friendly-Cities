@@ -178,21 +178,21 @@ function buildEmail(data) {
 }
 
 async function sendEmail(subject, body) {
-  const res = await fetch('https://api.sendgrid.com/v3/mail/send', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      personalizations: [{ to: EMAIL_TO.map(e => ({ email: e })) }],
-      from: { email: process.env.SENDGRID_FROM_EMAIL, name: 'CFP Monitor' },
-      subject,
-      content: [{ type: 'text/plain', value: body }]
-    })
+  const nodemailer = require('nodemailer');
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.office365.com',
+    port: 587,
+    secure: false,
+    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+    tls: { rejectUnauthorized: false }
   });
-  if (!res.ok) { const e = await res.text(); throw new Error(`SendGrid error: ${res.status} - ${e}`); }
-  console.log('Email sent via SendGrid');
+  await transporter.sendMail({
+    from: `"CFP Monitor" <${process.env.SMTP_USER}>`,
+    to: EMAIL_TO.join(', '),
+    subject,
+    text: body
+  });
+  console.log('Email sent via Office 365');
 }
 
 (async () => {
