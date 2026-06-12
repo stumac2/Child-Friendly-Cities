@@ -275,7 +275,6 @@ async function main() {
 
   // 1. Test SM API connection
   console.log("Testing SM API connection...");
-  console.log("Token length:", SM_TOKEN?.length, "Starts:", SM_TOKEN?.slice(0,4), "Ends:", SM_TOKEN?.slice(-4));
   await smGet("/surveys?per_page=1");
   console.log("SM API connected.");
 
