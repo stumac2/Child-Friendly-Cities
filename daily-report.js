@@ -33,7 +33,6 @@ function flag(p) { return p >= 100 ? "✓" : p >= 75 ? "~" : "⚠"; }
 
 async function smGet(path) {
   const token = process.env.SM_ACCESS_TOKEN;
-  console.log(`SM token length: ${token ? token.length : 'MISSING'}, first 8: ${token ? token.substring(0,8) : 'N/A'}`);
   const res = await fetch(`${SM_API}${path}`, {
     headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" }
   });
@@ -53,10 +52,8 @@ async function fetchSurveyData() {
   const SURVEYS = {};
   let page = 1;
   while (true) {
-    console.log(`Searching page ${page}...`);
     const data = await smGet(`/surveys?per_page=50&page=${page}`);
     for (const s of data.data || []) {
-      if (page === 1) console.log("  API title: " + JSON.stringify(s.title));
       const CFP_TITLES = {
         'Child Friendly Penang v3 (English)': 'English',
         'Child Friendly Penang v3 (Malay)': 'Malay',
