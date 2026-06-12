@@ -56,17 +56,24 @@ async function fetchSurveyData() {
     console.log(`Searching page ${page}...`);
     const data = await smGet(`/surveys?per_page=50&page=${page}`);
     for (const s of data.data || []) {
+      if (page === 1) console.log("  API title: " + JSON.stringify(s.title));
       const CFP_TITLES = {
         'Child Friendly Penang v3 (English)': 'English',
         'Child Friendly Penang v3 (Malay)': 'Malay',
         'Child Friendly Penang v3 (Mandarin)': 'Mandarin',
         'Child Friendly Penang v3 (Tamil)': 'Tamil',
+        'Pulau Pinang Mesra Kanak-Kanak': 'Malay',
+        'பினாங்கு குழந்தைகள் நேச நகரம்': 'Tamil',
       };
-      if (page === 1) console.log("  API title: " + JSON.stringify(s.title));
       if (CFP_TITLES[s.title]) {
-        const lang = CFP_TITLES[s.title]; if (!lang) continue;
-        SURVEYS[lang] = s.id;
-        console.log(`Found: ${s.title} → ID ${s.id}`);
+        SURVEYS[CFP_TITLES[s.title]] = s.id;
+        console.log(`Found ${CFP_TITLES[s.title]}: ${s.id}`);
+      } else if (s.title === 'Child Friendly Penang' && !SURVEYS['English']) {
+        SURVEYS['English'] = s.id;
+        console.log(`Found English (plain title): ${s.id}`);
+      } else if (s.title === 'Child Friendly Penang' && !SURVEYS['Mandarin']) {
+        SURVEYS['Mandarin'] = s.id;
+        console.log(`Found Mandarin (plain title): ${s.id}`);
       }
     }
     if (!data.links?.next) break;
