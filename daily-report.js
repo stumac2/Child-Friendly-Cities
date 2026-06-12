@@ -61,6 +61,7 @@ async function fetchSurveyData() {
         'Child Friendly Penang v3 (English)': 'English',
         'Child Friendly Penang v3 (Malay)': 'Malay',
         'Child Friendly Penang v3 (Mandarin)': 'Mandarin',
+        '槟城亲子友好': 'Mandarin',
         'Child Friendly Penang v3 (Tamil)': 'Tamil',
         'Pulau Pinang Mesra Kanak-Kanak': 'Malay',
         'பினாங்கு குழந்தைகள் நேச நகரம்': 'Tamil',
