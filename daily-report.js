@@ -300,9 +300,18 @@ async function main() {
   // 3. Classify via Anthropic
   console.log("Sending to Anthropic for classification...");
   const classified = await classifyResponses(allResponses);
+  classified.updatedAt = new Date().toISOString();
   console.log(`Classified: ${classified.totalStarted} started, ${classified.totalCompleted} completed`);
 
-  // 4. Build and send report
+  // 4. Write data.json for GitHub Pages dashboard
+  const fs = require("fs");
+  const path = require("path");
+  const docsDir = path.join(__dirname, "docs");
+  if (!fs.existsSync(docsDir)) fs.mkdirSync(docsDir, { recursive: true });
+  fs.writeFileSync(path.join(docsDir, "data.json"), JSON.stringify(classified, null, 2));
+  console.log("Wrote docs/data.json");
+
+  // 5. Build and send report
   const report = buildReport(classified);
   console.log("\n--- REPORT PREVIEW ---\n" + report.slice(0, 500) + "...\n");
   await sendEmail(report);
