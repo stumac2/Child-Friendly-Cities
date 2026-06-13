@@ -2,8 +2,11 @@ name: CFP Daily Survey Report
 
 on:
   schedule:
-    - cron: "0 1 * * *"
-  workflow_dispatch: # allows manual trigger from GitHub UI
+    - cron: "0 */2 * * *"   # every 2 hours
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   send-report:
@@ -28,3 +31,11 @@ jobs:
           SMTP_USER:         ${{ secrets.SMTP_USER }}
           SMTP_PASS:         ${{ secrets.SMTP_PASS }}
         run: node daily-report.js
+
+      - name: Commit data.json for GitHub Pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/data.json
+          git diff --staged --quiet || git commit -m "Update survey data $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push
