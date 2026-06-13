@@ -147,9 +147,16 @@ async function classifyResponses(allResponses) {
     }),
   });
 
-  const result = await res.json();
+  const rawText = await res.text();
+  console.log("API status:", res.status);
+  console.log("Raw API response (first 500 chars):", rawText.slice(0, 500));
+
+  if (!res.ok) throw new Error(`Anthropic API HTTP ${res.status}: ${rawText.slice(0, 200)}`);
+
+  const result = JSON.parse(rawText);
   if (result.error) throw new Error(`Anthropic API error: ${result.error.message}`);
   const text = result.content.filter(b => b.type === "text").map(b => b.text).join("");
+  console.log("Raw classification response (first 500 chars):", text.slice(0, 500));
   const match = text.match(/\{[\s\S]*\}/);
   if (!match) throw new Error("Could not parse Anthropic classification response");
   return JSON.parse(match[0]);
