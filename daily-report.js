@@ -19,7 +19,7 @@ const END_DATE   = new Date("2026-07-31");
 const TOTAL_TARGET  = 2500;
 const STRETCH_2D    = 10000;
 const STRETCH_3D    = 20000;
-const EMAIL_TO   = ["yancheng.tan@thinkcity.com.my", "hana.zulkifli@thinkcity.com.my"];
+const EMAIL_TO   = ["yancheng.tan@thinkcity.com.my", "hana.zulkifli@thinkcity.com.my", "stuart.macdonald@thinkcity.com.my"];
 
 const Q1 = {
   district:  { "Timur Laut":510, "Barat Daya":485, "SP Utara":485, "SP Tengah":510, "SP Selatan":510 },
@@ -318,10 +318,16 @@ async function main() {
   fs.writeFileSync(path.join(docsDir, "data.json"), JSON.stringify(classified, null, 2));
   console.log("Wrote docs/data.json");
 
-  // 5. Build and send report
+  // 5. Build and send report (only at 9am MYT / 1am UTC)
   const report = buildReport(classified);
   console.log("\n--- REPORT PREVIEW ---\n" + report.slice(0, 500) + "...\n");
-  await sendEmail(report);
+
+  const utcHour = new Date().getUTCHours();
+  if (utcHour === 1) {
+    await sendEmail(report);
+  } else {
+    console.log(`Skipping email (UTC hour ${utcHour}, only sends at 01:00 UTC / 9am MYT)`);
+  }
 
   console.log(`[${new Date().toISOString()}] Done.`);
 }
