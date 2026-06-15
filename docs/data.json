@@ -1,10 +1,10 @@
 {
-  "totalStarted": 22,
-  "totalCompleted": 10,
+  "totalStarted": 23,
+  "totalCompleted": 11,
   "byLanguage": {
     "English": {
-      "started": 4,
-      "completed": 2
+      "started": 5,
+      "completed": 3
     },
     "Malay": {
       "started": 18,
@@ -94,5 +94,5 @@
     "Institutional care": 0
   },
   "noDistrict": 0,
-  "updatedAt": "2026-06-15T15:43:44.601Z"
+  "updatedAt": "2026-06-15T19:41:25.896Z"
 }
