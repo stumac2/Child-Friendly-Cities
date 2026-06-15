@@ -1,14 +1,14 @@
 {
-  "totalStarted": 1,
-  "totalCompleted": 1,
+  "totalStarted": 22,
+  "totalCompleted": 10,
   "byLanguage": {
     "English": {
-      "started": 0,
-      "completed": 0
+      "started": 4,
+      "completed": 2
     },
     "Malay": {
-      "started": 1,
-      "completed": 1
+      "started": 18,
+      "completed": 8
     },
     "Mandarin": {
       "started": 0,
@@ -93,6 +93,6 @@
     "Single-parent households": 0,
     "Institutional care": 0
   },
-  "noDistrict": 1,
-  "updatedAt": "2026-06-15T09:56:10.890Z"
+  "noDistrict": 0,
+  "updatedAt": "2026-06-15T15:43:44.601Z"
 }
