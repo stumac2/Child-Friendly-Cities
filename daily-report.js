@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// CFP Survey Daily Report — matches cfp_booster_monitor.jsx (June 2026)
-// Runs via GitHub Actions at 9am MYT (1am UTC)
+// CFP Survey Daily Report — Node.js classification (no AI dependency for data)
+// Runs via GitHub Actions every 2 hours; emails at 9am MYT
 
 const nodemailer = require("nodemailer");
 
@@ -13,7 +13,6 @@ const SURVEY_IDS = {
 };
 const SM_BASE    = "https://api.surveymonkey.com/v3";
 const SM_TOKEN   = process.env.SM_MCP_TOKEN;
-const ANTH_KEY   = process.env.ANTHROPIC_API_KEY;
 const START_DATE = new Date("2026-06-15");
 const END_DATE   = new Date("2026-07-31");
 const TOTAL_TARGET  = 2500;
@@ -44,53 +43,170 @@ const ACTIONS = {
     Indian:["SJK(T) PIBG broadcast — resend Tamil survey to parent groups"],
     Others:["JREC, Equal Start, LifeBridge learning centres — direct distribution"],
   },
-  income: {
-    B40:["QR code in PPR noticeboards via MBPP/MBSP housing unit"],
-    M40:["Check if school WhatsApp groups need a resend"],
-    T20:["Private/international schools — contact admin directly"],
-  },
-  age: {
-    "10-12":["Year 4-6 class teacher reminder to parent WhatsApp groups"],
-    "13-16":["PRIORITY — Form 1-3 class teacher reminder for CRG recruitment"],
-    "17-18":["Form 4-5 school counsellor outreach to upper secondary parents"],
-  },
-  gender: {
-    Male:["Audit co-ed vs boys-only school distribution — call PPD if gap"],
-    Female:["Contact girls-only secondary schools directly"],
-  },
-  urbanRural: {
-    Urban:["PPD digital channels — check completion rate by school"],
-    "Peri-urban":["Contact PPD offices for Bukit Mertajam, Bayan Baru, Kepala Batas"],
-    Rural:["URGENT — printed QR codes and mosque/surau announcements via JAIPP for rural DUNs"],
-  },
+  income: { B40:["QR code in PPR noticeboards via MBPP/MBSP housing unit"], M40:["Check school WhatsApp groups need a resend"], T20:["Private/international schools — contact admin directly"] },
+  age: { "10-12":["Year 4-6 class teacher reminder"], "13-16":["PRIORITY — Form 1-3 class teacher reminder"], "17-18":["Form 4-5 school counsellor outreach"] },
+  gender: { Male:["Audit co-ed vs boys-only school distribution"], Female:["Contact girls-only secondary schools directly"] },
+  urbanRural: { Urban:["PPD digital channels — check completion rate"], "Peri-urban":["Contact PPD offices for BM, Bayan Baru, Kepala Batas"], Rural:["URGENT — printed QR codes and mosque announcements for rural DUNs"] },
 };
 
-// ─── Classification prompt for Anthropic ───────────────────────────────────────
-const CLASSIFY_PROMPT = `You are a data-processing assistant. Classify the SurveyMonkey response data provided below.
+// ─── DUN mappings ──────────────────────────────────────────────────────────────
+const DUN_DISTRICT = {};
+const DUN_URBAN = {};
+const dunData = {
+  "Timur Laut": {
+    duns: ["Tanjong Bunga","Air Putih","Kebun Bunga","Pulau Tikus","Padang Kota","Pengkalan Kota","Komtar","Datok Keramat","Sungai Pinang","Batu Lanchang","Seri Delima","Bukit Glugor","Paya Terubong","Batu Uban"],
+    urban: ["Tanjong Bunga","Air Putih","Kebun Bunga","Pulau Tikus","Padang Kota","Pengkalan Kota","Komtar","Datok Keramat","Sungai Pinang","Batu Lanchang","Seri Delima","Bukit Glugor","Batu Uban"],
+    periurban: ["Paya Terubong"],
+  },
+  "Barat Daya": {
+    duns: ["Pantai Jerejak","Batu Maung","Bayan Lepas","Pulau Betong","Telok Bahang"],
+    urban: ["Pantai Jerejak","Batu Maung","Bayan Lepas"],
+    rural: ["Pulau Betong","Telok Bahang"],
+  },
+  "SP Utara": {
+    duns: ["Penaga","Bertam","Pinang Tunggal","Permatang Berangan","Sungai Dua","Telok Ayer Tawar","Sungai Puyu","Bagan Jermal","Bagan Dalam"],
+    urban: ["Sungai Puyu","Bagan Jermal","Bagan Dalam"],
+    periurban: ["Bertam","Pinang Tunggal","Permatang Berangan","Sungai Dua"],
+    rural: ["Penaga","Telok Ayer Tawar"],
+  },
+  "SP Tengah": {
+    duns: ["Seberang Jaya","Permatang Pasir","Penanti","Berapit","Machang Bubok","Padang Lalang","Perai","Bukit Tengah","Bukit Tambun"],
+    urban: ["Seberang Jaya","Perai"],
+    periurban: ["Permatang Pasir","Berapit","Padang Lalang","Bukit Tengah","Bukit Tambun"],
+    rural: ["Penanti","Machang Bubok"],
+  },
+  "SP Selatan": {
+    duns: ["Jawi","Sungai Bakap","Sungai Acheh"],
+    periurban: ["Jawi","Sungai Bakap","Sungai Acheh"],
+  },
+};
+for (const [district, info] of Object.entries(dunData)) {
+  for (const dun of info.duns) {
+    DUN_DISTRICT[dun.toLowerCase()] = district;
+    if (info.urban?.includes(dun)) DUN_URBAN[dun.toLowerCase()] = "Urban";
+    else if (info.periurban?.includes(dun)) DUN_URBAN[dun.toLowerCase()] = "Peri-urban";
+    else if (info.rural?.includes(dun)) DUN_URBAN[dun.toLowerCase()] = "Rural";
+  }
+}
 
-ETHNICITY: Melayu/Bumiputera|马来人|மலாய் → Malay; Cina|华人|சீனர் → Chinese; India|印度人|இந்தியர் → Indian; Others/Lain-lain/Refugee/Non-citizen → Others
-DISTRICT: Map DUN name (case-insensitive) to district:
-SP Utara: Penaga, Bertam, Pinang Tunggal, Permatang Berangan, Sungai Dua, Telok Ayer Tawar, Sungai Puyu, Bagan Jermal, Bagan Dalam
-SP Tengah: Seberang Jaya, Permatang Pasir, Penanti, Berapit, Machang Bubok, Padang Lalang, Perai, Bukit Tengah, Bukit Tambun
-SP Selatan: Jawi, Sungai Bakap, Sungai Acheh
-Timur Laut: Tanjong Bunga, Air Putih, Kebun Bunga, Pulau Tikus, Padang Kota, Pengkalan Kota, Komtar, Datok Keramat, Sungai Pinang, Batu Lanchang, Seri Delima, Bukit Glugor, Paya Terubong, Batu Uban
-Barat Daya: Pantai Jerejak, Batu Maung, Bayan Lepas, Pulau Betong, Telok Bahang
-URBAN/RURAL: Classify each response by DUN:
-Urban: Tanjong Bunga, Air Putih, Kebun Bunga, Pulau Tikus, Padang Kota, Pengkalan Kota, Komtar, Datok Keramat, Sungai Pinang, Batu Lanchang, Seri Delima, Bukit Glugor, Batu Uban, Seberang Jaya, Perai, Sungai Puyu, Bagan Jermal, Bagan Dalam, Pantai Jerejak, Batu Maung, Bayan Lepas
-Peri-urban: Paya Terubong, Bertam, Pinang Tunggal, Permatang Berangan, Sungai Dua, Permatang Pasir, Berapit, Padang Lalang, Bukit Tengah, Bukit Tambun, Jawi, Sungai Bakap, Sungai Acheh
-Rural: Penaga, Telok Ayer Tawar, Penanti, Machang Bubok, Pulau Betong, Telok Bahang
-INCOME: ≤RM4,849 → B40; RM4,850-10,970 → M40; >RM10,970 → T20
-AGE: 10/11/12 → 10-12; 13/14/15/16 → 13-16; 17/18 → 17-18
-DISABILITY: any "some difficulty" or worse on Washington Group questions → true
-VULNERABLE: ethnicity="Refugee/Undocumented" → Refugees; marital=single/divorced/widowed → Single-parent; school contains "Children's Home"/"Tunas Bakti" → Institutional
+// ─── Pattern matchers ──────────────────────────────────────────────────────────
+const ETH_MAP = [
+  { pattern: /melayu|bumiputera|malay|马来|மலாய்/i, value: "Malay" },
+  { pattern: /cina|chinese|华人|சீனர்/i, value: "Chinese" },
+  { pattern: /india|indian|印度|இந்தியர்/i, value: "Indian" },
+  { pattern: /lain|other|refugee|non.?citizen|难民|அகதி|无国籍/i, value: "Others" },
+];
 
-COMPLETION: status=partial or complete → started; status=complete → completed. Count per survey and per language.
-BY DATE: Extract date portion of date_created (YYYY-MM-DD). Count started and completed per date. Also count completed per date per dimension category for all byDateBy* fields.
+const INCOME_MAP = [
+  { pattern: /b40|rm\s*4[,.]?849|below|bawah|以下|கீழ்/i, value: "B40" },
+  { pattern: /t20|rm\s*10[,.]?97[01]|above|atas|以上|மேல்/i, value: "T20" },
+  { pattern: /m40|rm\s*4[,.]?850|rm\s*10[,.]?970|middle|sederhana|中等|நடுத்தர/i, value: "M40" },
+];
 
-Return ONLY valid JSON:
-{"totalStarted":0,"totalCompleted":0,"byDate":{"2026-06-15":{"started":0,"completed":0}},"byLanguage":{"English":{"started":0,"completed":0},"Malay":{"started":0,"completed":0},"Mandarin":{"started":0,"completed":0},"Tamil":{"started":0,"completed":0}},"crossTab":{"Timur Laut":{"Malay":0,"Chinese":0,"Indian":0,"Others":0},"Barat Daya":{"Malay":0,"Chinese":0,"Indian":0,"Others":0},"SP Utara":{"Malay":0,"Chinese":0,"Indian":0,"Others":0},"SP Tengah":{"Malay":0,"Chinese":0,"Indian":0,"Others":0},"SP Selatan":{"Malay":0,"Chinese":0,"Indian":0,"Others":0}},"incomeByDistrict":{"Timur Laut":{"B40":0,"M40":0,"T20":0},"Barat Daya":{"B40":0,"M40":0,"T20":0},"SP Utara":{"B40":0,"M40":0,"T20":0},"SP Tengah":{"B40":0,"M40":0,"T20":0},"SP Selatan":{"B40":0,"M40":0,"T20":0}},"ageByDistrict":{"Timur Laut":{"10-12":0,"13-16":0,"17-18":0},"Barat Daya":{"10-12":0,"13-16":0,"17-18":0},"SP Utara":{"10-12":0,"13-16":0,"17-18":0},"SP Tengah":{"10-12":0,"13-16":0,"17-18":0},"SP Selatan":{"10-12":0,"13-16":0,"17-18":0}},"genderByDistrict":{"Timur Laut":{"Male":0,"Female":0},"Barat Daya":{"Male":0,"Female":0},"SP Utara":{"Male":0,"Female":0},"SP Tengah":{"Male":0,"Female":0},"SP Selatan":{"Male":0,"Female":0}},"ethnicityByGender":{"Malay":{"Male":0,"Female":0},"Chinese":{"Male":0,"Female":0},"Indian":{"Male":0,"Female":0},"Others":{"Male":0,"Female":0}},"ageByGender":{"10-12":{"Male":0,"Female":0},"13-16":{"Male":0,"Female":0},"17-18":{"Male":0,"Female":0}},"byGender":{"Male":0,"Female":0,"Other":0},"byIncome":{"B40":0,"M40":0,"T20":0,"Not stated":0},"ethnicityByIncome":{"Malay":{"B40":0,"M40":0,"T20":0},"Chinese":{"B40":0,"M40":0,"T20":0},"Indian":{"B40":0,"M40":0,"T20":0},"Others":{"B40":0,"M40":0,"T20":0}},"ethnicityByAge":{"Malay":{"10-12":0,"13-16":0,"17-18":0},"Chinese":{"10-12":0,"13-16":0,"17-18":0},"Indian":{"10-12":0,"13-16":0,"17-18":0},"Others":{"10-12":0,"13-16":0,"17-18":0}},"incomeByAge":{"B40":{"10-12":0,"13-16":0,"17-18":0},"M40":{"10-12":0,"13-16":0,"17-18":0},"T20":{"10-12":0,"13-16":0,"17-18":0}},"incomeByGender":{"B40":{"Male":0,"Female":0},"M40":{"Male":0,"Female":0},"T20":{"Male":0,"Female":0}},"vulnerableGroups":{"Refugees / undocumented":0,"Children with disability":0,"Single-parent households":0,"Institutional care":0},"byUrbanRural":{"Urban":0,"Peri-urban":0,"Rural":0},"byDateByDistrict":{"2026-06-15":{"Timur Laut":0,"Barat Daya":0,"SP Utara":0,"SP Tengah":0,"SP Selatan":0}},"byDateByEthnicity":{"2026-06-15":{"Malay":0,"Chinese":0,"Indian":0,"Others":0}},"byDateByIncome":{"2026-06-15":{"B40":0,"M40":0,"T20":0}},"byDateByAge":{"2026-06-15":{"10-12":0,"13-16":0,"17-18":0}},"byDateByGender":{"2026-06-15":{"Male":0,"Female":0}},"byDateByUrbanRural":{"2026-06-15":{"Urban":0,"Peri-urban":0,"Rural":0}},"noDistrict":0}`;
+const GENDER_MAP = [
+  { pattern: /^male$|^lelaki$|^男$|^ஆண்$/i, value: "Male" },
+  { pattern: /^female$|^perempuan$|^女$|^பெண்$/i, value: "Female" },
+];
 
-// ─── SurveyMonkey fetch ────────────────────────────────────────────────────────
+const DISABILITY_PATTERN = /some difficulty|a lot of difficulty|cannot do at all|sukar|kesukaran|困难|难以|சிரமம்/i;
+
+function matchDUN(text) {
+  if (!text) return null;
+  const lower = text.toLowerCase().trim();
+  if (DUN_DISTRICT[lower]) return lower;
+  // Fuzzy: check if any DUN name is contained in the text
+  for (const dun of Object.keys(DUN_DISTRICT)) {
+    if (lower.includes(dun) || dun.includes(lower)) return dun;
+  }
+  return null;
+}
+
+function matchPattern(text, map) {
+  if (!text) return null;
+  for (const { pattern, value } of map) {
+    if (pattern.test(text)) return value;
+  }
+  return null;
+}
+
+function extractAge(text) {
+  if (!text) return null;
+  const m = text.match(/\b(1[0-8]|[0-9])\b/);
+  if (!m) return null;
+  const age = parseInt(m[1]);
+  if (age >= 10 && age <= 12) return "10-12";
+  if (age >= 13 && age <= 16) return "13-16";
+  if (age >= 17 && age <= 18) return "17-18";
+  return null;
+}
+
+// ─── Question identifier ───────────────────────────────────────────────────────
+// Scans qMap choices to identify which question ID maps to which field
+function identifyQuestions(qMap) {
+  const ids = { dun: null, ethnicity: null, income: null, childAge: null, childGender: null, parentGender: null, marital: null, disability: [] };
+
+  for (const [qId, q] of Object.entries(qMap)) {
+    const heading = (q.heading || "").toLowerCase();
+    const choiceTexts = Object.values(q.choices).map(c => c.toLowerCase());
+    const allText = choiceTexts.join(" ");
+
+    // DUN: has DUN names as choices
+    if (!ids.dun && choiceTexts.some(c => DUN_DISTRICT[c.trim()])) {
+      ids.dun = qId;
+      continue;
+    }
+
+    // Ethnicity: choices contain Malay/Chinese/Indian or equivalents
+    if (!ids.ethnicity && (allText.match(/malay|melayu|华人|马来|சீனர்|cina/i))) {
+      ids.ethnicity = qId;
+      continue;
+    }
+
+    // Income: choices contain B40/M40/T20 or RM amounts
+    if (!ids.income && (allText.match(/b40|m40|t20|rm\s*4[,.]?849|rm\s*10[,.]?970/i))) {
+      ids.income = qId;
+      continue;
+    }
+
+    // Child gender: heading contains "child" + "gender" or "anak" + "jantina"
+    if (!ids.childGender && heading.match(/child.*(gender|sex)|gender.*child|jantina.*anak|anak.*jantina|孩子.*性别|性别.*孩子|குழந்தை.*பாலினம்/i)) {
+      ids.childGender = qId;
+      continue;
+    }
+
+    // Parent gender (fallback): heading has gender but not child
+    if (!ids.parentGender && heading.match(/gender|jantina|性别|பாலினம்/i) && !heading.match(/child|anak|孩子|குழந்தை/i)) {
+      ids.parentGender = qId;
+      continue;
+    }
+
+    // Child age: heading mentions child + age, or choices have numbers 10-18
+    if (!ids.childAge && heading.match(/child.*(age|old)|age.*child|umur.*anak|anak.*umur|孩子.*年龄|年龄.*孩子|குழந்தை.*வயது/i)) {
+      ids.childAge = qId;
+      continue;
+    }
+    if (!ids.childAge && choiceTexts.some(c => /^1[0-8]$/.test(c.trim()))) {
+      ids.childAge = qId;
+      continue;
+    }
+
+    // Marital: heading mentions marital/marriage/perkahwinan
+    if (!ids.marital && heading.match(/marital|marriage|status.*perkahwinan|perkahwinan|婚姻|திருமண/i)) {
+      ids.marital = qId;
+      continue;
+    }
+
+    // Disability: Washington Group questions - heading mentions difficulty + activity
+    if (heading.match(/difficulty|kesukaran|困难|சிரமம்/i) && heading.match(/seeing|hearing|walking|remembering|self.?care|communicat/i)) {
+      ids.disability.push(qId);
+      continue;
+    }
+  }
+
+  return ids;
+}
+
+// ─── SurveyMonkey API ──────────────────────────────────────────────────────────
 async function smGet(path) {
   const res = await fetch(`${SM_BASE}${path}`, {
     headers: { Authorization: `Bearer ${SM_TOKEN}`, "Content-Type": "application/json" },
@@ -118,7 +234,6 @@ function buildChoiceMap(details) {
       if (Array.isArray(ans.rows)) {
         for (const r of ans.rows) entry.rows[r.id] = r.text;
       }
-      // other can be object or array
       if (ans.other) {
         const others = Array.isArray(ans.other) ? ans.other : [ans.other];
         for (const o of others) if (o.id) entry.choices[o.id] = o.text || "Other";
@@ -127,29 +242,6 @@ function buildChoiceMap(details) {
     }
   }
   return qMap;
-}
-
-function enrichResponses(responses, qMap) {
-  return responses.map(r => ({
-    status: r.response_status,
-    date_created: r.date_created,
-    pages: (r.pages || []).map(p => ({
-      questions: (p.questions || []).map(q => {
-        const qInfo = qMap[q.id] || {};
-        return {
-          heading: qInfo.heading,
-          answers: (q.answers || []).map(a => {
-            const parts = [];
-            if (a.choice_id && qInfo.choices?.[a.choice_id]) parts.push(qInfo.choices[a.choice_id]);
-            if (a.row_id && qInfo.rows?.[a.row_id]) parts.push(qInfo.rows[a.row_id]);
-            if (a.text) parts.push(a.text);
-            if (a.other_id && qInfo.choices?.[a.other_id]) parts.push(qInfo.choices[a.other_id]);
-            return parts.length ? parts.join(": ") : JSON.stringify(a);
-          }),
-        };
-      }),
-    })),
-  }));
 }
 
 async function fetchAllResponses(surveyId) {
@@ -165,36 +257,176 @@ async function fetchAllResponses(surveyId) {
   return responses;
 }
 
-// ─── Anthropic classify ────────────────────────────────────────────────────────
-async function classifyResponses(enrichedData) {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": ANTH_KEY,
-      "anthropic-version": "2023-06-01",
-    },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-6",
-      max_tokens: 8000,
-      system: CLASSIFY_PROMPT,
-      messages: [{ role: "user", content: `Classify these survey responses:\n${JSON.stringify(enrichedData)}` }],
-    }),
-  });
+function getAnswerText(response, questionId, qMap) {
+  if (!questionId) return null;
+  const qInfo = qMap[questionId] || {};
+  for (const page of (response.pages || [])) {
+    for (const q of (page.questions || [])) {
+      if (q.id === questionId) {
+        const texts = (q.answers || []).map(a => {
+          if (a.choice_id && qInfo.choices?.[a.choice_id]) return qInfo.choices[a.choice_id];
+          if (a.row_id && qInfo.rows?.[a.row_id]) return qInfo.rows[a.row_id];
+          if (a.text) return a.text;
+          return null;
+        }).filter(Boolean);
+        return texts.join(", ");
+      }
+    }
+  }
+  return null;
+}
 
-  const rawText = await res.text();
-  console.log("API status:", res.status);
-  console.log("Raw API response (first 500 chars):", rawText.slice(0, 500));
+function hasDisability(response, disabilityIds, qMap) {
+  for (const qId of disabilityIds) {
+    const text = getAnswerText(response, qId, qMap);
+    if (text && DISABILITY_PATTERN.test(text)) return true;
+  }
+  return false;
+}
 
-  if (!res.ok) throw new Error(`Anthropic API HTTP ${res.status}: ${rawText.slice(0, 200)}`);
+// ─── Classify all responses ────────────────────────────────────────────────────
+function classifyAllResponses(surveyData) {
+  const result = {
+    totalStarted: 0, totalCompleted: 0,
+    byDate: {},
+    byLanguage: { English:{started:0,completed:0}, Malay:{started:0,completed:0}, Mandarin:{started:0,completed:0}, Tamil:{started:0,completed:0} },
+    crossTab: {},
+    incomeByDistrict: {}, ageByDistrict: {}, genderByDistrict: {},
+    ethnicityByGender: {}, ageByGender: {},
+    byGender: { Male:0, Female:0, Other:0 },
+    byIncome: { B40:0, M40:0, T20:0, "Not stated":0 },
+    byUrbanRural: { Urban:0, "Peri-urban":0, Rural:0 },
+    ethnicityByIncome: {}, ethnicityByAge: {}, incomeByAge: {}, incomeByGender: {},
+    vulnerableGroups: { "Refugees / undocumented":0, "Children with disability":0, "Single-parent households":0, "Institutional care":0 },
+    byDateByDistrict: {}, byDateByEthnicity: {}, byDateByIncome: {},
+    byDateByAge: {}, byDateByGender: {}, byDateByUrbanRural: {},
+    noDistrict: 0,
+  };
 
-  const result = JSON.parse(rawText);
-  if (result.error) throw new Error(`Anthropic API error: ${result.error.message}`);
-  const text = result.content.filter(b => b.type === "text").map(b => b.text).join("");
-  console.log("Raw classification response (first 500 chars):", text.slice(0, 500));
-  const match = text.match(/\{[\s\S]*\}/);
-  if (!match) throw new Error("Could not parse Anthropic classification response");
-  return JSON.parse(match[0]);
+  // Init cross-tab structures
+  for (const d of ["Timur Laut","Barat Daya","SP Utara","SP Tengah","SP Selatan"]) {
+    result.crossTab[d] = { Malay:0, Chinese:0, Indian:0, Others:0 };
+    result.incomeByDistrict[d] = { B40:0, M40:0, T20:0 };
+    result.ageByDistrict[d] = { "10-12":0, "13-16":0, "17-18":0 };
+    result.genderByDistrict[d] = { Male:0, Female:0 };
+  }
+  for (const e of ["Malay","Chinese","Indian","Others"]) {
+    result.ethnicityByGender[e] = { Male:0, Female:0 };
+    result.ethnicityByIncome[e] = { B40:0, M40:0, T20:0 };
+    result.ethnicityByAge[e] = { "10-12":0, "13-16":0, "17-18":0 };
+  }
+  for (const a of ["10-12","13-16","17-18"]) {
+    result.ageByGender[a] = { Male:0, Female:0 };
+  }
+  for (const i of ["B40","M40","T20"]) {
+    result.incomeByAge[i] = { "10-12":0, "13-16":0, "17-18":0 };
+    result.incomeByGender[i] = { Male:0, Female:0 };
+  }
+
+  for (const { language, responses, qMap, questionIds } of surveyData) {
+    for (const r of responses) {
+      const isStarted = r.response_status === "partial" || r.response_status === "completed";
+      const isCompleted = r.response_status === "completed";
+      if (!isStarted) continue;
+
+      result.totalStarted++;
+      result.byLanguage[language].started++;
+
+      const dateStr = r.date_created ? r.date_created.split("T")[0] : null;
+      if (dateStr) {
+        if (!result.byDate[dateStr]) result.byDate[dateStr] = { started:0, completed:0 };
+        result.byDate[dateStr].started++;
+      }
+
+      if (!isCompleted) continue;
+      result.totalCompleted++;
+      result.byLanguage[language].completed++;
+      if (dateStr) result.byDate[dateStr].completed++;
+
+      // Extract demographics
+      const dunText = getAnswerText(r, questionIds.dun, qMap);
+      const dunKey = matchDUN(dunText);
+      const district = dunKey ? DUN_DISTRICT[dunKey] : null;
+      const urbanRural = dunKey ? DUN_URBAN[dunKey] : null;
+
+      const ethText = getAnswerText(r, questionIds.ethnicity, qMap);
+      const ethnicity = matchPattern(ethText, ETH_MAP) || "Others";
+
+      const incText = getAnswerText(r, questionIds.income, qMap);
+      const income = matchPattern(incText, INCOME_MAP);
+
+      const ageText = getAnswerText(r, questionIds.childAge, qMap);
+      const ageGroup = extractAge(ageText);
+
+      const genderText = getAnswerText(r, questionIds.childGender, qMap) || getAnswerText(r, questionIds.parentGender, qMap);
+      const gender = matchPattern(genderText, GENDER_MAP);
+
+      const maritalText = getAnswerText(r, questionIds.marital, qMap);
+      const isSingleParent = maritalText && /single|divorced|widowed|bercerai|balu|janda|离婚|丧偶|விவாகரத்து|விதவை/i.test(maritalText);
+
+      const isDisabled = hasDisability(r, questionIds.disability, qMap);
+      const isRefugee = ethText && /refugee|undocumented|pelarian|难民|அகதி/i.test(ethText);
+
+      // Count
+      if (district) {
+        result.crossTab[district][ethnicity]++;
+        if (income) result.incomeByDistrict[district][income]++;
+        if (ageGroup) result.ageByDistrict[district][ageGroup]++;
+        if (gender) result.genderByDistrict[district][gender]++;
+      } else {
+        result.noDistrict++;
+      }
+
+      if (gender) {
+        result.byGender[gender]++;
+        result.ethnicityByGender[ethnicity][gender]++;
+        if (ageGroup) result.ageByGender[ageGroup][gender]++;
+        if (income) result.incomeByGender[income][gender]++;
+      }
+
+      if (income) {
+        result.byIncome[income]++;
+        result.ethnicityByIncome[ethnicity][income]++;
+        if (ageGroup) result.incomeByAge[income][ageGroup]++;
+      }
+
+      if (ageGroup) result.ethnicityByAge[ethnicity][ageGroup]++;
+      if (urbanRural) result.byUrbanRural[urbanRural]++;
+      if (isDisabled) result.vulnerableGroups["Children with disability"]++;
+      if (isSingleParent) result.vulnerableGroups["Single-parent households"]++;
+      if (isRefugee) result.vulnerableGroups["Refugees / undocumented"]++;
+
+      // Daily breakdowns
+      if (dateStr) {
+        if (district) {
+          if (!result.byDateByDistrict[dateStr]) result.byDateByDistrict[dateStr] = {};
+          result.byDateByDistrict[dateStr][district] = (result.byDateByDistrict[dateStr][district] || 0) + 1;
+        }
+        if (ethnicity) {
+          if (!result.byDateByEthnicity[dateStr]) result.byDateByEthnicity[dateStr] = {};
+          result.byDateByEthnicity[dateStr][ethnicity] = (result.byDateByEthnicity[dateStr][ethnicity] || 0) + 1;
+        }
+        if (income) {
+          if (!result.byDateByIncome[dateStr]) result.byDateByIncome[dateStr] = {};
+          result.byDateByIncome[dateStr][income] = (result.byDateByIncome[dateStr][income] || 0) + 1;
+        }
+        if (ageGroup) {
+          if (!result.byDateByAge[dateStr]) result.byDateByAge[dateStr] = {};
+          result.byDateByAge[dateStr][ageGroup] = (result.byDateByAge[dateStr][ageGroup] || 0) + 1;
+        }
+        if (gender) {
+          if (!result.byDateByGender[dateStr]) result.byDateByGender[dateStr] = {};
+          result.byDateByGender[dateStr][gender] = (result.byDateByGender[dateStr][gender] || 0) + 1;
+        }
+        if (urbanRural) {
+          if (!result.byDateByUrbanRural[dateStr]) result.byDateByUrbanRural[dateStr] = {};
+          result.byDateByUrbanRural[dateStr][urbanRural] = (result.byDateByUrbanRural[dateStr][urbanRural] || 0) + 1;
+        }
+      }
+    }
+  }
+
+  return result;
 }
 
 // ─── Report builder ────────────────────────────────────────────────────────────
@@ -204,7 +436,6 @@ function buildReport(data) {
   const de = Math.max(0, daysDiff(START_DATE, today));
   const dr = Math.max(0, daysDiff(today, END_DATE));
   const totalDays = daysDiff(START_DATE, END_DATE);
-
   const totalStarted = data.totalStarted || 0;
   const totalCompleted = data.totalCompleted || 0;
   const respPct = Math.min(100, Math.round(totalCompleted / TOTAL_TARGET * 100));
@@ -212,43 +443,37 @@ function buildReport(data) {
   const perDay = de > 0 ? Math.round(totalCompleted / de) : 0;
   const projected = de > 0 && dr > 0 ? totalCompleted + perDay * dr : null;
 
-  const date = today.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-  const sep = "─".repeat(55);
+  const date = today.toLocaleDateString("en-GB", { weekday:"long", day:"numeric", month:"long", year:"numeric" });
+  const sep = "-".repeat(55);
 
   let body = `CHILD FRIENDLY PENANG - DAILY SURVEY UPDATE\n${date}\n${sep}\n\n`;
-  body += `Survey day ${de} of ${totalDays} · ${dr} days remaining\n`;
-  body += `Started: ${totalStarted.toLocaleString()} · Completed: ${totalCompleted.toLocaleString()} / ${TOTAL_TARGET.toLocaleString()} (${respPct}%)\n`;
-  body += `Completion rate: ${completionRate}% · ~${perDay}/day`;
-  if (projected) body += ` · Projected: ${projected.toLocaleString()}`;
-  body += `\n\n`;
-
-  // Tier progress
-  body += `TARGET TIERS:\n`;
+  body += `Survey day ${de} of ${totalDays} - ${dr} days remaining\n`;
+  body += `Started: ${totalStarted.toLocaleString()} - Completed: ${totalCompleted.toLocaleString()} / ${TOTAL_TARGET.toLocaleString()} (${respPct}%)\n`;
+  body += `Completion rate: ${completionRate}% - ~${perDay}/day`;
+  if (projected) body += ` - Projected: ${projected.toLocaleString()}`;
+  body += `\n\nTARGET TIERS:\n`;
   body += `  1D (${TOTAL_TARGET.toLocaleString()}): ${respPct}%\n`;
   body += `  2D (${STRETCH_2D.toLocaleString()}): ${Math.min(100, Math.round(totalCompleted / STRETCH_2D * 100))}%\n`;
   body += `  3D (${STRETCH_3D.toLocaleString()}): ${Math.min(100, Math.round(totalCompleted / STRETCH_3D * 100))}%\n\n`;
 
-  // Language breakdown
   body += `BY LANGUAGE:\n`;
   for (const [lang, ld] of Object.entries(data.byLanguage || {})) {
     const ls = ld.started || 0, lc = ld.completed || 0;
-    const lPct = ls > 0 ? Math.round(lc / ls * 100) : 0;
-    body += `  ${lang}: ${lc} completed / ${ls} started (${lPct}%)\n`;
+    body += `  ${lang}: ${lc} completed / ${ls} started (${ls>0?Math.round(lc/ls*100):0}%)\n`;
   }
   body += `\n`;
 
-  // Dimension gaps
   const dims = [
-    { label: "District", quotas: Q1.district, actions: ACTIONS.district,
-      getActual: (cat) => ["Malay","Chinese","Indian","Others"].reduce((s,e) => s + (data.crossTab?.[cat]?.[e] || 0), 0) },
-    { label: "Ethnicity", quotas: Q1.ethnicity, actions: ACTIONS.ethnicity,
-      getActual: (cat) => ["Timur Laut","Barat Daya","SP Utara","SP Tengah","SP Selatan"].reduce((s,d) => s + (data.crossTab?.[d]?.[cat] || 0), 0) },
-    { label: "Income", quotas: Q1.income, actions: ACTIONS.income,
-      getActual: (cat) => ["Timur Laut","Barat Daya","SP Utara","SP Tengah","SP Selatan"].reduce((s,d) => s + (data.incomeByDistrict?.[d]?.[cat] || 0), 0) },
-    { label: "Gender", quotas: Q1.gender, actions: ACTIONS.gender,
-      getActual: (cat) => data.byGender?.[cat] || 0 },
-    { label: "Urban/Rural", quotas: Q1.urbanRural, actions: ACTIONS.urbanRural,
-      getActual: (cat) => data.byUrbanRural?.[cat] || 0 },
+    { label:"District", quotas:Q1.district, actions:ACTIONS.district,
+      getActual:(cat)=>["Malay","Chinese","Indian","Others"].reduce((s,e)=>s+(data.crossTab?.[cat]?.[e]||0),0) },
+    { label:"Ethnicity", quotas:Q1.ethnicity, actions:ACTIONS.ethnicity,
+      getActual:(cat)=>["Timur Laut","Barat Daya","SP Utara","SP Tengah","SP Selatan"].reduce((s,d)=>s+(data.crossTab?.[d]?.[cat]||0),0) },
+    { label:"Income", quotas:Q1.income, actions:ACTIONS.income,
+      getActual:(cat)=>data.byIncome?.[cat]||0 },
+    { label:"Gender", quotas:Q1.gender, actions:ACTIONS.gender,
+      getActual:(cat)=>data.byGender?.[cat]||0 },
+    { label:"Urban/Rural", quotas:Q1.urbanRural, actions:ACTIONS.urbanRural,
+      getActual:(cat)=>data.byUrbanRural?.[cat]||0 },
   ];
 
   let anyBehind = false;
@@ -261,53 +486,38 @@ function buildReport(data) {
     }
     if (behind.length > 0) {
       anyBehind = true;
-      behind.sort((a, b) => a.pct - b.pct);
+      behind.sort((a,b) => a.pct - b.pct);
       body += `${dim.label.toUpperCase()} - ${behind.length} group(s) behind:\n`;
       for (const g of behind) {
         body += `  ${g.cat}: ${g.actual}/${g.target} (${g.pct}%)\n`;
-        for (const a of g.actions.slice(0, 2)) {
-          body += `    > ${a}\n`;
-        }
+        for (const a of g.actions.slice(0,2)) body += `    > ${a}\n`;
       }
       body += `\n`;
     }
   }
-
   if (!anyBehind) body += `All dimension groups currently on track.\n\n`;
 
-  // Vulnerable groups
   const vg = data.vulnerableGroups || {};
   body += `VULNERABLE GROUPS:\n`;
-  body += `  Refugees / undocumented: ${vg["Refugees / undocumented"] || 0}\n`;
-  body += `  Children with disability: ${vg["Children with disability"] || 0} (target: 50)\n`;
-  body += `  Single-parent households: ${vg["Single-parent households"] || 0} (target: 150)\n`;
-  body += `  Institutional care: ${vg["Institutional care"] || 0}\n\n`;
-
+  body += `  Children with disability: ${vg["Children with disability"]||0} (target: 50)\n`;
+  body += `  Single-parent households: ${vg["Single-parent households"]||0} (target: 150)\n`;
+  body += `  Refugees / undocumented: ${vg["Refugees / undocumented"]||0}\n\n`;
   if (data.noDistrict > 0) body += `Note: ${data.noDistrict} responses missing district data.\n\n`;
-
   body += `${sep}\nAutomated daily report - Child Friendly Penang Survey Monitor\n`;
-
   return body;
 }
 
 // ─── Email ─────────────────────────────────────────────────────────────────────
 async function sendEmail(body) {
-  const shortDate = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
-
+  const shortDate = new Date().toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" });
   const transporter = nodemailer.createTransport({
-    host: "smtp.office365.com",
-    port: 587,
-    secure: false,
+    host: "smtp.office365.com", port: 587, secure: false,
     auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
   });
-
   await transporter.sendMail({
-    from: process.env.SMTP_USER,
-    to: EMAIL_TO.join(", "),
-    subject: `CFP Survey Update - ${shortDate}`,
-    text: body,
+    from: process.env.SMTP_USER, to: EMAIL_TO.join(", "),
+    subject: `CFP Survey Update - ${shortDate}`, text: body,
   });
-
   console.log(`Email sent to ${EMAIL_TO.join(", ")}`);
 }
 
@@ -315,52 +525,36 @@ async function sendEmail(body) {
 async function main() {
   console.log(`[${new Date().toISOString()}] Starting daily report...`);
 
-  // 1. Test SM API connection
   console.log("Testing SM API connection...");
   await smGet("/surveys?per_page=1");
   console.log("SM API connected.");
 
-  // 2. Fetch all responses from all 4 surveys, enriched with question text
-  const enrichedData = [];
+  const surveyData = [];
   for (const [lang, id] of Object.entries(SURVEY_IDS)) {
     console.log(`Fetching ${lang} survey (${id})...`);
     const details = await fetchSurveyDetails(id);
     const qMap = buildChoiceMap(details);
+    const questionIds = identifyQuestions(qMap);
     const responses = await fetchAllResponses(id);
     console.log(`  ${responses.length} responses, ${Object.keys(qMap).length} questions mapped`);
-    const enriched = enrichResponses(responses, qMap);
-    enrichedData.push({ language: lang, count: responses.length, responses: enriched });
+    console.log(`  Identified: DUN=${questionIds.dun?"yes":"NO"} eth=${questionIds.ethnicity?"yes":"NO"} inc=${questionIds.income?"yes":"NO"} age=${questionIds.childAge?"yes":"NO"} gen=${questionIds.childGender||questionIds.parentGender?"yes":"NO"} dis=${questionIds.disability.length}`);
+    surveyData.push({ language: lang, responses, qMap, questionIds });
   }
 
-  const totalRaw = enrichedData.reduce((s, d) => s + d.count, 0);
+  const totalRaw = surveyData.reduce((s, d) => s + d.responses.length, 0);
   console.log(`Total raw responses: ${totalRaw}`);
 
-  // Debug: show first response from first survey with data
-  const firstWithData = enrichedData.find(d => d.count > 0);
-  if (firstWithData) {
-    console.log(`\n--- SAMPLE ENRICHED RESPONSE (${firstWithData.language}) ---`);
-    console.log(JSON.stringify(firstWithData.responses[0], null, 2).slice(0, 2000));
-    console.log("--- END SAMPLE ---\n");
-  }
-
-  if (totalRaw === 0) {
-    console.log("No responses yet - sending skeleton report.");
-    const emptyData = { totalStarted: 0, totalCompleted: 0, byLanguage: {}, crossTab: {}, incomeByDistrict: {}, byGender: {}, byUrbanRural: {}, vulnerableGroups: {}, noDistrict: 0 };
-    const report = buildReport(emptyData);
-    await sendEmail(report);
-    return;
-  }
-
-  // 3. Classify via Anthropic
-  console.log("Sending to Anthropic for classification...");
-  const classified = await classifyResponses(enrichedData);
+  // Classify in Node.js - no AI dependency
+  console.log("Classifying responses...");
+  const classified = classifyAllResponses(surveyData);
   classified.updatedAt = new Date().toISOString();
-  console.log(`Classified: ${classified.totalStarted} started, ${classified.totalCompleted} completed`);
-  console.log(`CrossTab sample:`, JSON.stringify(classified.crossTab || {}).slice(0, 300));
-  console.log(`byGender:`, JSON.stringify(classified.byGender || {}));
-  console.log(`noDistrict:`, classified.noDistrict);
 
-  // 4. Write data.json for GitHub Pages dashboard
+  console.log(`Classified: ${classified.totalStarted} started, ${classified.totalCompleted} completed`);
+  console.log(`Districts:`, JSON.stringify(Object.fromEntries(Object.entries(classified.crossTab).map(([d,v])=>[d,Object.values(v).reduce((a,b)=>a+b,0)]))));
+  console.log(`Ethnicity:`, JSON.stringify(Object.fromEntries(["Malay","Chinese","Indian","Others"].map(e=>[e,Object.values(classified.crossTab).reduce((s,d)=>s+(d[e]||0),0)]))));
+  console.log(`noDistrict: ${classified.noDistrict}`);
+
+  // Write data.json
   const fs = require("fs");
   const path = require("path");
   const docsDir = path.join(__dirname, "docs");
@@ -368,9 +562,9 @@ async function main() {
   fs.writeFileSync(path.join(docsDir, "data.json"), JSON.stringify(classified, null, 2));
   console.log("Wrote docs/data.json");
 
-  // 5. Build and send report (only at 9am MYT / 1am UTC)
+  // Email (only at 9am MYT / 1am UTC)
   const report = buildReport(classified);
-  console.log("\n--- REPORT PREVIEW ---\n" + report.slice(0, 500) + "...\n");
+  console.log("\n--- REPORT PREVIEW ---\n" + report.slice(0, 600) + "...\n");
 
   const utcHour = new Date().getUTCHours();
   if (utcHour === 1) {
