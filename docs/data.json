@@ -1,45 +1,45 @@
 {
-  "totalStarted": 477,
-  "totalCompleted": 162,
+  "totalStarted": 1008,
+  "totalCompleted": 427,
   "byDate": {
     "2026-06-15": {
       "started": 24,
       "completed": 13
     },
     "2026-06-16": {
-      "started": 453,
-      "completed": 149
+      "started": 984,
+      "completed": 414
     }
   },
   "byLanguage": {
     "English": {
-      "started": 131,
-      "completed": 53
+      "started": 260,
+      "completed": 111
     },
     "Malay": {
-      "started": 145,
-      "completed": 44
+      "started": 301,
+      "completed": 105
     },
     "Mandarin": {
-      "started": 199,
-      "completed": 65
+      "started": 441,
+      "completed": 211
     },
     "Tamil": {
-      "started": 2,
+      "started": 6,
       "completed": 0
     }
   },
   "crossTab": {
     "Timur Laut": {
-      "Malay": 14,
-      "Chinese": 33,
-      "Indian": 1,
-      "Others": 2
+      "Malay": 47,
+      "Chinese": 59,
+      "Indian": 5,
+      "Others": 5
     },
     "Barat Daya": {
-      "Malay": 3,
-      "Chinese": 9,
-      "Indian": 0,
+      "Malay": 14,
+      "Chinese": 24,
+      "Indian": 3,
       "Others": 0
     },
     "SP Utara": {
@@ -90,14 +90,14 @@
   },
   "ageByDistrict": {
     "Timur Laut": {
-      "10-12": 4,
-      "13-16": 7,
-      "17-18": 3
+      "10-12": 6,
+      "13-16": 12,
+      "17-18": 10
     },
     "Barat Daya": {
-      "10-12": 0,
-      "13-16": 1,
-      "17-18": 2
+      "10-12": 2,
+      "13-16": 7,
+      "17-18": 7
     },
     "SP Utara": {
       "10-12": 0,
@@ -122,7 +122,7 @@
     },
     "Barat Daya": {
       "Male": 0,
-      "Female": 0
+      "Female": 1
     },
     "SP Utara": {
       "Male": 0,
@@ -139,12 +139,12 @@
   },
   "ethnicityByGender": {
     "Malay": {
-      "Male": 0,
-      "Female": 2
+      "Male": 1,
+      "Female": 3
     },
     "Chinese": {
       "Male": 0,
-      "Female": 3
+      "Female": 6
     },
     "Indian": {
       "Male": 0,
@@ -170,8 +170,8 @@
     }
   },
   "byGender": {
-    "Male": 0,
-    "Female": 5,
+    "Male": 1,
+    "Female": 9,
     "Other": 0
   },
   "byIncome": {
@@ -181,9 +181,9 @@
     "Not stated": 0
   },
   "byUrbanRural": {
-    "Urban": 54,
-    "Peri-urban": 7,
-    "Rural": 1
+    "Urban": 142,
+    "Peri-urban": 12,
+    "Rural": 3
   },
   "ethnicityByIncome": {
     "Malay": {
@@ -214,9 +214,9 @@
       "17-18": 0
     },
     "Chinese": {
-      "10-12": 15,
-      "13-16": 30,
-      "17-18": 11
+      "10-12": 52,
+      "13-16": 83,
+      "17-18": 48
     },
     "Indian": {
       "10-12": 0,
@@ -225,7 +225,7 @@
     },
     "Others": {
       "10-12": 0,
-      "13-16": 2,
+      "13-16": 3,
       "17-18": 0
     }
   },
@@ -272,8 +272,8 @@
       "Barat Daya": 1
     },
     "2026-06-16": {
-      "Barat Daya": 11,
-      "Timur Laut": 39
+      "Barat Daya": 40,
+      "Timur Laut": 105
     }
   },
   "byDateByEthnicity": {
@@ -283,18 +283,18 @@
       "Indian": 1
     },
     "2026-06-16": {
-      "Chinese": 112,
-      "Indian": 1,
-      "Malay": 30,
-      "Others": 6
+      "Chinese": 297,
+      "Indian": 14,
+      "Malay": 93,
+      "Others": 10
     }
   },
   "byDateByIncome": {},
   "byDateByAge": {
     "2026-06-16": {
-      "10-12": 15,
-      "13-16": 32,
-      "17-18": 11
+      "10-12": 52,
+      "13-16": 86,
+      "17-18": 48
     }
   },
   "byDateByGender": {
@@ -302,7 +302,8 @@
       "Female": 1
     },
     "2026-06-16": {
-      "Female": 4
+      "Female": 8,
+      "Male": 1
     }
   },
   "byDateByUrbanRural": {
@@ -310,11 +311,11 @@
       "Urban": 12
     },
     "2026-06-16": {
-      "Urban": 42,
-      "Peri-urban": 7,
-      "Rural": 1
+      "Urban": 130,
+      "Peri-urban": 12,
+      "Rural": 3
     }
   },
-  "noDistrict": 100,
-  "updatedAt": "2026-06-16T09:21:33.244Z"
+  "noDistrict": 270,
+  "updatedAt": "2026-06-16T13:08:00.880Z"
 }
