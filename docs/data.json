@@ -1,28 +1,28 @@
 {
-  "totalStarted": 1008,
-  "totalCompleted": 427,
+  "totalStarted": 1030,
+  "totalCompleted": 432,
   "byDate": {
     "2026-06-15": {
       "started": 24,
       "completed": 13
     },
     "2026-06-16": {
-      "started": 984,
-      "completed": 414
+      "started": 1006,
+      "completed": 419
     }
   },
   "byLanguage": {
     "English": {
-      "started": 260,
-      "completed": 111
+      "started": 263,
+      "completed": 113
     },
     "Malay": {
-      "started": 301,
-      "completed": 105
+      "started": 317,
+      "completed": 107
     },
     "Mandarin": {
-      "started": 441,
-      "completed": 211
+      "started": 444,
+      "completed": 212
     },
     "Tamil": {
       "started": 6,
@@ -31,14 +31,14 @@
   },
   "crossTab": {
     "Timur Laut": {
-      "Malay": 47,
-      "Chinese": 59,
-      "Indian": 5,
-      "Others": 5
+      "Malay": 51,
+      "Chinese": 113,
+      "Indian": 6,
+      "Others": 7
     },
     "Barat Daya": {
       "Malay": 14,
-      "Chinese": 24,
+      "Chinese": 25,
       "Indian": 3,
       "Others": 0
     },
@@ -90,9 +90,9 @@
   },
   "ageByDistrict": {
     "Timur Laut": {
-      "10-12": 6,
-      "13-16": 12,
-      "17-18": 10
+      "10-12": 12,
+      "13-16": 30,
+      "17-18": 14
     },
     "Barat Daya": {
       "10-12": 2,
@@ -118,7 +118,7 @@
   "genderByDistrict": {
     "Timur Laut": {
       "Male": 0,
-      "Female": 0
+      "Female": 1
     },
     "Barat Daya": {
       "Male": 0,
@@ -181,9 +181,9 @@
     "Not stated": 0
   },
   "byUrbanRural": {
-    "Urban": 142,
+    "Urban": 205,
     "Peri-urban": 12,
-    "Rural": 3
+    "Rural": 2
   },
   "ethnicityByIncome": {
     "Malay": {
@@ -215,7 +215,7 @@
     },
     "Chinese": {
       "10-12": 52,
-      "13-16": 83,
+      "13-16": 84,
       "17-18": 48
     },
     "Indian": {
@@ -272,8 +272,8 @@
       "Barat Daya": 1
     },
     "2026-06-16": {
-      "Barat Daya": 40,
-      "Timur Laut": 105
+      "Barat Daya": 41,
+      "Timur Laut": 166
     }
   },
   "byDateByEthnicity": {
@@ -283,9 +283,9 @@
       "Indian": 1
     },
     "2026-06-16": {
-      "Chinese": 297,
+      "Chinese": 300,
       "Indian": 14,
-      "Malay": 93,
+      "Malay": 95,
       "Others": 10
     }
   },
@@ -293,7 +293,7 @@
   "byDateByAge": {
     "2026-06-16": {
       "10-12": 52,
-      "13-16": 86,
+      "13-16": 87,
       "17-18": 48
     }
   },
@@ -311,11 +311,11 @@
       "Urban": 12
     },
     "2026-06-16": {
-      "Urban": 130,
+      "Urban": 193,
       "Peri-urban": 12,
-      "Rural": 3
+      "Rural": 2
     }
   },
-  "noDistrict": 270,
-  "updatedAt": "2026-06-16T13:08:00.880Z"
+  "noDistrict": 213,
+  "updatedAt": "2026-06-16T13:13:53.525Z"
 }
