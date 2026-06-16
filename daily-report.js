@@ -102,6 +102,48 @@ async function smGet(path) {
   return res.json();
 }
 
+async function fetchSurveyDetails(surveyId) {
+  return smGet(`/surveys/${surveyId}/details`);
+}
+
+function buildChoiceMap(details) {
+  // Map choice_id/row_id → text for all questions
+  const qMap = {}; // questionId → { heading, choices: {id→text}, rows: {id→text} }
+  for (const page of (details.pages || [])) {
+    for (const q of (page.questions || [])) {
+      const entry = { heading: q.headings?.[0]?.heading || "", choices: {}, rows: {} };
+      for (const c of (q.answers?.choices || [])) entry.choices[c.id] = c.text;
+      for (const r of (q.answers?.rows || [])) entry.rows[r.id] = r.text;
+      for (const o of (q.answers?.other || [])) entry.choices[o.id] = o.text || "Other";
+      qMap[q.id] = entry;
+    }
+  }
+  return qMap;
+}
+
+function enrichResponses(responses, qMap) {
+  return responses.map(r => ({
+    status: r.response_status,
+    date_created: r.date_created,
+    pages: (r.pages || []).map(p => ({
+      questions: (p.questions || []).map(q => {
+        const qInfo = qMap[q.id] || {};
+        return {
+          heading: qInfo.heading,
+          answers: (q.answers || []).map(a => {
+            const parts = [];
+            if (a.choice_id && qInfo.choices?.[a.choice_id]) parts.push(qInfo.choices[a.choice_id]);
+            if (a.row_id && qInfo.rows?.[a.row_id]) parts.push(qInfo.rows[a.row_id]);
+            if (a.text) parts.push(a.text);
+            if (a.other_id && qInfo.choices?.[a.other_id]) parts.push(qInfo.choices[a.other_id]);
+            return parts.length ? parts.join(": ") : JSON.stringify(a);
+          }),
+        };
+      }),
+    })),
+  }));
+}
+
 async function fetchAllResponses(surveyId) {
   const responses = [];
   let page = 1;
@@ -116,23 +158,7 @@ async function fetchAllResponses(surveyId) {
 }
 
 // ─── Anthropic classify ────────────────────────────────────────────────────────
-async function classifyResponses(allResponses) {
-  // Trim response data to reduce token usage — only send answers and metadata
-  const trimmed = Object.entries(allResponses).map(([lang, responses]) => ({
-    language: lang,
-    count: responses.length,
-    responses: responses.map(r => ({
-      status: r.response_status,
-      date_created: r.date_created,
-      pages: (r.pages || []).map(p => ({
-        questions: (p.questions || []).map(q => ({
-          id: q.id,
-          answers: q.answers,
-        })),
-      })),
-    })),
-  }));
-
+async function classifyResponses(enrichedData) {
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -144,7 +170,7 @@ async function classifyResponses(allResponses) {
       model: "claude-sonnet-4-6",
       max_tokens: 8000,
       system: CLASSIFY_PROMPT,
-      messages: [{ role: "user", content: `Classify these survey responses:\n${JSON.stringify(trimmed)}` }],
+      messages: [{ role: "user", content: `Classify these survey responses:\n${JSON.stringify(enrichedData)}` }],
     }),
   });
 
@@ -286,15 +312,19 @@ async function main() {
   await smGet("/surveys?per_page=1");
   console.log("SM API connected.");
 
-  // 2. Fetch all responses from all 4 surveys
-  const allResponses = {};
+  // 2. Fetch all responses from all 4 surveys, enriched with question text
+  const enrichedData = [];
   for (const [lang, id] of Object.entries(SURVEY_IDS)) {
     console.log(`Fetching ${lang} survey (${id})...`);
-    allResponses[lang] = await fetchAllResponses(id);
-    console.log(`  ${allResponses[lang].length} responses`);
+    const details = await fetchSurveyDetails(id);
+    const qMap = buildChoiceMap(details);
+    const responses = await fetchAllResponses(id);
+    console.log(`  ${responses.length} responses, ${Object.keys(qMap).length} questions mapped`);
+    const enriched = enrichResponses(responses, qMap);
+    enrichedData.push({ language: lang, count: responses.length, responses: enriched });
   }
 
-  const totalRaw = Object.values(allResponses).reduce((s, r) => s + r.length, 0);
+  const totalRaw = enrichedData.reduce((s, d) => s + d.count, 0);
   console.log(`Total raw responses: ${totalRaw}`);
 
   if (totalRaw === 0) {
@@ -307,7 +337,7 @@ async function main() {
 
   // 3. Classify via Anthropic
   console.log("Sending to Anthropic for classification...");
-  const classified = await classifyResponses(allResponses);
+  const classified = await classifyResponses(enrichedData);
   classified.updatedAt = new Date().toISOString();
   console.log(`Classified: ${classified.totalStarted} started, ${classified.totalCompleted} completed`);
 
