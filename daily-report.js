@@ -54,8 +54,8 @@ const DUN_DISTRICT = {};
 const DUN_URBAN = {};
 const dunData = {
   "Timur Laut": {
-    duns: ["Tanjong Bunga","Air Putih","Kebun Bunga","Pulau Tikus","Padang Kota","Pengkalan Kota","Komtar","Datok Keramat","Sungai Pinang","Batu Lanchang","Seri Delima","Bukit Glugor","Paya Terubong","Batu Uban"],
-    urban: ["Tanjong Bunga","Air Putih","Kebun Bunga","Pulau Tikus","Padang Kota","Pengkalan Kota","Komtar","Datok Keramat","Sungai Pinang","Batu Lanchang","Seri Delima","Bukit Glugor","Batu Uban"],
+    duns: ["Tanjong Bunga","Air Itam","Kebun Bunga","Pulau Tikus","Padang Kota","Pengkalan Kota","Komtar","Datok Keramat","Sungai Pinang","Batu Lanchang","Seri Delima","Bukit Gelugor","Paya Terubong","Batu Uban"],
+    urban: ["Tanjong Bunga","Air Itam","Kebun Bunga","Pulau Tikus","Padang Kota","Pengkalan Kota","Komtar","Datok Keramat","Sungai Pinang","Batu Lanchang","Seri Delima","Bukit Gelugor","Batu Uban"],
     periurban: ["Paya Terubong"],
   },
   "Barat Daya": {
@@ -112,11 +112,22 @@ const DISABILITY_PATTERN = /some difficulty|a lot of difficulty|cannot do at all
 
 function matchDUN(text) {
   if (!text) return null;
-  const lower = text.toLowerCase().trim();
+  let lower = text.toLowerCase().trim();
+  // Normalise common spelling variants
+  lower = lower
+    .replace(/\blancang\b/g, "lanchang")
+    .replace(/\bglugor\b/g, "gelugor")
+    .replace(/\btelok\b/g, "teluk")
+    .replace(/\btanjung\b/g, "tanjong")
+    .replace(/\s+/g, " ");
   if (DUN_DISTRICT[lower]) return lower;
-  // Fuzzy: check if any DUN name is contained in the text
+  // Exact match against normalised DUN keys
   for (const dun of Object.keys(DUN_DISTRICT)) {
-    if (lower.includes(dun) || dun.includes(lower)) return dun;
+    if (lower === dun) return dun;
+  }
+  // Containment match (DUN name appears within answer text)
+  for (const dun of Object.keys(DUN_DISTRICT)) {
+    if (lower.includes(dun)) return dun;
   }
   return null;
 }
@@ -549,11 +560,25 @@ async function main() {
   console.log("SM API connected.");
 
   const surveyData = [];
+  let dumpedStructure = false;
   for (const [lang, id] of Object.entries(SURVEY_IDS)) {
     console.log(`Fetching ${lang} survey (${id})...`);
     const details = await fetchSurveyDetails(id);
     const qMap = buildChoiceMap(details);
     const questionIds = identifyQuestions(qMap);
+
+    // Dump full question structure for English survey only (for debugging)
+    if (!dumpedStructure && lang === "English") {
+      dumpedStructure = true;
+      console.log("\n--- QUESTION STRUCTURE (English) ---");
+      for (const [qId, q] of Object.entries(qMap)) {
+        const h = (q.heading || "").replace(/<[^>]+>/g, "").slice(0, 60);
+        const choices = Object.values(q.choices).slice(0, 4).join(" / ").slice(0, 60);
+        console.log(`${qId} | "${h}" | choices: ${choices}`);
+      }
+      console.log("--- END STRUCTURE ---\n");
+    }
+
     const responses = await fetchAllResponses(id);
     console.log(`  ${responses.length} responses, ${Object.keys(qMap).length} questions mapped`);
     console.log(`  Identified: DUN=${questionIds.dun?"yes":"NO"} eth=${questionIds.ethnicity?"yes":"NO"} inc=${questionIds.income?"yes":"NO"} age=${questionIds.childAge?"yes":"NO"} gen=${questionIds.childGender||questionIds.parentGender?"yes":"NO"} dis=${questionIds.disability.length}`);
