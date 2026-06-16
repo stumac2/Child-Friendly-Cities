@@ -107,14 +107,22 @@ async function fetchSurveyDetails(surveyId) {
 }
 
 function buildChoiceMap(details) {
-  // Map choice_id/row_id → text for all questions
-  const qMap = {}; // questionId → { heading, choices: {id→text}, rows: {id→text} }
+  const qMap = {};
   for (const page of (details.pages || [])) {
     for (const q of (page.questions || [])) {
       const entry = { heading: q.headings?.[0]?.heading || "", choices: {}, rows: {} };
-      for (const c of (q.answers?.choices || [])) entry.choices[c.id] = c.text;
-      for (const r of (q.answers?.rows || [])) entry.rows[r.id] = r.text;
-      for (const o of (q.answers?.other || [])) entry.choices[o.id] = o.text || "Other";
+      const ans = q.answers || {};
+      if (Array.isArray(ans.choices)) {
+        for (const c of ans.choices) entry.choices[c.id] = c.text;
+      }
+      if (Array.isArray(ans.rows)) {
+        for (const r of ans.rows) entry.rows[r.id] = r.text;
+      }
+      // other can be object or array
+      if (ans.other) {
+        const others = Array.isArray(ans.other) ? ans.other : [ans.other];
+        for (const o of others) if (o.id) entry.choices[o.id] = o.text || "Other";
+      }
       qMap[q.id] = entry;
     }
   }
