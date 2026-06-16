@@ -173,13 +173,21 @@ function CFPDashboard() {
   const [dimIds, setDimIds]       = useState(["","",""]);
   const [lastUpdated, setLastUpdated] = useState(null);
 
-  useEffect(() => {
-    fetch("data.json")
+  const loadData = React.useCallback(() => {
+    // Cache-bust with timestamp so browser always fetches the freshest data.json
+    fetch("data.json?t=" + Date.now(), { cache: "no-store" })
       .then(r => { if (!r.ok) throw new Error("data.json not found"); return r.json(); })
-      .then(d => { setData(d); setLastUpdated(d.updatedAt ? new Date(d.updatedAt) : null); })
+      .then(d => { setData(d); setLastUpdated(d.updatedAt ? new Date(d.updatedAt) : null); setError(null); })
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    loadData();
+    // Auto-refresh every 5 minutes so the dashboard stays current without manual reload
+    const interval = setInterval(loadData, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [loadData]);
 
   const today = new Date();
   const daysElapsed   = Math.max(0, daysDiff(START_DATE, today));
@@ -241,6 +249,12 @@ function CFPDashboard() {
             UNICEF Child-Friendly City Initiative - Think City / MBPP / MBSP
           </p>
         </div>
+        <button onClick={loadData} disabled={loading}
+          style={{padding:"6px 12px",fontSize:12,borderRadius:6,border:"1px solid #e2e8f0",
+            cursor:loading?"default":"pointer",background:"#fff",color:"#475569",fontWeight:600,
+            opacity:loading?0.5:1,whiteSpace:"nowrap"}}>
+          {loading ? "Refreshing..." : "↻ Refresh"}
+        </button>
       </div>
 
       {error && <div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:8,padding:"10px 14px",marginBottom:12,fontSize:12,color:"#b91c1c"}}>{error}</div>}
