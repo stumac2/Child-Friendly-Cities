@@ -320,29 +320,10 @@ function classifyAllResponses(surveyData) {
   }
 
   const unmatchedDUN = {};
-  const unmatchedGender = {};
-  let completedNoDunAnswer = 0;
   let completedWithDunAnswer = 0;
-  let islandAnswers = 0, seberangAnswers = 0;
-  let dumpedIsland = false, dumpedSeberang = false;
 
   for (const { language, responses, qMap, questionIds } of surveyData) {
     for (const r of responses) {
-      // One-time raw dumps of each DUN question
-      if (r.response_status === "completed" && (!dumpedIsland || !dumpedSeberang)) {
-        for (const page of (r.pages || [])) {
-          for (const q of (page.questions || [])) {
-            if (q.id === questionIds.dunIsland && !dumpedIsland && q.answers?.length) {
-              console.log(`\n--- RAW ISLAND DUN (q ${q.id}) ---\n${JSON.stringify(q.answers)}\n`);
-              dumpedIsland = true;
-            }
-            if (q.id === questionIds.dunSeberang && !dumpedSeberang && q.answers?.length) {
-              console.log(`\n--- RAW SEBERANG DUN (q ${q.id}) ---\n${JSON.stringify(q.answers)}\n`);
-              dumpedSeberang = true;
-            }
-          }
-        }
-      }
       const isStarted = r.response_status === "partial" || r.response_status === "completed";
       const isCompleted = r.response_status === "completed";
       if (!isStarted) continue;
@@ -362,12 +343,8 @@ function classifyAllResponses(surveyData) {
       if (dateStr) result.byDate[dateStr].completed++;
 
       // Extract demographics — DUN may be in island OR Seberang Perai question
-      const islandText = getAnswerText(r, questionIds.dunIsland, qMap);
-      const seberangText = getAnswerText(r, questionIds.dunSeberang, qMap);
-      if (islandText) islandAnswers++;
-      if (seberangText) seberangAnswers++;
-      const dunText = islandText || seberangText;
-      if (dunText) completedWithDunAnswer++; else completedNoDunAnswer++;
+      const dunText = getAnswerText(r, questionIds.dunIsland, qMap) || getAnswerText(r, questionIds.dunSeberang, qMap);
+      if (dunText) completedWithDunAnswer++;
       const dunKey = matchDUN(dunText);
       const district = dunKey ? DUN_DISTRICT[dunKey] : null;
       const urbanRural = dunKey ? DUN_URBAN[dunKey] : null;
@@ -384,7 +361,6 @@ function classifyAllResponses(surveyData) {
 
       const genderText = getAnswerText(r, questionIds.childGender, qMap);
       const gender = matchPattern(genderText, GENDER_MAP);
-      if (genderText && !gender) unmatchedGender[genderText] = (unmatchedGender[genderText] || 0) + 1;
 
       const maritalText = getAnswerText(r, questionIds.marital, qMap);
       const isSingleParent = maritalText && /single.?parent|one.?parent|single|divorced|widowed|ibu tunggal|bapa tunggal|bercerai|balu|janda|单亲|离婚|丧偶|தனி|விவாகரத்து|விதவை/i.test(maritalText);
@@ -451,21 +427,11 @@ function classifyAllResponses(surveyData) {
     }
   }
 
-  console.log(`\nDUN answer presence (completed only): ${completedWithDunAnswer} have a DUN answer, ${completedNoDunAnswer} have none`);
-  console.log(`  Island DUN answers: ${islandAnswers}, Seberang DUN answers: ${seberangAnswers}`);
-
-  // Debug: show unmatched values
+  // Data quality note
+  const dunCoverage = result.totalCompleted > 0 ? Math.round(completedWithDunAnswer / result.totalCompleted * 100) : 0;
+  console.log(`DUN coverage: ${completedWithDunAnswer}/${result.totalCompleted} completed responses have district (${dunCoverage}%)`);
   if (Object.keys(unmatchedDUN).length > 0) {
-    console.log("\n--- UNMATCHED DUN VALUES ---");
-    for (const [val, count] of Object.entries(unmatchedDUN).sort((a,b) => b[1]-a[1]).slice(0, 20)) {
-      console.log(`  "${val}" (${count}x)`);
-    }
-  }
-  if (Object.keys(unmatchedGender).length > 0) {
-    console.log("\n--- UNMATCHED GENDER VALUES ---");
-    for (const [val, count] of Object.entries(unmatchedGender).sort((a,b) => b[1]-a[1])) {
-      console.log(`  "${val}" (${count}x)`);
-    }
+    console.log("Unmatched DUN values:", JSON.stringify(unmatchedDUN));
   }
 
   return result;
@@ -572,25 +538,12 @@ async function main() {
   console.log("SM API connected.");
 
   const surveyData = [];
-  let dumpedStructure = false;
   const statusCounts = {};
   for (const [lang, id] of Object.entries(SURVEY_IDS)) {
     console.log(`Fetching ${lang} survey (${id})...`);
     const details = await fetchSurveyDetails(id);
     const qMap = buildChoiceMap(details);
     const questionIds = identifyQuestions(qMap);
-
-    // Dump full question structure for English survey only (for debugging)
-    if (!dumpedStructure && lang === "English") {
-      dumpedStructure = true;
-      console.log("\n--- QUESTION STRUCTURE (English) ---");
-      for (const [qId, q] of Object.entries(qMap)) {
-        const h = (q.heading || "").replace(/<[^>]+>/g, "").slice(0, 60);
-        const choices = Object.values(q.choices).slice(0, 4).join(" / ").slice(0, 60);
-        console.log(`${qId} | "${h}" | choices: ${choices}`);
-      }
-      console.log("--- END STRUCTURE ---\n");
-    }
 
     const responses = await fetchAllResponses(id);
     for (const r of responses) {
