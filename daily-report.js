@@ -323,19 +323,22 @@ function classifyAllResponses(surveyData) {
   const unmatchedGender = {};
   let completedNoDunAnswer = 0;
   let completedWithDunAnswer = 0;
-  let dumpedDunRaw = false;
+  let islandAnswers = 0, seberangAnswers = 0;
+  let dumpedIsland = false, dumpedSeberang = false;
 
   for (const { language, responses, qMap, questionIds } of surveyData) {
     for (const r of responses) {
-      // One-time: dump raw structure of DUN questions for a completed response
-      if (!dumpedDunRaw && r.response_status === "completed") {
+      // One-time raw dumps of each DUN question
+      if (r.response_status === "completed" && (!dumpedIsland || !dumpedSeberang)) {
         for (const page of (r.pages || [])) {
           for (const q of (page.questions || [])) {
-            if (q.id === questionIds.dunIsland || q.id === questionIds.dunSeberang) {
-              console.log(`\n--- RAW DUN ANSWER (q ${q.id}) ---`);
-              console.log(JSON.stringify(q, null, 2).slice(0, 800));
-              console.log("--- END RAW DUN ---\n");
-              dumpedDunRaw = true;
+            if (q.id === questionIds.dunIsland && !dumpedIsland && q.answers?.length) {
+              console.log(`\n--- RAW ISLAND DUN (q ${q.id}) ---\n${JSON.stringify(q.answers)}\n`);
+              dumpedIsland = true;
+            }
+            if (q.id === questionIds.dunSeberang && !dumpedSeberang && q.answers?.length) {
+              console.log(`\n--- RAW SEBERANG DUN (q ${q.id}) ---\n${JSON.stringify(q.answers)}\n`);
+              dumpedSeberang = true;
             }
           }
         }
@@ -359,7 +362,11 @@ function classifyAllResponses(surveyData) {
       if (dateStr) result.byDate[dateStr].completed++;
 
       // Extract demographics — DUN may be in island OR Seberang Perai question
-      const dunText = getAnswerText(r, questionIds.dunIsland, qMap) || getAnswerText(r, questionIds.dunSeberang, qMap);
+      const islandText = getAnswerText(r, questionIds.dunIsland, qMap);
+      const seberangText = getAnswerText(r, questionIds.dunSeberang, qMap);
+      if (islandText) islandAnswers++;
+      if (seberangText) seberangAnswers++;
+      const dunText = islandText || seberangText;
       if (dunText) completedWithDunAnswer++; else completedNoDunAnswer++;
       const dunKey = matchDUN(dunText);
       const district = dunKey ? DUN_DISTRICT[dunKey] : null;
@@ -445,6 +452,7 @@ function classifyAllResponses(surveyData) {
   }
 
   console.log(`\nDUN answer presence (completed only): ${completedWithDunAnswer} have a DUN answer, ${completedNoDunAnswer} have none`);
+  console.log(`  Island DUN answers: ${islandAnswers}, Seberang DUN answers: ${seberangAnswers}`);
 
   // Debug: show unmatched values
   if (Object.keys(unmatchedDUN).length > 0) {
