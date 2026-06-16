@@ -54,20 +54,20 @@ const DUN_DISTRICT = {};
 const DUN_URBAN = {};
 const dunData = {
   "Timur Laut": {
-    duns: ["Tanjong Bunga","Air Itam","Kebun Bunga","Pulau Tikus","Padang Kota","Pengkalan Kota","Komtar","Datok Keramat","Sungai Pinang","Batu Lanchang","Seri Delima","Bukit Gelugor","Paya Terubong","Batu Uban"],
-    urban: ["Tanjong Bunga","Air Itam","Kebun Bunga","Pulau Tikus","Padang Kota","Pengkalan Kota","Komtar","Datok Keramat","Sungai Pinang","Batu Lanchang","Seri Delima","Bukit Gelugor","Batu Uban"],
+    duns: ["Tanjong Bunga","Air Putih","Air Itam","Kebun Bunga","Pulau Tikus","Padang Kota","Pengkalan Kota","Komtar","Datok Keramat","Sungai Pinang","Batu Lanchang","Seri Delima","Bukit Gelugor","Paya Terubong","Batu Uban"],
+    urban: ["Tanjong Bunga","Air Putih","Air Itam","Kebun Bunga","Pulau Tikus","Padang Kota","Pengkalan Kota","Komtar","Datok Keramat","Sungai Pinang","Batu Lanchang","Seri Delima","Bukit Gelugor","Batu Uban"],
     periurban: ["Paya Terubong"],
   },
   "Barat Daya": {
-    duns: ["Pantai Jerejak","Batu Maung","Bayan Lepas","Pulau Betong","Telok Bahang"],
+    duns: ["Pantai Jerejak","Batu Maung","Bayan Lepas","Pulau Betong","Teluk Bahang"],
     urban: ["Pantai Jerejak","Batu Maung","Bayan Lepas"],
-    rural: ["Pulau Betong","Telok Bahang"],
+    rural: ["Pulau Betong","Teluk Bahang"],
   },
   "SP Utara": {
-    duns: ["Penaga","Bertam","Pinang Tunggal","Permatang Berangan","Sungai Dua","Telok Ayer Tawar","Sungai Puyu","Bagan Jermal","Bagan Dalam"],
+    duns: ["Penaga","Bertam","Pinang Tunggal","Permatang Berangan","Sungai Dua","Teluk Air Tawar","Sungai Puyu","Bagan Jermal","Bagan Dalam"],
     urban: ["Sungai Puyu","Bagan Jermal","Bagan Dalam"],
     periurban: ["Bertam","Pinang Tunggal","Permatang Berangan","Sungai Dua"],
-    rural: ["Penaga","Telok Ayer Tawar"],
+    rural: ["Penaga","Teluk Air Tawar"],
   },
   "SP Tengah": {
     duns: ["Seberang Jaya","Permatang Pasir","Penanti","Berapit","Machang Bubok","Padang Lalang","Perai","Bukit Tengah","Bukit Tambun"],
@@ -97,11 +97,25 @@ const ETH_MAP = [
   { pattern: /lain|other|refugee|non.?citizen|难民|அகதி|无国籍/i, value: "Others" },
 ];
 
-const INCOME_MAP = [
-  { pattern: /b40|rm\s*4[,.]?849|below|bawah|以下|கீழ்/i, value: "B40" },
-  { pattern: /t20|rm\s*10[,.]?97[01]|above|atas|以上|மேல்/i, value: "T20" },
-  { pattern: /m40|rm\s*4[,.]?850|rm\s*10[,.]?970|middle|sederhana|中等|நடுத்தர/i, value: "M40" },
-];
+function matchIncome(text) {
+  if (!text) return null;
+  const t = text.toLowerCase();
+  if (/prefer not|tidak mahu|不愿|விரும்பவில்லை/.test(t)) return null;
+  // Extract all RM amounts mentioned
+  const nums = (text.match(/\d[\d,]*/g) || []).map(n => parseInt(n.replace(/,/g, ""))).filter(n => n >= 100);
+  if (nums.length === 0) {
+    // Text-based bands
+    if (/b40|below|less than|bawah|kurang/i.test(t)) return "B40";
+    if (/t20|above|more than|atas|lebih/i.test(t)) return "T20";
+    if (/m40|middle|sederhana/i.test(t)) return "M40";
+    return null;
+  }
+  // Use the lower bound of the band to classify
+  const low = Math.min(...nums);
+  if (low < 4850) return "B40";
+  if (low <= 10970) return "M40";
+  return "T20";
+}
 
 const GENDER_MAP = [
   { pattern: /^male$|^lelaki$|^男$|^ஆண்$/i, value: "Male" },
@@ -152,68 +166,35 @@ function extractAge(text) {
 }
 
 // ─── Question identifier ───────────────────────────────────────────────────────
-// Scans qMap choices to identify which question ID maps to which field
+// Exact question IDs (consistent across all four language surveys)
+const QUESTION_IDS = {
+  dunIsland:    "289909870",  // Which area (DUN) ... Penang Island
+  dunSeberang:  "289909884",  // Which area (DUN) ... Seberang Perai
+  ethnicity:    "289909807",  // What is your ethnic group?
+  income:       "289909904",  // household's total monthly income
+  childGender:  "289909839",  // What is your child's gender?
+  parentGender: "289909808",  // What is your gender?
+  childAge:     "289909924",  // age of your child (10-17)
+  household:    "289909811",  // best describes your household (single/two-parent)
+  status:       "289909841",  // status in Malaysia (refugee/stateless)
+  disability:   "289909840",  // difficulties your child may have (Washington Group)
+};
+
 function identifyQuestions(qMap) {
-  const ids = { dun: null, ethnicity: null, income: null, childAge: null, childGender: null, parentGender: null, marital: null, disability: [] };
-
-  for (const [qId, q] of Object.entries(qMap)) {
-    const heading = (q.heading || "").toLowerCase();
-    const choiceTexts = Object.values(q.choices).map(c => c.toLowerCase());
-    const allText = choiceTexts.join(" ");
-
-    // DUN: has DUN names as choices
-    if (!ids.dun && choiceTexts.some(c => DUN_DISTRICT[c.trim()])) {
-      ids.dun = qId;
-      continue;
-    }
-
-    // Ethnicity: choices contain Malay/Chinese/Indian or equivalents
-    if (!ids.ethnicity && (allText.match(/malay|melayu|华人|马来|சீனர்|cina/i))) {
-      ids.ethnicity = qId;
-      continue;
-    }
-
-    // Income: choices contain B40/M40/T20 or RM amounts
-    if (!ids.income && (allText.match(/b40|m40|t20|rm\s*4[,.]?849|rm\s*10[,.]?970/i))) {
-      ids.income = qId;
-      continue;
-    }
-
-    // Child gender: heading contains "child" + "gender" or "anak" + "jantina"
-    if (!ids.childGender && heading.match(/child.*(gender|sex)|gender.*child|jantina.*anak|anak.*jantina|孩子.*性别|性别.*孩子|குழந்தை.*பாலினம்/i)) {
-      ids.childGender = qId;
-      continue;
-    }
-
-    // Parent gender (fallback): heading has gender but not child
-    if (!ids.parentGender && heading.match(/gender|jantina|性别|பாலினம்/i) && !heading.match(/child|anak|孩子|குழந்தை/i)) {
-      ids.parentGender = qId;
-      continue;
-    }
-
-    // Child age: heading mentions child + age, or choices have numbers 10-18
-    if (!ids.childAge && heading.match(/child.*(age|old)|age.*child|umur.*anak|anak.*umur|孩子.*年龄|年龄.*孩子|குழந்தை.*வயது/i)) {
-      ids.childAge = qId;
-      continue;
-    }
-    if (!ids.childAge && choiceTexts.some(c => /^1[0-8]$/.test(c.trim()))) {
-      ids.childAge = qId;
-      continue;
-    }
-
-    // Marital: heading mentions marital/marriage/perkahwinan
-    if (!ids.marital && heading.match(/marital|marriage|status.*perkahwinan|perkahwinan|婚姻|திருமண/i)) {
-      ids.marital = qId;
-      continue;
-    }
-
-    // Disability: Washington Group questions - heading mentions difficulty + activity
-    if (heading.match(/difficulty|kesukaran|困难|சிரமம்/i) && heading.match(/seeing|hearing|walking|remembering|self.?care|communicat/i)) {
-      ids.disability.push(qId);
-      continue;
-    }
-  }
-
+  // Use exact IDs; fall back gracefully if a survey is missing one
+  const ids = {
+    dun: QUESTION_IDS.dunIsland,        // primary; Seberang handled separately
+    dunIsland: QUESTION_IDS.dunIsland,
+    dunSeberang: QUESTION_IDS.dunSeberang,
+    ethnicity: QUESTION_IDS.ethnicity,
+    income: QUESTION_IDS.income,
+    childAge: QUESTION_IDS.childAge,
+    childGender: QUESTION_IDS.childGender,
+    parentGender: QUESTION_IDS.parentGender,
+    marital: QUESTION_IDS.household,
+    status: QUESTION_IDS.status,
+    disability: [QUESTION_IDS.disability],
+  };
   return ids;
 }
 
@@ -357,8 +338,8 @@ function classifyAllResponses(surveyData) {
       result.byLanguage[language].completed++;
       if (dateStr) result.byDate[dateStr].completed++;
 
-      // Extract demographics
-      const dunText = getAnswerText(r, questionIds.dun, qMap);
+      // Extract demographics — DUN may be in island OR Seberang Perai question
+      const dunText = getAnswerText(r, questionIds.dunIsland, qMap) || getAnswerText(r, questionIds.dunSeberang, qMap);
       const dunKey = matchDUN(dunText);
       const district = dunKey ? DUN_DISTRICT[dunKey] : null;
       const urbanRural = dunKey ? DUN_URBAN[dunKey] : null;
@@ -368,17 +349,17 @@ function classifyAllResponses(surveyData) {
       const ethnicity = matchPattern(ethText, ETH_MAP) || "Others";
 
       const incText = getAnswerText(r, questionIds.income, qMap);
-      const income = matchPattern(incText, INCOME_MAP);
+      const income = matchIncome(incText);
 
       const ageText = getAnswerText(r, questionIds.childAge, qMap);
       const ageGroup = extractAge(ageText);
 
-      const genderText = getAnswerText(r, questionIds.childGender, qMap) || getAnswerText(r, questionIds.parentGender, qMap);
+      const genderText = getAnswerText(r, questionIds.childGender, qMap);
       const gender = matchPattern(genderText, GENDER_MAP);
       if (genderText && !gender) unmatchedGender[genderText] = (unmatchedGender[genderText] || 0) + 1;
 
       const maritalText = getAnswerText(r, questionIds.marital, qMap);
-      const isSingleParent = maritalText && /single|divorced|widowed|bercerai|balu|janda|离婚|丧偶|விவாகரத்து|விதவை/i.test(maritalText);
+      const isSingleParent = maritalText && /single.?parent|one.?parent|single|divorced|widowed|ibu tunggal|bapa tunggal|bercerai|balu|janda|单亲|离婚|丧偶|தனி|விவாகரத்து|விதவை/i.test(maritalText);
 
       const isDisabled = hasDisability(r, questionIds.disability, qMap);
       const isRefugee = ethText && /refugee|undocumented|pelarian|难民|அகதி/i.test(ethText);
@@ -561,6 +542,7 @@ async function main() {
 
   const surveyData = [];
   let dumpedStructure = false;
+  const statusCounts = {};
   for (const [lang, id] of Object.entries(SURVEY_IDS)) {
     console.log(`Fetching ${lang} survey (${id})...`);
     const details = await fetchSurveyDetails(id);
@@ -580,6 +562,10 @@ async function main() {
     }
 
     const responses = await fetchAllResponses(id);
+    for (const r of responses) {
+      const st = r.response_status || "unknown";
+      statusCounts[st] = (statusCounts[st] || 0) + 1;
+    }
     console.log(`  ${responses.length} responses, ${Object.keys(qMap).length} questions mapped`);
     console.log(`  Identified: DUN=${questionIds.dun?"yes":"NO"} eth=${questionIds.ethnicity?"yes":"NO"} inc=${questionIds.income?"yes":"NO"} age=${questionIds.childAge?"yes":"NO"} gen=${questionIds.childGender||questionIds.parentGender?"yes":"NO"} dis=${questionIds.disability.length}`);
     surveyData.push({ language: lang, responses, qMap, questionIds });
@@ -587,6 +573,7 @@ async function main() {
 
   const totalRaw = surveyData.reduce((s, d) => s + d.responses.length, 0);
   console.log(`Total raw responses: ${totalRaw}`);
+  console.log(`Response status breakdown:`, JSON.stringify(statusCounts));
 
   // Classify in Node.js - no AI dependency
   console.log("Classifying responses...");
