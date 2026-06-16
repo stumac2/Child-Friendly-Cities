@@ -1,18 +1,28 @@
 {
-  "totalStarted": 130,
-  "totalCompleted": 28,
+  "totalStarted": 164,
+  "totalCompleted": 54,
+  "byDate": {
+    "2026-06-15": {
+      "started": 24,
+      "completed": 13
+    },
+    "2026-06-16": {
+      "started": 140,
+      "completed": 41
+    }
+  },
   "byLanguage": {
     "English": {
-      "started": 31,
-      "completed": 10
+      "started": 41,
+      "completed": 17
     },
     "Malay": {
-      "started": 44,
-      "completed": 12
+      "started": 56,
+      "completed": 17
     },
     "Mandarin": {
-      "started": 53,
-      "completed": 6
+      "started": 65,
+      "completed": 20
     },
     "Tamil": {
       "started": 2,
@@ -78,14 +88,172 @@
       "T20": 0
     }
   },
+  "ageByDistrict": {
+    "Timur Laut": {
+      "10-12": 0,
+      "13-16": 0,
+      "17-18": 0
+    },
+    "Barat Daya": {
+      "10-12": 0,
+      "13-16": 0,
+      "17-18": 0
+    },
+    "SP Utara": {
+      "10-12": 0,
+      "13-16": 0,
+      "17-18": 0
+    },
+    "SP Tengah": {
+      "10-12": 0,
+      "13-16": 0,
+      "17-18": 0
+    },
+    "SP Selatan": {
+      "10-12": 0,
+      "13-16": 0,
+      "17-18": 0
+    }
+  },
+  "genderByDistrict": {
+    "Timur Laut": {
+      "Male": 0,
+      "Female": 0
+    },
+    "Barat Daya": {
+      "Male": 0,
+      "Female": 0
+    },
+    "SP Utara": {
+      "Male": 0,
+      "Female": 0
+    },
+    "SP Tengah": {
+      "Male": 0,
+      "Female": 0
+    },
+    "SP Selatan": {
+      "Male": 0,
+      "Female": 0
+    }
+  },
+  "ethnicityByGender": {
+    "Malay": {
+      "Male": 0,
+      "Female": 0
+    },
+    "Chinese": {
+      "Male": 0,
+      "Female": 0
+    },
+    "Indian": {
+      "Male": 0,
+      "Female": 0
+    },
+    "Others": {
+      "Male": 0,
+      "Female": 0
+    }
+  },
+  "ageByGender": {
+    "10-12": {
+      "Male": 0,
+      "Female": 0
+    },
+    "13-16": {
+      "Male": 0,
+      "Female": 0
+    },
+    "17-18": {
+      "Male": 0,
+      "Female": 0
+    }
+  },
   "byGender": {
     "Male": 0,
-    "Female": 0
+    "Female": 0,
+    "Other": 0
   },
-  "byUrbanRural": {
-    "Urban": 0,
-    "Peri-urban": 0,
-    "Rural": 0
+  "byIncome": {
+    "B40": 0,
+    "M40": 0,
+    "T20": 0,
+    "Not stated": 0
+  },
+  "ethnicityByIncome": {
+    "Malay": {
+      "B40": 0,
+      "M40": 0,
+      "T20": 0
+    },
+    "Chinese": {
+      "B40": 0,
+      "M40": 0,
+      "T20": 0
+    },
+    "Indian": {
+      "B40": 0,
+      "M40": 0,
+      "T20": 0
+    },
+    "Others": {
+      "B40": 0,
+      "M40": 0,
+      "T20": 0
+    }
+  },
+  "ethnicityByAge": {
+    "Malay": {
+      "10-12": 0,
+      "13-16": 0,
+      "17-18": 0
+    },
+    "Chinese": {
+      "10-12": 0,
+      "13-16": 0,
+      "17-18": 0
+    },
+    "Indian": {
+      "10-12": 0,
+      "13-16": 0,
+      "17-18": 0
+    },
+    "Others": {
+      "10-12": 0,
+      "13-16": 0,
+      "17-18": 0
+    }
+  },
+  "incomeByAge": {
+    "B40": {
+      "10-12": 0,
+      "13-16": 0,
+      "17-18": 0
+    },
+    "M40": {
+      "10-12": 0,
+      "13-16": 0,
+      "17-18": 0
+    },
+    "T20": {
+      "10-12": 0,
+      "13-16": 0,
+      "17-18": 0
+    }
+  },
+  "incomeByGender": {
+    "B40": {
+      "Male": 0,
+      "Female": 0
+    },
+    "M40": {
+      "Male": 0,
+      "Female": 0
+    },
+    "T20": {
+      "Male": 0,
+      "Female": 0
+    }
   },
   "vulnerableGroups": {
     "Refugees / undocumented": 0,
@@ -93,6 +261,87 @@
     "Single-parent households": 0,
     "Institutional care": 0
   },
-  "noDistrict": 0,
-  "updatedAt": "2026-06-16T03:30:12.188Z"
+  "byUrbanRural": {
+    "Urban": 0,
+    "Peri-urban": 0,
+    "Rural": 0
+  },
+  "byDateByDistrict": {
+    "2026-06-15": {
+      "Timur Laut": 0,
+      "Barat Daya": 0,
+      "SP Utara": 0,
+      "SP Tengah": 0,
+      "SP Selatan": 0
+    },
+    "2026-06-16": {
+      "Timur Laut": 0,
+      "Barat Daya": 0,
+      "SP Utara": 0,
+      "SP Tengah": 0,
+      "SP Selatan": 0
+    }
+  },
+  "byDateByEthnicity": {
+    "2026-06-15": {
+      "Malay": 0,
+      "Chinese": 0,
+      "Indian": 0,
+      "Others": 0
+    },
+    "2026-06-16": {
+      "Malay": 0,
+      "Chinese": 0,
+      "Indian": 0,
+      "Others": 0
+    }
+  },
+  "byDateByIncome": {
+    "2026-06-15": {
+      "B40": 0,
+      "M40": 0,
+      "T20": 0
+    },
+    "2026-06-16": {
+      "B40": 0,
+      "M40": 0,
+      "T20": 0
+    }
+  },
+  "byDateByAge": {
+    "2026-06-15": {
+      "10-12": 0,
+      "13-16": 0,
+      "17-18": 0
+    },
+    "2026-06-16": {
+      "10-12": 0,
+      "13-16": 0,
+      "17-18": 0
+    }
+  },
+  "byDateByGender": {
+    "2026-06-15": {
+      "Male": 0,
+      "Female": 0
+    },
+    "2026-06-16": {
+      "Male": 0,
+      "Female": 0
+    }
+  },
+  "byDateByUrbanRural": {
+    "2026-06-15": {
+      "Urban": 0,
+      "Peri-urban": 0,
+      "Rural": 0
+    },
+    "2026-06-16": {
+      "Urban": 0,
+      "Peri-urban": 0,
+      "Rural": 0
+    }
+  },
+  "noDistrict": 54,
+  "updatedAt": "2026-06-16T04:13:50.855Z"
 }
