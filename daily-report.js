@@ -327,6 +327,14 @@ async function main() {
   const totalRaw = enrichedData.reduce((s, d) => s + d.count, 0);
   console.log(`Total raw responses: ${totalRaw}`);
 
+  // Debug: show first response from first survey with data
+  const firstWithData = enrichedData.find(d => d.count > 0);
+  if (firstWithData) {
+    console.log(`\n--- SAMPLE ENRICHED RESPONSE (${firstWithData.language}) ---`);
+    console.log(JSON.stringify(firstWithData.responses[0], null, 2).slice(0, 2000));
+    console.log("--- END SAMPLE ---\n");
+  }
+
   if (totalRaw === 0) {
     console.log("No responses yet - sending skeleton report.");
     const emptyData = { totalStarted: 0, totalCompleted: 0, byLanguage: {}, crossTab: {}, incomeByDistrict: {}, byGender: {}, byUrbanRural: {}, vulnerableGroups: {}, noDistrict: 0 };
@@ -340,6 +348,9 @@ async function main() {
   const classified = await classifyResponses(enrichedData);
   classified.updatedAt = new Date().toISOString();
   console.log(`Classified: ${classified.totalStarted} started, ${classified.totalCompleted} completed`);
+  console.log(`CrossTab sample:`, JSON.stringify(classified.crossTab || {}).slice(0, 300));
+  console.log(`byGender:`, JSON.stringify(classified.byGender || {}));
+  console.log(`noDistrict:`, classified.noDistrict);
 
   // 4. Write data.json for GitHub Pages dashboard
   const fs = require("fs");
