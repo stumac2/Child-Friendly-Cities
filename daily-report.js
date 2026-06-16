@@ -131,6 +131,7 @@ function matchDUN(text) {
   lower = lower
     .replace(/\blancang\b/g, "lanchang")
     .replace(/\bglugor\b/g, "gelugor")
+    .replace(/\bbubuk\b/g, "bubok")
     .replace(/\btelok\b/g, "teluk")
     .replace(/\btanjung\b/g, "tanjong")
     .replace(/\s+/g, " ");
@@ -258,10 +259,13 @@ function getAnswerText(response, questionId, qMap) {
         const texts = (q.answers || []).map(a => {
           if (a.choice_id && qInfo.choices?.[a.choice_id]) return qInfo.choices[a.choice_id];
           if (a.row_id && qInfo.rows?.[a.row_id]) return qInfo.rows[a.row_id];
+          if (a.other_id && qInfo.choices?.[a.other_id]) return qInfo.choices[a.other_id];
           if (a.text) return a.text;
+          // Fallback: choice_id present but not in map — return the raw id so we can debug
+          if (a.choice_id) return `__unmapped_choice:${a.choice_id}`;
           return null;
         }).filter(Boolean);
-        return texts.join(", ");
+        return texts.length ? texts.join(", ") : null;
       }
     }
   }
@@ -317,9 +321,25 @@ function classifyAllResponses(surveyData) {
 
   const unmatchedDUN = {};
   const unmatchedGender = {};
+  let completedNoDunAnswer = 0;
+  let completedWithDunAnswer = 0;
+  let dumpedDunRaw = false;
 
   for (const { language, responses, qMap, questionIds } of surveyData) {
     for (const r of responses) {
+      // One-time: dump raw structure of DUN questions for a completed response
+      if (!dumpedDunRaw && r.response_status === "completed") {
+        for (const page of (r.pages || [])) {
+          for (const q of (page.questions || [])) {
+            if (q.id === questionIds.dunIsland || q.id === questionIds.dunSeberang) {
+              console.log(`\n--- RAW DUN ANSWER (q ${q.id}) ---`);
+              console.log(JSON.stringify(q, null, 2).slice(0, 800));
+              console.log("--- END RAW DUN ---\n");
+              dumpedDunRaw = true;
+            }
+          }
+        }
+      }
       const isStarted = r.response_status === "partial" || r.response_status === "completed";
       const isCompleted = r.response_status === "completed";
       if (!isStarted) continue;
@@ -340,6 +360,7 @@ function classifyAllResponses(surveyData) {
 
       // Extract demographics — DUN may be in island OR Seberang Perai question
       const dunText = getAnswerText(r, questionIds.dunIsland, qMap) || getAnswerText(r, questionIds.dunSeberang, qMap);
+      if (dunText) completedWithDunAnswer++; else completedNoDunAnswer++;
       const dunKey = matchDUN(dunText);
       const district = dunKey ? DUN_DISTRICT[dunKey] : null;
       const urbanRural = dunKey ? DUN_URBAN[dunKey] : null;
@@ -422,6 +443,8 @@ function classifyAllResponses(surveyData) {
       }
     }
   }
+
+  console.log(`\nDUN answer presence (completed only): ${completedWithDunAnswer} have a DUN answer, ${completedNoDunAnswer} have none`);
 
   // Debug: show unmatched values
   if (Object.keys(unmatchedDUN).length > 0) {
