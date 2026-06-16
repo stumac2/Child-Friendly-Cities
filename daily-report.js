@@ -323,6 +323,9 @@ function classifyAllResponses(surveyData) {
     result.incomeByGender[i] = { Male:0, Female:0 };
   }
 
+  const unmatchedDUN = {};
+  const unmatchedGender = {};
+
   for (const { language, responses, qMap, questionIds } of surveyData) {
     for (const r of responses) {
       const isStarted = r.response_status === "partial" || r.response_status === "completed";
@@ -348,6 +351,7 @@ function classifyAllResponses(surveyData) {
       const dunKey = matchDUN(dunText);
       const district = dunKey ? DUN_DISTRICT[dunKey] : null;
       const urbanRural = dunKey ? DUN_URBAN[dunKey] : null;
+      if (dunText && !district) unmatchedDUN[dunText] = (unmatchedDUN[dunText] || 0) + 1;
 
       const ethText = getAnswerText(r, questionIds.ethnicity, qMap);
       const ethnicity = matchPattern(ethText, ETH_MAP) || "Others";
@@ -360,6 +364,7 @@ function classifyAllResponses(surveyData) {
 
       const genderText = getAnswerText(r, questionIds.childGender, qMap) || getAnswerText(r, questionIds.parentGender, qMap);
       const gender = matchPattern(genderText, GENDER_MAP);
+      if (genderText && !gender) unmatchedGender[genderText] = (unmatchedGender[genderText] || 0) + 1;
 
       const maritalText = getAnswerText(r, questionIds.marital, qMap);
       const isSingleParent = maritalText && /single|divorced|widowed|bercerai|balu|janda|离婚|丧偶|விவாகரத்து|விதவை/i.test(maritalText);
@@ -423,6 +428,20 @@ function classifyAllResponses(surveyData) {
           result.byDateByUrbanRural[dateStr][urbanRural] = (result.byDateByUrbanRural[dateStr][urbanRural] || 0) + 1;
         }
       }
+    }
+  }
+
+  // Debug: show unmatched values
+  if (Object.keys(unmatchedDUN).length > 0) {
+    console.log("\n--- UNMATCHED DUN VALUES ---");
+    for (const [val, count] of Object.entries(unmatchedDUN).sort((a,b) => b[1]-a[1]).slice(0, 20)) {
+      console.log(`  "${val}" (${count}x)`);
+    }
+  }
+  if (Object.keys(unmatchedGender).length > 0) {
+    console.log("\n--- UNMATCHED GENDER VALUES ---");
+    for (const [val, count] of Object.entries(unmatchedGender).sort((a,b) => b[1]-a[1])) {
+      console.log(`  "${val}" (${count}x)`);
     }
   }
 
