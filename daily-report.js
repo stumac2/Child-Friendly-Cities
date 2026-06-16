@@ -75,7 +75,7 @@ SP Tengah: Seberang Jaya, Permatang Pasir, Penanti, Berapit, Machang Bubok, Pada
 SP Selatan: Jawi, Sungai Bakap, Sungai Acheh
 Timur Laut: Tanjong Bunga, Air Putih, Kebun Bunga, Pulau Tikus, Padang Kota, Pengkalan Kota, Komtar, Datok Keramat, Sungai Pinang, Batu Lanchang, Seri Delima, Bukit Glugor, Paya Terubong, Batu Uban
 Barat Daya: Pantai Jerejak, Batu Maung, Bayan Lepas, Pulau Betong, Telok Bahang
-URBAN/RURAL:
+URBAN/RURAL: Classify each response by DUN:
 Urban: Tanjong Bunga, Air Putih, Kebun Bunga, Pulau Tikus, Padang Kota, Pengkalan Kota, Komtar, Datok Keramat, Sungai Pinang, Batu Lanchang, Seri Delima, Bukit Glugor, Batu Uban, Seberang Jaya, Perai, Sungai Puyu, Bagan Jermal, Bagan Dalam, Pantai Jerejak, Batu Maung, Bayan Lepas
 Peri-urban: Paya Terubong, Bertam, Pinang Tunggal, Permatang Berangan, Sungai Dua, Permatang Pasir, Berapit, Padang Lalang, Bukit Tengah, Bukit Tambun, Jawi, Sungai Bakap, Sungai Acheh
 Rural: Penaga, Telok Ayer Tawar, Penanti, Machang Bubok, Pulau Betong, Telok Bahang
@@ -84,10 +84,11 @@ AGE: 10/11/12 → 10-12; 13/14/15/16 → 13-16; 17/18 → 17-18
 DISABILITY: any "some difficulty" or worse on Washington Group questions → true
 VULNERABLE: ethnicity="Refugee/Undocumented" → Refugees; marital=single/divorced/widowed → Single-parent; school contains "Children's Home"/"Tunas Bakti" → Institutional
 
-COMPLETION: status=partial or complete → started; status=complete → completed.
+COMPLETION: status=partial or complete → started; status=complete → completed. Count per survey and per language.
+BY DATE: Extract date portion of date_created (YYYY-MM-DD). Count started and completed per date. Also count completed per date per dimension category for all byDateBy* fields.
 
 Return ONLY valid JSON:
-{"totalStarted":0,"totalCompleted":0,"byLanguage":{"English":{"started":0,"completed":0},"Malay":{"started":0,"completed":0},"Mandarin":{"started":0,"completed":0},"Tamil":{"started":0,"completed":0}},"crossTab":{"Timur Laut":{"Malay":0,"Chinese":0,"Indian":0,"Others":0},"Barat Daya":{"Malay":0,"Chinese":0,"Indian":0,"Others":0},"SP Utara":{"Malay":0,"Chinese":0,"Indian":0,"Others":0},"SP Tengah":{"Malay":0,"Chinese":0,"Indian":0,"Others":0},"SP Selatan":{"Malay":0,"Chinese":0,"Indian":0,"Others":0}},"incomeByDistrict":{"Timur Laut":{"B40":0,"M40":0,"T20":0},"Barat Daya":{"B40":0,"M40":0,"T20":0},"SP Utara":{"B40":0,"M40":0,"T20":0},"SP Tengah":{"B40":0,"M40":0,"T20":0},"SP Selatan":{"B40":0,"M40":0,"T20":0}},"byGender":{"Male":0,"Female":0},"byUrbanRural":{"Urban":0,"Peri-urban":0,"Rural":0},"vulnerableGroups":{"Refugees / undocumented":0,"Children with disability":0,"Single-parent households":0,"Institutional care":0},"noDistrict":0}`;
+{"totalStarted":0,"totalCompleted":0,"byDate":{"2026-06-15":{"started":0,"completed":0}},"byLanguage":{"English":{"started":0,"completed":0},"Malay":{"started":0,"completed":0},"Mandarin":{"started":0,"completed":0},"Tamil":{"started":0,"completed":0}},"crossTab":{"Timur Laut":{"Malay":0,"Chinese":0,"Indian":0,"Others":0},"Barat Daya":{"Malay":0,"Chinese":0,"Indian":0,"Others":0},"SP Utara":{"Malay":0,"Chinese":0,"Indian":0,"Others":0},"SP Tengah":{"Malay":0,"Chinese":0,"Indian":0,"Others":0},"SP Selatan":{"Malay":0,"Chinese":0,"Indian":0,"Others":0}},"incomeByDistrict":{"Timur Laut":{"B40":0,"M40":0,"T20":0},"Barat Daya":{"B40":0,"M40":0,"T20":0},"SP Utara":{"B40":0,"M40":0,"T20":0},"SP Tengah":{"B40":0,"M40":0,"T20":0},"SP Selatan":{"B40":0,"M40":0,"T20":0}},"ageByDistrict":{"Timur Laut":{"10-12":0,"13-16":0,"17-18":0},"Barat Daya":{"10-12":0,"13-16":0,"17-18":0},"SP Utara":{"10-12":0,"13-16":0,"17-18":0},"SP Tengah":{"10-12":0,"13-16":0,"17-18":0},"SP Selatan":{"10-12":0,"13-16":0,"17-18":0}},"genderByDistrict":{"Timur Laut":{"Male":0,"Female":0},"Barat Daya":{"Male":0,"Female":0},"SP Utara":{"Male":0,"Female":0},"SP Tengah":{"Male":0,"Female":0},"SP Selatan":{"Male":0,"Female":0}},"ethnicityByGender":{"Malay":{"Male":0,"Female":0},"Chinese":{"Male":0,"Female":0},"Indian":{"Male":0,"Female":0},"Others":{"Male":0,"Female":0}},"ageByGender":{"10-12":{"Male":0,"Female":0},"13-16":{"Male":0,"Female":0},"17-18":{"Male":0,"Female":0}},"byGender":{"Male":0,"Female":0,"Other":0},"byIncome":{"B40":0,"M40":0,"T20":0,"Not stated":0},"ethnicityByIncome":{"Malay":{"B40":0,"M40":0,"T20":0},"Chinese":{"B40":0,"M40":0,"T20":0},"Indian":{"B40":0,"M40":0,"T20":0},"Others":{"B40":0,"M40":0,"T20":0}},"ethnicityByAge":{"Malay":{"10-12":0,"13-16":0,"17-18":0},"Chinese":{"10-12":0,"13-16":0,"17-18":0},"Indian":{"10-12":0,"13-16":0,"17-18":0},"Others":{"10-12":0,"13-16":0,"17-18":0}},"incomeByAge":{"B40":{"10-12":0,"13-16":0,"17-18":0},"M40":{"10-12":0,"13-16":0,"17-18":0},"T20":{"10-12":0,"13-16":0,"17-18":0}},"incomeByGender":{"B40":{"Male":0,"Female":0},"M40":{"Male":0,"Female":0},"T20":{"Male":0,"Female":0}},"vulnerableGroups":{"Refugees / undocumented":0,"Children with disability":0,"Single-parent households":0,"Institutional care":0},"byUrbanRural":{"Urban":0,"Peri-urban":0,"Rural":0},"byDateByDistrict":{"2026-06-15":{"Timur Laut":0,"Barat Daya":0,"SP Utara":0,"SP Tengah":0,"SP Selatan":0}},"byDateByEthnicity":{"2026-06-15":{"Malay":0,"Chinese":0,"Indian":0,"Others":0}},"byDateByIncome":{"2026-06-15":{"B40":0,"M40":0,"T20":0}},"byDateByAge":{"2026-06-15":{"10-12":0,"13-16":0,"17-18":0}},"byDateByGender":{"2026-06-15":{"Male":0,"Female":0}},"byDateByUrbanRural":{"2026-06-15":{"Urban":0,"Peri-urban":0,"Rural":0}},"noDistrict":0}`;
 
 // ─── SurveyMonkey fetch ────────────────────────────────────────────────────────
 async function smGet(path) {
@@ -141,7 +142,7 @@ async function classifyResponses(allResponses) {
     },
     body: JSON.stringify({
       model: "claude-sonnet-4-6",
-      max_tokens: 5000,
+      max_tokens: 8000,
       system: CLASSIFY_PROMPT,
       messages: [{ role: "user", content: `Classify these survey responses:\n${JSON.stringify(trimmed)}` }],
     }),
