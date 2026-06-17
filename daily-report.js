@@ -167,35 +167,92 @@ function extractAge(text) {
 }
 
 // ─── Question identifier ───────────────────────────────────────────────────────
-// Exact question IDs (consistent across all four language surveys)
-const QUESTION_IDS = {
-  dunIsland:    "289909870",  // Which area (DUN) ... Penang Island
-  dunSeberang:  "289909884",  // Which area (DUN) ... Seberang Perai
-  ethnicity:    "289909807",  // What is your ethnic group?
-  income:       "289909904",  // household's total monthly income
-  childGender:  "289909839",  // What is your child's gender?
-  parentGender: "289909808",  // What is your gender?
-  childAge:     "289909924",  // age of your child (10-17)
-  household:    "289909811",  // best describes your household (single/two-parent)
-  status:       "289909841",  // status in Malaysia (refugee/stateless)
-  disability:   "289909840",  // difficulties your child may have (Washington Group)
-};
+// Question IDs differ across the 4 language surveys, so identify by content.
+// English IDs kept as fallback hints only.
+const KNOWN_DUN_NAMES = /air itam|air putih|komtar|bayan lepas|tanjong bunga|bagan dalam|bagan jermal|seberang jaya|bukit tambun|machang bubuk|sungai bakap/i;
 
 function identifyQuestions(qMap) {
-  // Use exact IDs; fall back gracefully if a survey is missing one
   const ids = {
-    dun: QUESTION_IDS.dunIsland,        // primary; Seberang handled separately
-    dunIsland: QUESTION_IDS.dunIsland,
-    dunSeberang: QUESTION_IDS.dunSeberang,
-    ethnicity: QUESTION_IDS.ethnicity,
-    income: QUESTION_IDS.income,
-    childAge: QUESTION_IDS.childAge,
-    childGender: QUESTION_IDS.childGender,
-    parentGender: QUESTION_IDS.parentGender,
-    marital: QUESTION_IDS.household,
-    status: QUESTION_IDS.status,
-    disability: [QUESTION_IDS.disability],
+    dunIsland: null, dunSeberang: null,
+    ethnicity: null, income: null, childAge: null,
+    childGender: null, parentGender: null, marital: null,
+    status: null, disability: [],
   };
+
+  const dunCandidates = [];
+
+  for (const [qId, q] of Object.entries(qMap)) {
+    const heading = (q.heading || "").toLowerCase();
+    const choiceVals = Object.values(q.choices || {});
+    const choiceText = choiceVals.join(" ").toLowerCase();
+
+    // DUN questions: choices contain known romanised DUN names (same in all languages)
+    if (choiceVals.length > 5 && KNOWN_DUN_NAMES.test(choiceText)) {
+      // Island list contains AIR ITAM/KOMTAR; Seberang contains BAGAN DALAM/SEBERANG JAYA
+      if (/air itam|komtar|bayan lepas|tanjong bunga|pulau tikus/i.test(choiceText)) {
+        dunCandidates.push({ qId, type: "island", n: choiceVals.length });
+      } else if (/bagan dalam|seberang jaya|bukit tambun|machang|sungai bakap/i.test(choiceText)) {
+        dunCandidates.push({ qId, type: "seberang", n: choiceVals.length });
+      }
+      continue;
+    }
+
+    // Ethnicity: choices contain Malay/Chinese/Indian (romanised or local-language) 
+    if (!ids.ethnicity && /\bmalay\b|melayu|chinese|cina|\bindian\b|\bindia\b|bumiputera|马来|华人|印度|மலாய்|சீன|இந்திய/i.test(choiceText) && choiceVals.length >= 3 && choiceVals.length <= 8) {
+      ids.ethnicity = qId;
+      continue;
+    }
+
+    // Income: choices contain RM amounts
+    if (!ids.income && /rm\s*\d|rm2,4|rm2,5|less than rm|prefer not/i.test(choiceText)) {
+      ids.income = qId;
+      continue;
+    }
+
+    // Child gender: heading references child + gender (multilingual)
+    if (!ids.childGender && /child.{0,12}(gender|sex)|anak.{0,12}jantina|jantina.{0,12}anak|孩子.{0,4}性别|குழந்தை.{0,8}பாலின/i.test(heading) && choiceVals.length >= 2 && choiceVals.length <= 4) {
+      ids.childGender = qId;
+      continue;
+    }
+
+    // Parent gender: heading is gender but not child
+    if (!ids.parentGender && /\bgender\b|jantina|您的性别|性别|பாலினம்/i.test(heading) && !/child|anak|孩子|குழந்தை/i.test(heading) && choiceVals.length >= 2 && choiceVals.length <= 4) {
+      ids.parentGender = qId;
+      continue;
+    }
+
+    // Child age: heading references child age 10-17, choices are numbers
+    if (!ids.childAge && /age.{0,15}child|child.{0,15}age|umur.{0,12}anak|anak.{0,12}umur|孩子.{0,6}(年龄|岁)|குழந்தை.{0,10}வய+/i.test(heading) && choiceVals.some(c => /^1[0-7]$/.test(String(c).trim()))) {
+      ids.childAge = qId;
+      continue;
+    }
+
+    // Household / marital: heading references household composition
+    if (!ids.marital && /household|describes your (family|household)|isi rumah|keluarga|家庭|குடும்ப/i.test(heading) && /single|two.?parent|tunggal|dua ibu|单亲|双亲|தனி|இரு/i.test(choiceText)) {
+      ids.marital = qId;
+      continue;
+    }
+
+    // Status in Malaysia: refugee/stateless choices
+    if (!ids.status && /refugee|stateless|pelarian|tanpa negara|难民|无国籍|அகதி/i.test(choiceText)) {
+      ids.status = qId;
+      continue;
+    }
+
+    // Disability: Washington Group - heading mentions difficulty + a function
+    if (/difficulty|kesukaran|sukar|困难|难以|சிரமம்/i.test(heading) && /seeing|hearing|walking|remember|melihat|mendengar|berjalan|看|听|走|பார்|கேட்/i.test(heading)) {
+      ids.disability.push(qId);
+      continue;
+    }
+  }
+
+  // Resolve DUN candidates: pick the largest island list and largest Seberang list
+  const islands = dunCandidates.filter(c => c.type === "island").sort((a,b) => b.n - a.n);
+  const seberangs = dunCandidates.filter(c => c.type === "seberang").sort((a,b) => b.n - a.n);
+  ids.dunIsland = islands[0]?.qId || null;
+  ids.dunSeberang = seberangs[0]?.qId || null;
+  ids.dun = ids.dunIsland;
+
   return ids;
 }
 
@@ -552,27 +609,13 @@ async function main() {
       seberang: Object.values(qMap[questionIds.dunSeberang]?.choices || {}),
     };
 
-    // Find DUN questions by heading (not hard-coded ID) to detect ID mismatches across languages
-    const dunQuestionsFound = [];
-    for (const [qId, q] of Object.entries(qMap)) {
-      const h = (q.heading || "").toLowerCase();
-      const choiceVals = Object.values(q.choices || {});
-      // A DUN question: heading mentions DUN/area/kawasan, or choices contain known DUN names
-      const looksLikeDun = /\bdun\b|which area|kawasan|area.*live|地区|选区|பகுதி/i.test(h)
-        || choiceVals.some(c => /air itam|komtar|bayan lepas|seberang jaya|bagan dalam/i.test(c));
-      if (looksLikeDun && choiceVals.length > 5) {
-        dunQuestionsFound.push(`${qId} (${choiceVals.length} choices, sample: ${choiceVals.slice(0,2).join(",")})`);
-      }
-    }
-    console.log(`  DUN questions found by content in ${lang}: ${dunQuestionsFound.join(" ; ") || "NONE"}`);
-
     const responses = await fetchAllResponses(id);
     for (const r of responses) {
       const st = r.response_status || "unknown";
       statusCounts[st] = (statusCounts[st] || 0) + 1;
     }
     console.log(`  ${responses.length} responses, ${Object.keys(qMap).length} questions mapped`);
-    console.log(`  Identified: DUN=${questionIds.dun?"yes":"NO"} eth=${questionIds.ethnicity?"yes":"NO"} inc=${questionIds.income?"yes":"NO"} age=${questionIds.childAge?"yes":"NO"} gen=${questionIds.childGender||questionIds.parentGender?"yes":"NO"} dis=${questionIds.disability.length}`);
+    console.log(`  Identified: islandDUN=${questionIds.dunIsland||"NO"} seberangDUN=${questionIds.dunSeberang||"NO"} eth=${questionIds.ethnicity||"NO"} inc=${questionIds.income||"NO"} age=${questionIds.childAge||"NO"} gen=${questionIds.childGender||questionIds.parentGender||"NO"} dis=${questionIds.disability.length}`);
     surveyData.push({ language: lang, responses, qMap, questionIds });
   }
 
