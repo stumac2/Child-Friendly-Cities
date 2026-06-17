@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Child Friendly Penang - Survey Monitor</title>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/prop-types@15/prop-types.min.js"></script>
-<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.8.1/prop-types.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.12.7/Recharts.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.0/babel.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; }
   body { font-family: system-ui, -apple-system, sans-serif; background: #f1f5f9; }
@@ -16,22 +16,22 @@
 </head>
 <body>
 <div id="root"><div style="font-family:system-ui;padding:40px;text-align:center;color:#64748b"><p>Loading dashboard...</p><p style="font-size:12px;margin-top:8px">If this persists, check browser console (F12) for errors.</p></div></div>
-<script type="text/babel">
+<script type="text/babel" data-presets="react">
 const { useState, useEffect, useCallback } = React;
 const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine, ResponsiveContainer } = Recharts;
- 
+
 // ─── Config ────────────────────────────────────────────────────────────────────
 const START_DATE    = new Date("2026-06-15");
 const END_DATE      = new Date("2026-07-31");
 const TOTAL_TARGET  = 2500;
 const STRETCH_2D    = 10000;
 const STRETCH_3D    = 20000;
- 
+
 const DISTRICTS     = ["Timur Laut","Barat Daya","SP Utara","SP Tengah","SP Selatan"];
 const ETHNICITIES   = ["Malay","Chinese","Indian","Others"];
 const INCOME_GROUPS = ["B40","M40","T20"];
 const AGE_GROUPS    = ["10-12","13-16","17-18"];
- 
+
 const EQ = {
   "Timur Laut":{ Malay:140, Chinese:140, Indian:145, Others:85 },
   "Barat Daya":{ Malay:140, Chinese:140, Indian:120, Others:85 },
@@ -67,7 +67,7 @@ const Q1 = {
 };
 const EGQ = { Malay:{Male:355,Female:355}, Chinese:{Male:355,Female:355}, Indian:{Male:330,Female:325}, Others:{Male:215,Female:210} };
 const AGQ = { "10-12":{Male:315,Female:310}, "13-16":{Male:315,Female:310}, "17-18":{Male:240,Female:240} };
- 
+
 const A = {
   district: {
     "Timur Laut":["Chase via PPD Timur Laut - targeted resend to George Town and Ayer Itam clusters","MBPP corporate comms to amplify on council social media and school app channels"],
@@ -104,11 +104,11 @@ const A = {
   disability:["BOLD for Special Needs Children Penang","Cerebral Palsy Association Penang parent group","Down Syndrome Association Penang","JPNPP Special Education unit - push via all special education school coordinators"],
   singleParent:["Women's Centre for Change (WCC) - single parent support network","JKM district offices - broadcast to registered single-parent welfare recipients","School counsellors - personal follow-up with identified single-parent families"],
 };
- 
+
 // ─── Dimensions ────────────────────────────────────────────────────────────────
 function proj(actual, de, dr) { return (de < 1 || actual === 0) ? null : Math.round(actual + (actual / de) * dr); }
 function mkCell(id, label, actual, target, de, dr, actions) { return { id, label, actual, target, proj: proj(actual, de, dr), actions }; }
- 
+
 const DIMS = [
   { id:"1d_district",   label:"District",
     get:(d,de,dr)=>DISTRICTS.map(x=>mkCell(x,x,ETHNICITIES.reduce((s,e)=>s+(d?.crossTab?.[x]?.[e]||0),0), Q1.district[x], de,dr, A.district[x]||[])) },
@@ -131,7 +131,7 @@ const DIMS = [
   { id:"1d_sp",         label:"Single-parent HH",
     get:(d,de,dr)=>[mkCell("sp","Single-parent HH", d?.vulnerableGroups?.["Single-parent households"]||0, 150, de,dr, A.singleParent)] },
 ];
- 
+
 const CHART_COLORS = ["#0e4a6e","#0284c7","#7c3aed","#dc2626","#d97706","#16a34a","#be185d"];
 const DIM_CHART_CONFIG = {
   "1d_district":   { key:"byDateByDistrict",   cats:DISTRICTS },
@@ -141,7 +141,7 @@ const DIM_CHART_CONFIG = {
   "1d_gender":     { key:"byDateByGender",      cats:["Male","Female"] },
   "1d_urbanrural": { key:"byDateByUrbanRural",  cats:["Urban","Peri-urban","Rural"] },
 };
- 
+
 const CROSS_TABS = {
   "1d_district|1d_ethnicity":  { label:"District x Ethnicity", rows:DISTRICTS, cols:ETHNICITIES, getVal:(d,r,c)=>d?.crossTab?.[r]?.[c]||0, getQ:(r,c)=>EQ[r]?.[c]||75 },
   "1d_district|1d_income":     { label:"District x Income", rows:DISTRICTS, cols:INCOME_GROUPS, getVal:(d,r,c)=>d?.incomeByDistrict?.[r]?.[c]||0, getQ:(r,c)=>IQ[r]?.[c]||50 },
@@ -154,7 +154,7 @@ const CROSS_TABS = {
   "1d_age|1d_income":          { label:"Income x Age Group", rows:INCOME_GROUPS, cols:AGE_GROUPS, getVal:(d,r,c)=>d?.incomeByAge?.[r]?.[c]||0, getQ:(r,c)=>({"B40":{"10-12":230,"13-16":230,"17-18":175},"M40":{"10-12":185,"13-16":185,"17-18":140},"T20":{"10-12":100,"13-16":100,"17-18":75}})[r]?.[c]||75 },
   "1d_gender|1d_income":       { label:"Income x Gender", rows:INCOME_GROUPS, cols:["Male","Female"], getVal:(d,r,c)=>d?.incomeByGender?.[r]?.[c]||0, getQ:(r,c)=>({"B40":{Male:385,Female:385},"M40":{Male:315,Female:310},"T20":{Male:170,Female:170}})[r]?.[c]||100 },
 };
- 
+
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 function daysDiff(a, b) { return Math.floor((b - a) / 86400000); }
 function cellPct(c) { return c.target > 0 ? Math.round(c.actual / c.target * 100) : 0; }
@@ -164,7 +164,7 @@ function cellColor(c) {
   if (p >= 75)  return { bg:"#fef9c3", fg:"#854d0e", bar:"#ca8a04" };
   return              { bg:"#fee2e2", fg:"#b91c1c", bar:"#ef4444" };
 }
- 
+
 // ─── Component ─────────────────────────────────────────────────────────────────
 function CFPDashboard() {
   const [data, setData]           = useState(null);
@@ -172,7 +172,7 @@ function CFPDashboard() {
   const [error, setError]         = useState(null);
   const [dimIds, setDimIds]       = useState(["","",""]);
   const [lastUpdated, setLastUpdated] = useState(null);
- 
+
   const loadData = useCallback(() => {
     // Cache-bust with timestamp so browser always fetches the freshest data.json
     fetch("data.json?t=" + Date.now(), { cache: "no-store" })
@@ -181,28 +181,28 @@ function CFPDashboard() {
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, []);
- 
+
   useEffect(() => {
     loadData();
     // Auto-refresh every 5 minutes so the dashboard stays current without manual reload
     const interval = setInterval(loadData, 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, [loadData]);
- 
+
   const today = new Date();
   const daysElapsed   = Math.max(0, daysDiff(START_DATE, today));
   const daysRemaining = Math.max(0, daysDiff(today, END_DATE));
   const surveyStarted = today >= START_DATE;
   const totalDays     = daysDiff(START_DATE, END_DATE);
   const surveyPct     = Math.min(100, Math.round(daysElapsed / totalDays * 100));
- 
+
   const allPanels = dimIds.filter(id=>id).map(id => {
     const dim = DIMS.find(d => d.id === id) || DIMS[0];
     const cells = data ? dim.get(data, daysElapsed, daysRemaining) : [];
     const behind = cells.filter(c => cellPct(c) < 75).sort((a,b) => cellPct(a)-cellPct(b));
     return { dim, cells, behind };
   });
- 
+
   const activeDims = dimIds.filter(id=>id);
   const crossTabsToShow = [];
   const crossTabsMissing = [];
@@ -218,21 +218,21 @@ function CFPDashboard() {
       }
     }
   }
- 
+
   const totalStarted   = data?.totalStarted   || 0;
   const totalCompleted = data?.totalCompleted || 0;
   const respPct        = Math.min(100, Math.round(totalCompleted / TOTAL_TARGET * 100));
   const completionRate = totalStarted > 0 ? Math.round(totalCompleted / totalStarted * 100) : 0;
   const setDimId = (idx, val) => setDimIds(prev => prev.map((v,i) => i===idx ? val : v));
- 
+
   const s = {
     card: { background:"#fff", borderRadius:10, border:"1px solid #e2e8f0" },
     label: { fontSize:11, fontWeight:700, color:"#94a3b8", letterSpacing:"0.05em", textTransform:"uppercase", marginBottom:4 },
   };
- 
+
   return (
     <div style={{background:"#f1f5f9",minHeight:"100vh",padding:16,maxWidth:1200,margin:"0 auto"}}>
- 
+
       {/* Header */}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:14}}>
         <div>
@@ -256,10 +256,10 @@ function CFPDashboard() {
           {loading ? "Refreshing..." : "↻ Refresh"}
         </button>
       </div>
- 
+
       {error && <div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:8,padding:"10px 14px",marginBottom:12,fontSize:12,color:"#b91c1c"}}>{error}</div>}
       {loading && <div style={{display:"flex",alignItems:"center",gap:8,background:"#f8fafc",border:"1px solid #e2e8f0",borderRadius:8,padding:"10px 14px",marginBottom:12,fontSize:12,color:"#64748b"}}>Loading survey data...</div>}
- 
+
       {/* Headline stats */}
       <div style={{...s.card,padding:16,marginBottom:14}}>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16,marginBottom:14,paddingBottom:14,borderBottom:"1px solid #f1f5f9"}}>
@@ -279,7 +279,7 @@ function CFPDashboard() {
             <div style={{fontSize:11,color:"#64748b",marginTop:2}}>started → submitted</div>
           </div>
         </div>
- 
+
         {/* Tier progress */}
         <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:14,paddingBottom:14,borderBottom:"1px solid #f1f5f9"}}>
           {[
@@ -303,7 +303,7 @@ function CFPDashboard() {
             );
           })}
         </div>
- 
+
         {/* Survey period + language */}
         <div style={{display:"grid",gridTemplateColumns:"auto 1fr",gap:16,alignItems:"start"}}>
           <div style={{minWidth:160}}>
@@ -338,7 +338,7 @@ function CFPDashboard() {
           </div>
         </div>
       </div>
- 
+
       {/* Dimension selectors */}
       <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:14}}>
         {dimIds.map((id,idx)=>(
@@ -352,7 +352,7 @@ function CFPDashboard() {
           </div>
         ))}
       </div>
- 
+
       {/* Dimension panels */}
       {data && allPanels.length > 0 && (
         <div style={{display:"grid",gridTemplateColumns:"repeat("+allPanels.length+",1fr)",gap:10,marginBottom:14,alignItems:"start"}}>
@@ -408,7 +408,7 @@ function CFPDashboard() {
           ))}
         </div>
       )}
- 
+
       {/* Cross-tabs */}
       {data && activeDims.length >= 2 && (
         <div style={{marginTop:10}}>
@@ -473,7 +473,7 @@ function CFPDashboard() {
             );
           })}
           {crossTabsMissing.length>0 && (<div style={{fontSize:11,color:"#94a3b8",padding:"8px 12px",background:"#f8fafc",borderRadius:8,border:"1px solid #e2e8f0",marginBottom:10}}>Cross-tab not available for: {crossTabsMissing.join(", ")}</div>)}
- 
+
           {/* 3-way achievability */}
           {activeDims.length === 3 && (() => {
             const dimMarginals = {
@@ -546,7 +546,7 @@ function CFPDashboard() {
           })()}
         </div>
       )}
- 
+
       {/* Chart */}
       {(() => {
         const activeDimId = dimIds.find(id => id && DIM_CHART_CONFIG[id]);
@@ -599,7 +599,7 @@ function CFPDashboard() {
           </div>
         );
       })()}
- 
+
       {/* Footer */}
       <div style={{textAlign:"center",padding:"16px 0 8px",fontSize:10,color:"#94a3b8"}}>
         Child Friendly Penang - UNICEF Child-Friendly City Initiative - Think City / MBPP / MBSP - Data updates every 2 hours
@@ -607,7 +607,7 @@ function CFPDashboard() {
     </div>
   );
 }
- 
+
 ReactDOM.render(React.createElement(CFPDashboard), document.getElementById("root"));
 </script>
 </body>
