@@ -539,11 +539,18 @@ async function main() {
 
   const surveyData = [];
   const statusCounts = {};
+  const dunChoicesByLang = {}; // for spelling comparison
   for (const [lang, id] of Object.entries(SURVEY_IDS)) {
     console.log(`Fetching ${lang} survey (${id})...`);
     const details = await fetchSurveyDetails(id);
     const qMap = buildChoiceMap(details);
     const questionIds = identifyQuestions(qMap);
+
+    // Collect DUN dropdown choices for cross-survey spelling check
+    dunChoicesByLang[lang] = {
+      island: Object.values(qMap[questionIds.dunIsland]?.choices || {}),
+      seberang: Object.values(qMap[questionIds.dunSeberang]?.choices || {}),
+    };
 
     const responses = await fetchAllResponses(id);
     for (const r of responses) {
@@ -558,6 +565,26 @@ async function main() {
   const totalRaw = surveyData.reduce((s, d) => s + d.responses.length, 0);
   console.log(`Total raw responses: ${totalRaw}`);
   console.log(`Response status breakdown:`, JSON.stringify(statusCounts));
+
+  // ── DUN spelling check across all 4 surveys ──
+  console.log("\n=== DUN SPELLING CHECK ===");
+  for (const part of ["island", "seberang"]) {
+    const base = (dunChoicesByLang.English?.[part] || []).map(s => s.toUpperCase().trim());
+    console.log(`\n${part.toUpperCase()} - English baseline (${base.length}): ${base.join(" | ")}`);
+    for (const lang of ["Malay", "Mandarin", "Tamil"]) {
+      const other = (dunChoicesByLang[lang]?.[part] || []).map(s => s.toUpperCase().trim());
+      const onlyBase = base.filter(x => !other.includes(x));
+      const onlyOther = other.filter(x => !base.includes(x));
+      if (!onlyBase.length && !onlyOther.length) {
+        console.log(`  ${lang}: identical ✓`);
+      } else {
+        console.log(`  ${lang}: DIFFERS`);
+        if (onlyOther.length) console.log(`    Only in ${lang}: ${onlyOther.join(", ")}`);
+        if (onlyBase.length) console.log(`    Missing from ${lang}: ${onlyBase.join(", ")}`);
+      }
+    }
+  }
+  console.log("=== END DUN CHECK ===\n");
 
   // Classify in Node.js - no AI dependency
   console.log("Classifying responses...");
