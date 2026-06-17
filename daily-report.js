@@ -552,6 +552,20 @@ async function main() {
       seberang: Object.values(qMap[questionIds.dunSeberang]?.choices || {}),
     };
 
+    // Find DUN questions by heading (not hard-coded ID) to detect ID mismatches across languages
+    const dunQuestionsFound = [];
+    for (const [qId, q] of Object.entries(qMap)) {
+      const h = (q.heading || "").toLowerCase();
+      const choiceVals = Object.values(q.choices || {});
+      // A DUN question: heading mentions DUN/area/kawasan, or choices contain known DUN names
+      const looksLikeDun = /\bdun\b|which area|kawasan|area.*live|地区|选区|பகுதி/i.test(h)
+        || choiceVals.some(c => /air itam|komtar|bayan lepas|seberang jaya|bagan dalam/i.test(c));
+      if (looksLikeDun && choiceVals.length > 5) {
+        dunQuestionsFound.push(`${qId} (${choiceVals.length} choices, sample: ${choiceVals.slice(0,2).join(",")})`);
+      }
+    }
+    console.log(`  DUN questions found by content in ${lang}: ${dunQuestionsFound.join(" ; ") || "NONE"}`);
+
     const responses = await fetchAllResponses(id);
     for (const r of responses) {
       const st = r.response_status || "unknown";
