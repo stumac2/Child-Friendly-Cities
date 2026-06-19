@@ -1,6 +1,6 @@
 {
-  "totalStarted": 4977,
-  "totalCompleted": 2580,
+  "totalStarted": 4978,
+  "totalCompleted": 2581,
   "byDate": {
     "2026-06-15": {
       "started": 24,
@@ -19,8 +19,8 @@
       "completed": 645
     },
     "2026-06-19": {
-      "started": 716,
-      "completed": 355
+      "started": 717,
+      "completed": 356
     }
   },
   "byLanguage": {
@@ -29,8 +29,8 @@
       "completed": 505
     },
     "Malay": {
-      "started": 2231,
-      "completed": 1178
+      "started": 2232,
+      "completed": 1179
     },
     "Mandarin": {
       "started": 1645,
@@ -61,7 +61,7 @@
       "Others": 5
     },
     "SP Tengah": {
-      "Malay": 523,
+      "Malay": 524,
       "Chinese": 651,
       "Indian": 75,
       "Others": 12
@@ -91,7 +91,7 @@
     },
     "SP Tengah": {
       "B40": 553,
-      "M40": 297,
+      "M40": 298,
       "T20": 94
     },
     "SP Selatan": {
@@ -188,19 +188,19 @@
   },
   "byIncome": {
     "B40": 1063,
-    "M40": 630,
+    "M40": 631,
     "T20": 184,
     "Not stated": 0
   },
   "byUrbanRural": {
     "Urban": 1273,
     "Peri-urban": 921,
-    "Rural": 355
+    "Rural": 356
   },
   "ethnicityByIncome": {
     "Malay": {
       "B40": 653,
-      "M40": 311,
+      "M40": 312,
       "T20": 78
     },
     "Chinese": {
@@ -306,7 +306,7 @@
     },
     "2026-06-19": {
       "SP Utara": 68,
-      "SP Tengah": 146,
+      "SP Tengah": 147,
       "Barat Daya": 47,
       "Timur Laut": 73,
       "SP Selatan": 11
@@ -339,7 +339,7 @@
     "2026-06-19": {
       "Chinese": 218,
       "Indian": 19,
-      "Malay": 111,
+      "Malay": 112,
       "Others": 7
     }
   },
@@ -364,7 +364,7 @@
       "T20": 39
     },
     "2026-06-19": {
-      "M40": 100,
+      "M40": 101,
       "B40": 118,
       "T20": 25
     }
@@ -438,10 +438,10 @@
     },
     "2026-06-19": {
       "Urban": 236,
-      "Rural": 47,
+      "Rural": 48,
       "Peri-urban": 62
     }
   },
   "noDistrict": 31,
-  "updatedAt": "2026-06-19T19:41:39.486Z"
+  "updatedAt": "2026-06-19T21:04:42.536Z"
 }
