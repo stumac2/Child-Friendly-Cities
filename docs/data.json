@@ -1,5 +1,5 @@
 {
-  "totalStarted": 5454,
+  "totalStarted": 5456,
   "totalCompleted": 2807,
   "byDate": {
     "2026-06-15": {
@@ -23,17 +23,17 @@
       "completed": 376
     },
     "2026-06-20": {
-      "started": 460,
+      "started": 462,
       "completed": 194
     }
   },
   "byLanguage": {
     "English": {
-      "started": 1187,
+      "started": 1188,
       "completed": 561
     },
     "Malay": {
-      "started": 2421,
+      "started": 2422,
       "completed": 1266
     },
     "Mandarin": {
@@ -479,5 +479,5 @@
     }
   },
   "noDistrict": 33,
-  "updatedAt": "2026-06-20T21:10:56.138Z"
+  "updatedAt": "2026-06-20T23:02:35.189Z"
 }
