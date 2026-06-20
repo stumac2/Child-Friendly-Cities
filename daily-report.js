@@ -643,6 +643,52 @@ async function main() {
   }
   console.log("=== END DUN CHECK ===\n");
 
+  // ── DROP-OFF ANALYSIS ──
+  // Build a question-order + heading map from the English survey (structure is shared)
+  console.log("=== DROP-OFF ANALYSIS ===");
+  const engSurvey = surveyData.find(s => s.language === "English");
+  if (engSurvey) {
+    // Build ordered list of question IDs with short headings, per survey
+    for (const { language, responses, qMap } of surveyData) {
+      // Order questions by their appearance in qMap (insertion order = survey order)
+      const orderedQ = Object.keys(qMap);
+      const qPosition = {};
+      orderedQ.forEach((qId, i) => { qPosition[qId] = i; });
+
+      // For each partial response, find the furthest-position question answered
+      const dropAtHeading = {};
+      let partialCount = 0;
+      for (const r of responses) {
+        if (r.response_status !== "partial") continue;
+        partialCount++;
+        let maxPos = -1, lastQId = null;
+        for (const page of (r.pages || [])) {
+          for (const q of (page.questions || [])) {
+            const pos = qPosition[q.id];
+            if (pos !== undefined && pos > maxPos && (q.answers || []).length > 0) {
+              maxPos = pos; lastQId = q.id;
+            }
+          }
+        }
+        if (lastQId) {
+          const heading = (qMap[lastQId]?.heading || "(unknown)").replace(/<[^>]+>/g, "").slice(0, 50);
+          const key = `pos${String(maxPos).padStart(3,"0")}: ${heading}`;
+          dropAtHeading[key] = (dropAtHeading[key] || 0) + 1;
+        }
+      }
+
+      if (partialCount > 0) {
+        console.log(`\n${language} - ${partialCount} partial responses, top drop-off points:`);
+        const sorted = Object.entries(dropAtHeading).sort((a,b) => b[1]-a[1]).slice(0, 8);
+        for (const [key, count] of sorted) {
+          const pct = Math.round(count / partialCount * 100);
+          console.log(`  ${count} (${pct}%) last answered → ${key}`);
+        }
+      }
+    }
+  }
+  console.log("=== END DROP-OFF ===\n");
+
   // Classify in Node.js - no AI dependency
   console.log("Classifying responses...");
   const classified = classifyAllResponses(surveyData);
