@@ -1,6 +1,6 @@
 {
-  "totalStarted": 5414,
-  "totalCompleted": 2776,
+  "totalStarted": 5447,
+  "totalCompleted": 2800,
   "byDate": {
     "2026-06-15": {
       "started": 24,
@@ -16,86 +16,86 @@
     },
     "2026-06-18": {
       "started": 1376,
-      "completed": 653
+      "completed": 654
     },
     "2026-06-19": {
       "started": 730,
-      "completed": 375
+      "completed": 376
     },
     "2026-06-20": {
-      "started": 420,
-      "completed": 166
+      "started": 453,
+      "completed": 188
     }
   },
   "byLanguage": {
     "English": {
-      "started": 1180,
-      "completed": 555
+      "started": 1185,
+      "completed": 561
     },
     "Malay": {
-      "started": 2404,
-      "completed": 1257
+      "started": 2418,
+      "completed": 1263
     },
     "Mandarin": {
-      "started": 1762,
-      "completed": 940
+      "started": 1773,
+      "completed": 950
     },
     "Tamil": {
-      "started": 68,
-      "completed": 24
+      "started": 71,
+      "completed": 26
     }
   },
   "crossTab": {
     "Timur Laut": {
       "Malay": 309,
-      "Chinese": 370,
+      "Chinese": 373,
       "Indian": 37,
       "Others": 17
     },
     "Barat Daya": {
-      "Malay": 136,
-      "Chinese": 147,
+      "Malay": 137,
+      "Chinese": 151,
       "Indian": 19,
       "Others": 8
     },
     "SP Utara": {
-      "Malay": 206,
-      "Chinese": 75,
+      "Malay": 207,
+      "Chinese": 77,
       "Indian": 19,
       "Others": 6
     },
     "SP Tengah": {
-      "Malay": 555,
-      "Chinese": 685,
-      "Indian": 89,
+      "Malay": 556,
+      "Chinese": 689,
+      "Indian": 96,
       "Others": 14
     },
     "SP Selatan": {
       "Malay": 16,
       "Chinese": 33,
-      "Indian": 1,
+      "Indian": 2,
       "Others": 1
     }
   },
   "incomeByDistrict": {
     "Timur Laut": {
-      "B40": 272,
-      "M40": 176,
+      "B40": 273,
+      "M40": 177,
       "T20": 40
     },
     "Barat Daya": {
-      "B40": 95,
+      "B40": 99,
       "M40": 79,
       "T20": 29
     },
     "SP Utara": {
-      "B40": 158,
+      "B40": 160,
       "M40": 80,
       "T20": 17
     },
     "SP Tengah": {
-      "B40": 577,
-      "M40": 321,
+      "B40": 583,
+      "M40": 324,
       "T20": 102
     },
     "SP Selatan": {
@@ -106,27 +106,27 @@
   },
   "ageByDistrict": {
     "Timur Laut": {
-      "10-12": 237,
-      "13-16": 252,
+      "10-12": 238,
+      "13-16": 254,
       "17-18": 105
     },
     "Barat Daya": {
-      "10-12": 78,
-      "13-16": 140,
+      "10-12": 81,
+      "13-16": 142,
       "17-18": 44
     },
     "SP Utara": {
       "10-12": 140,
-      "13-16": 71,
-      "17-18": 18
+      "13-16": 72,
+      "17-18": 19
     },
     "SP Tengah": {
-      "10-12": 474,
-      "13-16": 413,
-      "17-18": 156
+      "10-12": 479,
+      "13-16": 416,
+      "17-18": 159
     },
     "SP Selatan": {
-      "10-12": 12,
+      "10-12": 13,
       "13-16": 17,
       "17-18": 7
     }
@@ -134,37 +134,37 @@
   "genderByDistrict": {
     "Timur Laut": {
       "Male": 208,
-      "Female": 357
+      "Female": 360
     },
     "Barat Daya": {
-      "Male": 119,
-      "Female": 113
+      "Male": 120,
+      "Female": 117
     },
     "SP Utara": {
-      "Male": 115,
+      "Male": 116,
       "Female": 105
     },
     "SP Tengah": {
-      "Male": 474,
-      "Female": 454
+      "Male": 478,
+      "Female": 461
     },
     "SP Selatan": {
       "Male": 12,
-      "Female": 18
+      "Female": 19
     }
   },
   "ethnicityByGender": {
     "Malay": {
-      "Male": 422,
-      "Female": 508
+      "Male": 423,
+      "Female": 509
     },
     "Chinese": {
-      "Male": 439,
-      "Female": 469
+      "Male": 442,
+      "Female": 477
     },
     "Indian": {
-      "Male": 65,
-      "Female": 62
+      "Male": 67,
+      "Female": 68
     },
     "Others": {
       "Male": 17,
@@ -173,48 +173,48 @@
   },
   "ageByGender": {
     "10-12": {
-      "Male": 414,
-      "Female": 446
+      "Male": 416,
+      "Female": 454
     },
     "13-16": {
-      "Male": 386,
-      "Female": 412
+      "Male": 388,
+      "Female": 418
     },
     "17-18": {
-      "Male": 118,
-      "Female": 170
+      "Male": 120,
+      "Female": 171
     }
   },
   "byGender": {
-    "Male": 943,
-    "Female": 1056,
+    "Male": 949,
+    "Female": 1071,
     "Other": 0
   },
   "byIncome": {
-    "B40": 1132,
-    "M40": 675,
+    "B40": 1145,
+    "M40": 679,
     "T20": 198,
     "Not stated": 0
   },
   "byUrbanRural": {
-    "Urban": 1403,
-    "Peri-urban": 958,
-    "Rural": 382
+    "Urban": 1412,
+    "Peri-urban": 966,
+    "Rural": 389
   },
   "ethnicityByIncome": {
     "Malay": {
-      "B40": 690,
+      "B40": 693,
       "M40": 335,
       "T20": 85
     },
     "Chinese": {
-      "B40": 368,
-      "M40": 319,
+      "B40": 374,
+      "M40": 322,
       "T20": 107
     },
     "Indian": {
-      "B40": 45,
-      "M40": 15,
+      "B40": 49,
+      "M40": 16,
       "T20": 3
     },
     "Others": {
@@ -225,19 +225,19 @@
   },
   "ethnicityByAge": {
     "Malay": {
-      "10-12": 508,
-      "13-16": 341,
+      "10-12": 509,
+      "13-16": 342,
       "17-18": 82
     },
     "Chinese": {
-      "10-12": 379,
-      "13-16": 485,
-      "17-18": 230
+      "10-12": 383,
+      "13-16": 490,
+      "17-18": 233
     },
     "Indian": {
-      "10-12": 45,
-      "13-16": 65,
-      "17-18": 17
+      "10-12": 50,
+      "13-16": 67,
+      "17-18": 18
     },
     "Others": {
       "10-12": 18,
@@ -247,13 +247,13 @@
   },
   "incomeByAge": {
     "B40": {
-      "10-12": 425,
-      "13-16": 327,
-      "17-18": 128
+      "10-12": 431,
+      "13-16": 331,
+      "17-18": 130
     },
     "M40": {
-      "10-12": 207,
-      "13-16": 271,
+      "10-12": 208,
+      "13-16": 274,
       "17-18": 99
     },
     "T20": {
@@ -264,12 +264,12 @@
   },
   "incomeByGender": {
     "B40": {
-      "Male": 382,
-      "Female": 445
+      "Male": 386,
+      "Female": 452
     },
     "M40": {
-      "Male": 228,
-      "Female": 277
+      "Male": 229,
+      "Female": 280
     },
     "T20": {
       "Male": 76,
@@ -279,7 +279,7 @@
   "vulnerableGroups": {
     "Refugees / undocumented": 0,
     "Children with disability": 0,
-    "Single-parent households": 188,
+    "Single-parent households": 192,
     "Institutional care": 0
   },
   "byDateByDistrict": {
@@ -303,7 +303,7 @@
     },
     "2026-06-18": {
       "Timur Laut": 125,
-      "SP Tengah": 378,
+      "SP Tengah": 379,
       "SP Selatan": 28,
       "SP Utara": 65,
       "Barat Daya": 57
@@ -311,16 +311,16 @@
     "2026-06-19": {
       "SP Utara": 73,
       "SP Tengah": 156,
-      "Barat Daya": 49,
+      "Barat Daya": 50,
       "Timur Laut": 76,
       "SP Selatan": 11
     },
     "2026-06-20": {
-      "Timur Laut": 34,
-      "SP Tengah": 65,
-      "Barat Daya": 32,
-      "SP Utara": 31,
-      "SP Selatan": 2
+      "Timur Laut": 37,
+      "SP Tengah": 76,
+      "Barat Daya": 36,
+      "SP Utara": 34,
+      "SP Selatan": 3
     }
   },
   "byDateByEthnicity": {
@@ -342,21 +342,21 @@
       "Others": 17
     },
     "2026-06-18": {
-      "Chinese": 351,
+      "Chinese": 352,
       "Indian": 46,
       "Others": 7,
       "Malay": 249
     },
     "2026-06-19": {
-      "Chinese": 228,
+      "Chinese": 229,
       "Indian": 22,
       "Malay": 118,
       "Others": 7
     },
     "2026-06-20": {
-      "Chinese": 78,
-      "Indian": 19,
-      "Malay": 67,
+      "Chinese": 89,
+      "Indian": 27,
+      "Malay": 70,
       "Others": 2
     }
   },
@@ -376,18 +376,18 @@
       "T20": 61
     },
     "2026-06-18": {
-      "B40": 276,
+      "B40": 277,
       "M40": 153,
       "T20": 40
     },
     "2026-06-19": {
       "M40": 105,
-      "B40": 124,
+      "B40": 125,
       "T20": 25
     },
     "2026-06-20": {
-      "M40": 37,
-      "B40": 60,
+      "M40": 41,
+      "B40": 71,
       "T20": 13
     }
   },
@@ -409,17 +409,17 @@
     "2026-06-18": {
       "10-12": 221,
       "13-16": 195,
-      "17-18": 77
+      "17-18": 78
     },
     "2026-06-19": {
       "10-12": 127,
-      "13-16": 120,
+      "13-16": 121,
       "17-18": 38
     },
     "2026-06-20": {
-      "10-12": 61,
-      "13-16": 65,
-      "17-18": 14
+      "10-12": 71,
+      "13-16": 72,
+      "17-18": 17
     }
   },
   "byDateByGender": {
@@ -436,16 +436,16 @@
       "Female": 358
     },
     "2026-06-18": {
-      "Male": 211,
+      "Male": 212,
       "Female": 220
     },
     "2026-06-19": {
-      "Female": 124,
+      "Female": 125,
       "Male": 110
     },
     "2026-06-20": {
-      "Female": 72,
-      "Male": 62
+      "Female": 86,
+      "Male": 67
     }
   },
   "byDateByUrbanRural": {
@@ -465,19 +465,19 @@
     "2026-06-18": {
       "Urban": 302,
       "Peri-urban": 210,
-      "Rural": 141
+      "Rural": 142
     },
     "2026-06-19": {
       "Urban": 249,
-      "Rural": 51,
+      "Rural": 52,
       "Peri-urban": 65
     },
     "2026-06-20": {
-      "Urban": 113,
-      "Peri-urban": 30,
-      "Rural": 21
+      "Urban": 122,
+      "Peri-urban": 38,
+      "Rural": 26
     }
   },
   "noDistrict": 33,
-  "updatedAt": "2026-06-20T13:48:56.880Z"
+  "updatedAt": "2026-06-20T15:43:12.730Z"
 }
