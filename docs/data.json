@@ -1,5 +1,5 @@
 {
-  "totalStarted": 6537,
+  "totalStarted": 6542,
   "totalCompleted": 3375,
   "byDate": {
     "2026-06-15": {
@@ -35,21 +35,21 @@
       "completed": 237
     },
     "2026-06-23": {
-      "started": 240,
+      "started": 245,
       "completed": 93
     }
   },
   "byLanguage": {
     "English": {
-      "started": 1453,
+      "started": 1455,
       "completed": 705
     },
     "Malay": {
-      "started": 2807,
+      "started": 2808,
       "completed": 1454
     },
     "Mandarin": {
-      "started": 2183,
+      "started": 2185,
       "completed": 1175
     },
     "Tamil": {
@@ -587,35 +587,35 @@
   },
   "noDistrict": 13,
   "crg": {
-    "total": 1,
+    "total": 5,
     "eligible1316": 1,
     "byDistrict": {
-      "Timur Laut": 0,
-      "Barat Daya": 0,
-      "SP Utara": 0,
-      "SP Tengah": 1,
+      "Timur Laut": 1,
+      "Barat Daya": 1,
+      "SP Utara": 1,
+      "SP Tengah": 2,
       "SP Selatan": 0
     },
     "byEthnicity": {
       "Malay": 1,
-      "Chinese": 0,
+      "Chinese": 4,
       "Indian": 0,
       "Others": 0
     },
     "byIncome": {
-      "B40": 0,
-      "M40": 0,
+      "B40": 2,
+      "M40": 1,
       "T20": 0,
-      "Not stated": 1
+      "Not stated": 2
     },
     "byGender": {
-      "Male": 0,
-      "Female": 1
+      "Male": 1,
+      "Female": 4
     },
     "byUrbanRural": {
-      "Urban": 0,
+      "Urban": 2,
       "Peri-urban": 1,
-      "Rural": 0
+      "Rural": 2
     },
     "byAge": {
       "17": 0,
@@ -623,5 +623,5 @@
       "13-16": 1
     }
   },
-  "updatedAt": "2026-06-23T09:52:12.301Z"
+  "updatedAt": "2026-06-23T10:00:59.911Z"
 }
