@@ -26,7 +26,7 @@ const Q_BASE = {
   district:  { "Timur Laut":3265, "Barat Daya":1310, "SP Utara":1905, "SP Tengah":2425, "SP Selatan":1095 },
   ethnicity: { Malay:4490, Chinese:4150, Indian:990, Others:370 },
   income:    { B40:2590, M40:2870, T20:1540 },
-  age:       { "10-12":2335, "13-16":3110, "17-18":1555 },
+  age:       { "10-12":2625, "13-16":3500, "17":875 },
   gender:    { Male:5080, Female:4920 },
   urbanRural:{ Urban:6000, "Peri-urban":2500, Rural:1500 },
 };
@@ -62,7 +62,7 @@ const ACTIONS = {
     Others:["JREC, Equal Start, LifeBridge learning centres — direct distribution"],
   },
   income: { B40:["QR code in PPR noticeboards via MBPP/MBSP housing unit"], M40:["Check school WhatsApp groups need a resend"], T20:["Private/international schools — contact admin directly"] },
-  age: { "10-12":["Year 4-6 class teacher reminder"], "13-16":["PRIORITY — Form 1-3 class teacher reminder"], "17-18":["Form 4-5 school counsellor outreach"] },
+  age: { "10-12":["Year 4-6 class teacher reminder"], "13-16":["PRIORITY — Form 1-3 class teacher reminder"], "17":["Form 5 school counsellor outreach"] },
   gender: { Male:["Audit co-ed vs boys-only school distribution"], Female:["Contact girls-only secondary schools directly"] },
   urbanRural: { Urban:["PPD digital channels — check completion rate"], "Peri-urban":["Contact PPD offices for BM, Bayan Baru, Kepala Batas"], Rural:["URGENT — printed QR codes and mosque announcements for rural DUNs"] },
 };
@@ -176,12 +176,12 @@ function matchPattern(text, map) {
 
 function extractAge(text) {
   if (!text) return null;
-  const m = text.match(/\b(1[0-8]|[0-9])\b/);
+  const m = text.match(/\b(1[0-7]|[0-9])\b/);
   if (!m) return null;
   const age = parseInt(m[1]);
   if (age >= 10 && age <= 12) return "10-12";
   if (age >= 13 && age <= 16) return "13-16";
-  if (age >= 17 && age <= 18) return "17-18";
+  if (age === 17) return "17";
   return null;
 }
 
@@ -195,7 +195,7 @@ function identifyQuestions(qMap) {
     dunIsland: null, dunSeberang: null,
     ethnicity: null, income: null, childAge: null,
     childGender: null, parentGender: null, marital: null,
-    status: null, disability: [],
+    status: null, disability: [], crg: null,
   };
 
   const dunCandidates = [];
@@ -255,6 +255,12 @@ function identifyQuestions(qMap) {
     // Status in Malaysia: refugee/stateless choices
     if (!ids.status && /refugee|stateless|pelarian|tanpa negara|难民|无国籍|அகதி/i.test(choiceText)) {
       ids.status = qId;
+      continue;
+    }
+
+    // Child Reference Group question: distinctive heading (multilingual), free-text contact field
+    if (!ids.crg && /child reference group|kumpulan rujukan kanak|儿童参考小组|குழந்தைகள் குறிப்பு|reference group/i.test(heading)) {
+      ids.crg = qId;
       continue;
     }
 
@@ -373,25 +379,36 @@ function classifyAllResponses(surveyData) {
     byDateByDistrict: {}, byDateByEthnicity: {}, byDateByIncome: {},
     byDateByAge: {}, byDateByGender: {}, byDateByUrbanRural: {},
     noDistrict: 0,
+    // CRG sign-ups (contact details left on the Child Reference Group question; 13-16 eligible)
+    crg: {
+      total: 0,                       // total sign-ups
+      eligible1316: 0,                // sign-ups who are 13-16 (the eligible band)
+      byDistrict: {}, byEthnicity: { Malay:0, Chinese:0, Indian:0, Others:0 },
+      byIncome: { B40:0, M40:0, T20:0, "Not stated":0 },
+      byGender: { Male:0, Female:0 },
+      byUrbanRural: { Urban:0, "Peri-urban":0, Rural:0 },
+      byAge: { "10-12":0, "13-16":0, "17":0 },
+    },
   };
 
   // Init cross-tab structures
   for (const d of ["Timur Laut","Barat Daya","SP Utara","SP Tengah","SP Selatan"]) {
     result.crossTab[d] = { Malay:0, Chinese:0, Indian:0, Others:0 };
     result.incomeByDistrict[d] = { B40:0, M40:0, T20:0 };
-    result.ageByDistrict[d] = { "10-12":0, "13-16":0, "17-18":0 };
+    result.ageByDistrict[d] = { "10-12":0, "13-16":0, "17":0 };
     result.genderByDistrict[d] = { Male:0, Female:0 };
+    result.crg.byDistrict[d] = 0;
   }
   for (const e of ["Malay","Chinese","Indian","Others"]) {
     result.ethnicityByGender[e] = { Male:0, Female:0 };
     result.ethnicityByIncome[e] = { B40:0, M40:0, T20:0 };
-    result.ethnicityByAge[e] = { "10-12":0, "13-16":0, "17-18":0 };
+    result.ethnicityByAge[e] = { "10-12":0, "13-16":0, "17":0 };
   }
-  for (const a of ["10-12","13-16","17-18"]) {
+  for (const a of ["10-12","13-16","17"]) {
     result.ageByGender[a] = { Male:0, Female:0 };
   }
   for (const i of ["B40","M40","T20"]) {
-    result.incomeByAge[i] = { "10-12":0, "13-16":0, "17-18":0 };
+    result.incomeByAge[i] = { "10-12":0, "13-16":0, "17":0 };
     result.incomeByGender[i] = { Male:0, Female:0 };
   }
 
@@ -472,6 +489,23 @@ function classifyAllResponses(surveyData) {
       if (isDisabled) result.vulnerableGroups["Children with disability"]++;
       if (isSingleParent) result.vulnerableGroups["Single-parent households"]++;
       if (isRefugee) result.vulnerableGroups["Refugees / undocumented"]++;
+
+      // CRG sign-up: contact details left on the Child Reference Group question.
+      // Privacy: we only record presence/absence of contact text, never the text itself.
+      const crgText = getAnswerText(r, questionIds.crg, qMap);
+      const crgSignup = !!(crgText && crgText.trim().length > 0);
+      if (crgSignup) {
+        result.crg.total++;
+        if (district) result.crg.byDistrict[district]++;
+        result.crg.byEthnicity[ethnicity]++;
+        result.crg.byIncome[income || "Not stated"]++;
+        if (gender) result.crg.byGender[gender]++;
+        if (urbanRural) result.crg.byUrbanRural[urbanRural]++;
+        if (ageGroup) {
+          result.crg.byAge[ageGroup]++;
+          if (ageGroup === "13-16") result.crg.eligible1316++;
+        }
+      }
 
       // Daily breakdowns
       if (dateStr) {
@@ -640,7 +674,7 @@ async function main() {
       statusCounts[st] = (statusCounts[st] || 0) + 1;
     }
     console.log(`  ${responses.length} responses, ${Object.keys(qMap).length} questions mapped`);
-    console.log(`  Identified: islandDUN=${questionIds.dunIsland||"NO"} seberangDUN=${questionIds.dunSeberang||"NO"} eth=${questionIds.ethnicity||"NO"} inc=${questionIds.income||"NO"} age=${questionIds.childAge||"NO"} gen=${questionIds.childGender||questionIds.parentGender||"NO"} dis=${questionIds.disability.length}`);
+    console.log(`  Identified: islandDUN=${questionIds.dunIsland||"NO"} seberangDUN=${questionIds.dunSeberang||"NO"} eth=${questionIds.ethnicity||"NO"} inc=${questionIds.income||"NO"} age=${questionIds.childAge||"NO"} gen=${questionIds.childGender||questionIds.parentGender||"NO"} dis=${questionIds.disability.length} crg=${questionIds.crg||"NO"}`);
     surveyData.push({ language: lang, responses, qMap, questionIds });
   }
 
@@ -723,6 +757,7 @@ async function main() {
   console.log(`Districts:`, JSON.stringify(Object.fromEntries(Object.entries(classified.crossTab).map(([d,v])=>[d,Object.values(v).reduce((a,b)=>a+b,0)]))));
   console.log(`Ethnicity:`, JSON.stringify(Object.fromEntries(["Malay","Chinese","Indian","Others"].map(e=>[e,Object.values(classified.crossTab).reduce((s,d)=>s+(d[e]||0),0)]))));
   console.log(`noDistrict: ${classified.noDistrict}`);
+  console.log(`CRG sign-ups: ${classified.crg.total} total (${classified.crg.eligible1316} aged 13-16, the eligible band) | by district: ${JSON.stringify(classified.crg.byDistrict)}`);
 
   // Write data.json
   const fs = require("fs");
