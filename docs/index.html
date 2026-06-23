@@ -30,7 +30,7 @@ const STRETCH_3D    = 20000;
 const DISTRICTS     = ["Timur Laut","Barat Daya","SP Utara","SP Tengah","SP Selatan"];
 const ETHNICITIES   = ["Malay","Chinese","Indian","Others"];
 const INCOME_GROUPS = ["B40","M40","T20"];
-const AGE_GROUPS    = ["10-12","13-16","17-18"];
+const AGE_GROUPS    = ["10-12","13-16","17"];
 
 const EQ_BASE = {
   "Timur Laut":{ Malay:1465, Chinese:1355, Indian:325, Others:120 },
@@ -47,11 +47,11 @@ const IQ_BASE = {
   "SP Selatan":{ B40:285, M40:315, T20:170 },
 };
 const AQ_BASE = {
-  "Timur Laut":{ "10-12":760, "13-16":1015, "17-18":510 },
-  "Barat Daya":{ "10-12":305, "13-16":405, "17-18":205 },
-  "SP Utara":  { "10-12":445, "13-16":590, "17-18":295 },
-  "SP Tengah": { "10-12":565, "13-16":755, "17-18":375 },
-  "SP Selatan":{ "10-12":255, "13-16":340, "17-18":170 },
+  "Timur Laut":{ "10-12":855, "13-16":1145, "17":285 },
+  "Barat Daya":{ "10-12":345, "13-16":460, "17":115 },
+  "SP Utara":  { "10-12":500, "13-16":665, "17":165 },
+  "SP Tengah": { "10-12":635, "13-16":850, "17":210 },
+  "SP Selatan":{ "10-12":285, "13-16":385, "17":95 },
 };
 const GDQ_BASE = {
   "Timur Laut":{ Male:1660, Female:1605 }, "Barat Daya":{ Male:665, Female:645 },
@@ -62,11 +62,11 @@ const Q1_BASE = {
   district:  { "Timur Laut":3265, "Barat Daya":1310, "SP Utara":1905, "SP Tengah":2425, "SP Selatan":1095 },
   ethnicity: { Malay:4490, Chinese:4150, Indian:990, Others:370 },
   income:    { B40:2590, M40:2870, T20:1540 },
-  age:       { "10-12":2335, "13-16":3110, "17-18":1555 },
+  age:       { "10-12":2625, "13-16":3500, "17":875 },
   gender:    { Male:5080, Female:4920 },
 };
 const EGQ_BASE = { Malay:{Male:2280,Female:2210}, Chinese:{Male:2110,Female:2040}, Indian:{Male:505,Female:485}, Others:{Male:190,Female:180} };
-const AGQ_BASE = { "10-12":{Male:1185,Female:1150}, "13-16":{Male:1580,Female:1530}, "17-18":{Male:790,Female:765} };
+const AGQ_BASE = { "10-12":{Male:1335,Female:1290}, "13-16":{Male:1780,Female:1720}, "17":{Male:445,Female:430} };
 
 const STRETCH_2D_THRESHOLD = 10000;
 // Tier multiplier (Option A: locks to 3D=×2 once 2D completions reached).
@@ -117,7 +117,7 @@ const A = {
   age: {
     "10-12":["Year 4-6 class teacher reminder to parent WhatsApp groups","Primary school headteacher request targeting Year 4-6 parents"],
     "13-16":["PRIORITY - Form 1-3 class teacher reminder for CRG recruitment","PYDC youth programme channels","Student council representatives to champion participation"],
-    "17-18":["Form 4-5 school counsellor outreach to upper secondary parents","SPM exam preparation parent WhatsApp groups"],
+    "17":["Form 5 school counsellor outreach to upper secondary parents","SPM exam preparation parent WhatsApp groups"],
   },
   gender: {
     Male:["Audit co-ed vs boys-only school distribution - call PPD if gap","Sports/co-curricular teacher reminder targeting male-dominated activities"],
@@ -177,8 +177,8 @@ const CROSS_TABS = {
   "1d_ethnicity|1d_gender":    { label:"Ethnicity x Gender", rows:ETHNICITIES, cols:["Male","Female"], getVal:(d,r,c)=>d?.ethnicityByGender?.[r]?.[c]||0, getQ:(r,c)=>EGQ[r]?.[c]||100 },
   "1d_age|1d_gender":          { label:"Age Group x Gender", rows:AGE_GROUPS, cols:["Male","Female"], getVal:(d,r,c)=>d?.ageByGender?.[r]?.[c]||0, getQ:(r,c)=>AGQ[r]?.[c]||100 },
   "1d_ethnicity|1d_income":    { label:"Ethnicity x Income", rows:ETHNICITIES, cols:INCOME_GROUPS, getVal:(d,r,c)=>d?.ethnicityByIncome?.[r]?.[c]||0, getQ:(r,c)=>(({Malay:{B40:1165,M40:1290,T20:690},Chinese:{B40:1075,M40:1190,T20:640},Indian:{B40:255,M40:285,T20:150},Others:{B40:95,M40:105,T20:55}})[r]?.[c]||300)*TIER_MULT },
-  "1d_age|1d_ethnicity":       { label:"Ethnicity x Age Group", rows:ETHNICITIES, cols:AGE_GROUPS, getVal:(d,r,c)=>d?.ethnicityByAge?.[r]?.[c]||0, getQ:(r,c)=>(({"Malay":{"10-12":1050,"13-16":1395,"17-18":700},"Chinese":{"10-12":970,"13-16":1290,"17-18":645},"Indian":{"10-12":230,"13-16":310,"17-18":155},"Others":{"10-12":85,"13-16":115,"17-18":60}})[r]?.[c]||300)*TIER_MULT },
-  "1d_age|1d_income":          { label:"Income x Age Group", rows:INCOME_GROUPS, cols:AGE_GROUPS, getVal:(d,r,c)=>d?.incomeByAge?.[r]?.[c]||0, getQ:(r,c)=>(({"B40":{"10-12":865,"13-16":1150,"17-18":575},"M40":{"10-12":955,"13-16":1275,"17-18":640},"T20":{"10-12":515,"13-16":685,"17-18":340}})[r]?.[c]||300)*TIER_MULT },
+  "1d_age|1d_ethnicity":       { label:"Ethnicity x Age Group", rows:ETHNICITIES, cols:AGE_GROUPS, getVal:(d,r,c)=>d?.ethnicityByAge?.[r]?.[c]||0, getQ:(r,c)=>(({"Malay":{"10-12":1180,"13-16":1570,"17":395},"Chinese":{"10-12":1090,"13-16":1455,"17":365},"Indian":{"10-12":260,"13-16":345,"17":85},"Others":{"10-12":95,"13-16":130,"17":30}})[r]?.[c]||300)*TIER_MULT },
+  "1d_age|1d_income":          { label:"Income x Age Group", rows:INCOME_GROUPS, cols:AGE_GROUPS, getVal:(d,r,c)=>d?.incomeByAge?.[r]?.[c]||0, getQ:(r,c)=>(({"B40":{"10-12":970,"13-16":1295,"17":325},"M40":{"10-12":1075,"13-16":1435,"17":360},"T20":{"10-12":580,"13-16":770,"17":195}})[r]?.[c]||300)*TIER_MULT },
   "1d_gender|1d_income":       { label:"Income x Gender", rows:INCOME_GROUPS, cols:["Male","Female"], getVal:(d,r,c)=>d?.incomeByGender?.[r]?.[c]||0, getQ:(r,c)=>(({"B40":{Male:1315,Female:1275},"M40":{Male:1460,Female:1410},"T20":{Male:780,Female:760}})[r]?.[c]||400)*TIER_MULT },
 };
 
@@ -199,6 +199,7 @@ function CFPDashboard() {
   const [error, setError]         = useState(null);
   const [dimIds, setDimIds]       = useState(["","",""]);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [page, setPage]           = useState("overview"); // "overview" | "crg"
 
   const loadData = useCallback(() => {
     // Cache-bust with timestamp so browser always fetches the freshest data.json
@@ -289,6 +290,20 @@ function CFPDashboard() {
       {error && <div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:8,padding:"10px 14px",marginBottom:12,fontSize:12,color:"#b91c1c"}}>{error}</div>}
       {loading && <div style={{display:"flex",alignItems:"center",gap:8,background:"#f8fafc",border:"1px solid #e2e8f0",borderRadius:8,padding:"10px 14px",marginBottom:12,fontSize:12,color:"#64748b"}}>Loading survey data...</div>}
 
+      {/* Page toggle */}
+      <div style={{display:"flex",gap:4,marginBottom:14,background:"#e2e8f0",borderRadius:8,padding:3,width:"fit-content"}}>
+        {[{id:"overview",label:"Survey Overview"},{id:"crg",label:"Child Reference Group"}].map(p=>(
+          <button key={p.id} onClick={()=>setPage(p.id)}
+            style={{padding:"7px 16px",fontSize:12,fontWeight:600,borderRadius:6,border:"none",cursor:"pointer",
+              background:page===p.id?"#fff":"transparent",color:page===p.id?"#0e4a6e":"#64748b",
+              boxShadow:page===p.id?"0 1px 2px rgba(0,0,0,0.08)":"none"}}>
+            {p.label}
+          </button>
+        ))}
+      </div>
+
+      {/* ======================= OVERVIEW PAGE ======================= */}
+      {page === "overview" && (<>
       {/* Headline stats */}
       <div style={{...s.card,padding:16,marginBottom:14}}>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16,marginBottom:14,paddingBottom:14,borderBottom:"1px solid #f1f5f9"}}>
@@ -632,6 +647,105 @@ function CFPDashboard() {
                 </ResponsiveContainer>
             }
           </div>
+        );
+      })()}
+      </>)}
+
+      {/* ======================= CHILD REFERENCE GROUP PAGE ======================= */}
+      {page === "crg" && (() => {
+        const crg = data?.crg;
+        if (!crg) return <div style={{...s.card,padding:24,textAlign:"center",color:"#94a3b8",fontSize:13}}>No Child Reference Group data yet.</div>;
+
+        const completed1316 = (() => {
+          // total completed responses aged 13-16, for sign-up rate denominator
+          let n = 0;
+          for (const dist of DISTRICTS) n += data?.ageByDistrict?.[dist]?.["13-16"] || 0;
+          return n;
+        })();
+        const signupRate = completed1316 > 0 ? Math.round(crg.eligible1316 / completed1316 * 100) : 0;
+
+        const Bar = ({rows, getLabel, getVal, max}) => (
+          <div>
+            {rows.map((r,i)=>{
+              const v = getVal(r);
+              const pct = max>0 ? Math.round(v/max*100) : 0;
+              return (
+                <div key={i} style={{padding:"7px 14px",borderBottom:i<rows.length-1?"1px solid #f8fafc":"none",display:"flex",alignItems:"center",gap:8}}>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontSize:11,fontWeight:500,color:"#334155",marginBottom:3}}>{getLabel(r)}</div>
+                    <div style={{height:4,background:"#f1f5f9",borderRadius:2,overflow:"hidden"}}>
+                      <div style={{width:pct+"%",height:"100%",background:"#7c3aed",borderRadius:2}}/>
+                    </div>
+                  </div>
+                  <span style={{fontSize:12,fontWeight:700,color:"#0f172a",width:36,textAlign:"right"}}>{v}</span>
+                </div>
+              );
+            })}
+          </div>
+        );
+
+        const card = (title, children) => (
+          <div style={{...s.card,overflow:"hidden"}}>
+            <div style={{padding:"10px 14px",background:"#faf5ff",borderBottom:"1px solid #e2e8f0"}}>
+              <span style={{fontSize:12,fontWeight:700,color:"#0f172a"}}>{title}</span>
+            </div>
+            {children}
+          </div>
+        );
+
+        const distRows = DISTRICTS;
+        const distMax = Math.max(1, ...distRows.map(d=>crg.byDistrict[d]||0));
+        const ethRows = ETHNICITIES;
+        const ethMax = Math.max(1, ...ethRows.map(e=>crg.byEthnicity[e]||0));
+        const incRows = INCOME_GROUPS;
+        const incMax = Math.max(1, ...incRows.map(i=>crg.byIncome[i]||0));
+        const genRows = ["Male","Female"];
+        const genMax = Math.max(1, ...genRows.map(g=>crg.byGender[g]||0));
+        const urRows = ["Urban","Peri-urban","Rural"];
+        const urMax = Math.max(1, ...urRows.map(u=>crg.byUrbanRural[u]||0));
+
+        return (
+          <>
+            {/* CRG headline */}
+            <div style={{...s.card,padding:16,marginBottom:14}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16}}>
+                <div>
+                  <div style={s.label}>Total sign-ups</div>
+                  <span style={{fontSize:32,fontWeight:800,color:"#7c3aed"}}>{crg.total.toLocaleString()}</span>
+                  <div style={{fontSize:11,color:"#64748b",marginTop:2}}>contact details provided</div>
+                </div>
+                <div>
+                  <div style={s.label}>Eligible (aged 13-16)</div>
+                  <span style={{fontSize:32,fontWeight:800,color:"#0f172a"}}>{crg.eligible1316.toLocaleString()}</span>
+                  <div style={{fontSize:11,color:"#64748b",marginTop:2}}>CRG is open to 13-16 only</div>
+                </div>
+                <div>
+                  <div style={s.label}>Sign-up rate (13-16)</div>
+                  <span style={{fontSize:32,fontWeight:800,color:signupRate>=25?"#15803d":signupRate>=10?"#854d0e":"#b91c1c"}}>{signupRate}%</span>
+                  <div style={{fontSize:11,color:"#64748b",marginTop:2}}>of {completed1316.toLocaleString()} completed 13-16</div>
+                </div>
+              </div>
+              <div style={{marginTop:12,paddingTop:12,borderTop:"1px solid #f1f5f9",fontSize:11,color:"#64748b",lineHeight:1.5}}>
+                The Child Reference Group is open to children aged 13-16. The eligible count and sign-up rate above reflect that band. The breakdowns below show all sign-ups by demographic. Contact details themselves are stored separately and are never shown here - only counts.
+              </div>
+            </div>
+
+            {/* Note if sign-ups outside eligible band */}
+            {(crg.byAge["10-12"]>0 || crg.byAge["17"]>0) && (
+              <div style={{background:"#fffbeb",border:"1px solid #fde68a",borderRadius:8,padding:"10px 14px",marginBottom:14,fontSize:11,color:"#92400e"}}>
+                Note: {crg.byAge["10-12"]} sign-up(s) aged 10-12 and {crg.byAge["17"]} aged 17 fall outside the eligible 13-16 band. These may need follow-up or exclusion.
+              </div>
+            )}
+
+            {/* Demographic breakdowns */}
+            <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:10,marginBottom:14,alignItems:"start"}}>
+              {card("By District", <Bar rows={distRows} getLabel={d=>d} getVal={d=>crg.byDistrict[d]||0} max={distMax}/>)}
+              {card("By Ethnicity", <Bar rows={ethRows} getLabel={e=>e} getVal={e=>crg.byEthnicity[e]||0} max={ethMax}/>)}
+              {card("By Household Income", <Bar rows={incRows} getLabel={i=>i} getVal={i=>crg.byIncome[i]||0} max={incMax}/>)}
+              {card("By Child Gender", <Bar rows={genRows} getLabel={g=>g} getVal={g=>crg.byGender[g]||0} max={genMax}/>)}
+              {card("By Urban / Rural", <Bar rows={urRows} getLabel={u=>u} getVal={u=>crg.byUrbanRural[u]||0} max={urMax}/>)}
+            </div>
+          </>
         );
       })()}
 
