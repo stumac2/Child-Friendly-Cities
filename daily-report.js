@@ -299,9 +299,16 @@ async function fetchSurveyDetails(surveyId) {
 
 function buildChoiceMap(details) {
   const qMap = {};
+  let pos = 0;
   for (const page of (details.pages || [])) {
     for (const q of (page.questions || [])) {
-      const entry = { heading: q.headings?.[0]?.heading || "", choices: {}, rows: {} };
+      const entry = {
+        heading: q.headings?.[0]?.heading || "",
+        choices: {}, rows: {},
+        family: q.family || "", subtype: q.subtype || "",
+        position: pos,
+      };
+      pos++;
       const ans = q.answers || {};
       if (Array.isArray(ans.choices)) {
         for (const c of ans.choices) entry.choices[c.id] = c.text;
@@ -492,8 +499,19 @@ function classifyAllResponses(surveyData) {
 
       // CRG sign-up: contact details left on the Child Reference Group question.
       // Privacy: we only record presence/absence of contact text, never the text itself.
-      const crgText = getAnswerText(r, questionIds.crg, qMap);
-      const crgSignup = !!(crgText && crgText.trim().length > 0);
+      // The field may be multi-textbox (email + WhatsApp), so check for any non-empty text.
+      let crgSignup = false;
+      if (questionIds.crg) {
+        for (const page of (r.pages || [])) {
+          for (const q of (page.questions || [])) {
+            if (q.id === questionIds.crg) {
+              for (const a of (q.answers || [])) {
+                if (a.text && String(a.text).trim().length > 0) { crgSignup = true; break; }
+              }
+            }
+          }
+        }
+      }
       if (crgSignup) {
         result.crg.total++;
         if (district) result.crg.byDistrict[district]++;
@@ -677,6 +695,39 @@ async function main() {
     console.log(`  Identified: islandDUN=${questionIds.dunIsland||"NO"} seberangDUN=${questionIds.dunSeberang||"NO"} eth=${questionIds.ethnicity||"NO"} inc=${questionIds.income||"NO"} age=${questionIds.childAge||"NO"} gen=${questionIds.childGender||questionIds.parentGender||"NO"} dis=${questionIds.disability.length} crg=${questionIds.crg||"NO"}`);
     surveyData.push({ language: lang, responses, qMap, questionIds });
   }
+
+  // ── CRG cross-language anchoring ──
+  // The four surveys share identical question structure, so the CRG question sits at
+  // the same position in each. Use the English CRG position to fill any survey where
+  // heading-based detection failed (translated wording the regex didn't catch).
+  const engData = surveyData.find(s => s.language === "English");
+  const engCrgPos = engData?.questionIds.crg ? engData.qMap[engData.questionIds.crg]?.position : null;
+  console.log(`\n=== CRG DETECTION ===`);
+  if (engCrgPos != null) {
+    console.log(`English CRG question position: ${engCrgPos} (id ${engData.questionIds.crg})`);
+    for (const sd of surveyData) {
+      if (!sd.questionIds.crg && engCrgPos != null) {
+        // Find the question at the same position in this survey
+        const match = Object.entries(sd.qMap).find(([,q]) => q.position === engCrgPos);
+        if (match) {
+          sd.questionIds.crg = match[0];
+          console.log(`  ${sd.language}: CRG not found by heading - anchored to position ${engCrgPos} -> id ${match[0]}`);
+        }
+      }
+    }
+  } else {
+    console.log(`WARNING: English CRG question not detected by heading. Check the heading regex.`);
+  }
+  // Report CRG question heading + family per survey for verification
+  for (const sd of surveyData) {
+    const q = sd.questionIds.crg ? sd.qMap[sd.questionIds.crg] : null;
+    if (q) {
+      console.log(`  ${sd.language}: crg id=${sd.questionIds.crg} family=${q.family}/${q.subtype} heading="${(q.heading||"").replace(/<[^>]+>/g,"").slice(0,55)}"`);
+    } else {
+      console.log(`  ${sd.language}: CRG QUESTION NOT FOUND`);
+    }
+  }
+  console.log(`=== END CRG DETECTION ===\n`);
 
   const totalRaw = surveyData.reduce((s, d) => s + d.responses.length, 0);
   console.log(`Total raw responses: ${totalRaw}`);
