@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Child Friendly Penang - Survey Monitor</title>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.8.1/prop-types.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.12.7/Recharts.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.0/babel.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: #f1f5f9; }
+</style>
+</head>
+<body>
+<div id="root"><div style="font-family:system-ui;padding:40px;text-align:center;color:#64748b"><p>Loading dashboard...</p><p style="font-size:12px;margin-top:8px">If this persists, check browser console (F12) for errors.</p></div></div>
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useCallback } = React;
+const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine, ResponsiveContainer } = Recharts;
+
+// ─── Config ────────────────────────────────────────────────────────────────────
+const START_DATE    = new Date("2026-06-15");
+const END_DATE      = new Date("2026-07-31");
+const TOTAL_TARGET  = 2500;
+const STRETCH_2D    = 10000;
+const STRETCH_3D    = 20000;
+
+const DISTRICTS     = ["Timur Laut","Barat Daya","SP Utara","SP Tengah","SP Selatan"];
+const ETHNICITIES   = ["Malay","Chinese","Indian","Others"];
+const INCOME_GROUPS = ["B40","M40","T20"];
+const AGE_GROUPS    = ["10-12","13-16","17"];
+
+const EQ_BASE = {
+  "Timur Laut":{ Malay:1465, Chinese:1355, Indian:325, Others:120 },
+  "Barat Daya":{ Malay:590, Chinese:545, Indian:130, Others:50 },
+  "SP Utara":  { Malay:855, Chinese:790, Indian:190, Others:70 },
+  "SP Tengah": { Malay:1090, Chinese:1005, Indian:240, Others:90 },
+  "SP Selatan":{ Malay:490, Chinese:455, Indian:110, Others:40 },
+};
+const IQ_BASE = {
+  "Timur Laut":{ B40:845, M40:935, T20:505 },
+  "Barat Daya":{ B40:340, M40:375, T20:200 },
+  "SP Utara":  { B40:495, M40:545, T20:295 },
+  "SP Tengah": { B40:630, M40:695, T20:375 },
+  "SP Selatan":{ B40:285, M40:315, T20:170 },
+};
+const AQ_BASE = {
+  "Timur Laut":{ "10-12":855, "13-16":1145, "17":285 },
+  "Barat Daya":{ "10-12":345, "13-16":460, "17":115 },
+  "SP Utara":  { "10-12":500, "13-16":665, "17":165 },
+  "SP Tengah": { "10-12":635, "13-16":850, "17":210 },
+  "SP Selatan":{ "10-12":285, "13-16":385, "17":95 },
+};
+const GDQ_BASE = {
+  "Timur Laut":{ Male:1660, Female:1605 }, "Barat Daya":{ Male:665, Female:645 },
+  "SP Utara":  { Male:970, Female:935 }, "SP Tengah": { Male:1230, Female:1195 },
+  "SP Selatan":{ Male:555, Female:540 },
+};
+const Q1_BASE = {
+  district:  { "Timur Laut":3265, "Barat Daya":1310, "SP Utara":1905, "SP Tengah":2425, "SP Selatan":1095 },
+  ethnicity: { Malay:4490, Chinese:4150, Indian:990, Others:370 },
+  income:    { B40:2590, M40:2870, T20:1540 },
+  age:       { "10-12":2625, "13-16":3500, "17":875 },
+  gender:    { Male:5080, Female:4920 },
+};
+const EGQ_BASE = { Malay:{Male:2280,Female:2210}, Chinese:{Male:2110,Female:2040}, Indian:{Male:505,Female:485}, Others:{Male:190,Female:180} };
+const AGQ_BASE = { "10-12":{Male:1335,Female:1290}, "13-16":{Male:1780,Female:1720}, "17":{Male:445,Female:430} };
+
+const STRETCH_2D_THRESHOLD = 10000;
+// Tier multiplier (Option A: locks to 3D=×2 once 2D completions reached).
+// TIER_MULT is set from live data in the component before any table is read.
+let TIER_MULT = 1;
+function scaleTbl(t) {
+  const o = {};
+  for (const [k, v] of Object.entries(t)) {
+    if (typeof v === "number") o[k] = v * TIER_MULT;
+    else { o[k] = {}; for (const [k2, v2] of Object.entries(v)) o[k][k2] = v2 * TIER_MULT; }
+  }
+  return o;
+}
+// Scaled accessors used everywhere downstream
+const EQ  = new Proxy({}, { get:(_,p)=>scaleTbl(EQ_BASE)[p] });
+const IQ  = new Proxy({}, { get:(_,p)=>scaleTbl(IQ_BASE)[p] });
+const AQ  = new Proxy({}, { get:(_,p)=>scaleTbl(AQ_BASE)[p] });
+const GDQ = new Proxy({}, { get:(_,p)=>scaleTbl(GDQ_BASE)[p] });
+const EGQ = new Proxy({}, { get:(_,p)=>scaleTbl(EGQ_BASE)[p] });
+const AGQ = new Proxy({}, { get:(_,p)=>scaleTbl(AGQ_BASE)[p] });
+const Q1 = {
+  get district(){ return scaleTbl(Q1_BASE.district); },
+  get ethnicity(){ return scaleTbl(Q1_BASE.ethnicity); },
+  get income(){ return scaleTbl(Q1_BASE.income); },
+  get age(){ return scaleTbl(Q1_BASE.age); },
+  get gender(){ return scaleTbl(Q1_BASE.gender); },
+};
+
+const A = {
+  district: {
+    "Timur Laut":["Chase via PPD Timur Laut - targeted resend to George Town and Ayer Itam clusters","MBPP corporate comms to amplify on council social media and school app channels"],
+    "Barat Daya":["Contact PPD Barat Daya - request Balik Pulau and Teluk Bahang school follow-up","JKKK WhatsApp broadcast in rural kampung areas","Repost in Barat Daya community Facebook groups"],
+    "SP Utara":["Contact PPD Seberang Perai Utara - Kepala Batas and north Butterworth clusters","Mosque/surau announcements in Malay-majority Kepala Batas area via JAIPP"],
+    "SP Tengah":["Chase PPD Seberang Perai Tengah for Bukit Mertajam and Perai school clusters","FMM Penang - reach Perai industrial estate worker-parents"],
+    "SP Selatan":["URGENT - Direct call to PPD Seberang Perai Selatan for Nibong Tebal & Simpang Ampat","Tamil community: SJK(T) PIBG broadcast","FMM Penang for Batu Kawan industrial estate parents"],
+  },
+  ethnicity: {
+    Malay:["Friday mosque/surau announcement via JAIPP","JKKK network WhatsApp broadcast across all five districts","National school PIBG personal message from headteacher"],
+    Chinese:["SJK(C) PIBG broadcast - resend Mandarin survey link","Buddhist Tzu Chi Foundation Penang chapter","Penang Chinese Chamber of Commerce member newsletter"],
+    Indian:["SJK(T) PIBG broadcast - resend Tamil survey to parent groups","Hindu Mahajana Sangam Penang branch","Minnal FM Tamil radio community announcement slot","MSF Klinik Mewah 6, Butterworth - QR code display"],
+    Others:["JREC Rohingya Education Centre Penang","Equal Start, LifeBridge, Good Start learning centres","SelflessTogether outreach workers","UNHCR Malaysia Penang field presence"],
+  },
+  income: {
+    B40:["QR code in PPR noticeboards via MBPP/MBSP housing unit","JKM Penang district offices - broadcast to welfare recipient families","Zakat MAINPP - announcement to beneficiary network","House of Hope and Caring Hearts NGO family networks"],
+    M40:["Standard digital channels should reach M40 - check if school WhatsApp groups need a resend"],
+    T20:["Private and international schools - contact admin directly if T20 underrepresented"],
+  },
+  age: {
+    "10-12":["Year 4-6 class teacher reminder to parent WhatsApp groups","Primary school headteacher request targeting Year 4-6 parents"],
+    "13-16":["PRIORITY - Form 1-3 class teacher reminder for CRG recruitment","PYDC youth programme channels","Student council representatives to champion participation"],
+    "17":["Form 5 school counsellor outreach to upper secondary parents","SPM exam preparation parent WhatsApp groups"],
+  },
+  gender: {
+    Male:["Audit co-ed vs boys-only school distribution - call PPD if gap","Sports/co-curricular teacher reminder targeting male-dominated activities"],
+    Female:["Contact girls-only secondary schools directly","PWDC women's community channels"],
+  },
+  urbanRural: {
+    Urban:["PPD digital channels - check completion rate by school","MBPP corporate comms via council social media targeting George Town and Butterworth parents"],
+    "Peri-urban":["Contact PPD offices for Bukit Mertajam, Bayan Baru, and Kepala Batas clusters","JKKK network WhatsApp broadcast","FMM Penang for industrial estates in Perai and Batu Kawan"],
+    Rural:["URGENT - rural DUNs likely underserved by digital channels","Mosque/surau announcements via JAIPP","JKKK kampung committee personal outreach - printed QR codes","SJK(T) PIBG broadcast for Telok Bahang and Pulau Betong"],
+  },
+  disability:["BOLD for Special Needs Children Penang","Cerebral Palsy Association Penang parent group","Down Syndrome Association Penang","JPNPP Special Education unit - push via all special education school coordinators"],
+  singleParent:["Women's Centre for Change (WCC) - single parent support network","JKM district offices - broadcast to registered single-parent welfare recipients","School counsellors - personal follow-up with identified single-parent families"],
+};
+
+// ─── Dimensions ────────────────────────────────────────────────────────────────
+function proj(actual, de, dr) { return (de < 1 || actual === 0) ? null : Math.round(actual + (actual / de) * dr); }
+function mkCell(id, label, actual, target, de, dr, actions) { return { id, label, actual, target, proj: proj(actual, de, dr), actions }; }
+
+const DIMS = [
+  { id:"1d_district",   label:"District",
+    get:(d,de,dr)=>DISTRICTS.map(x=>mkCell(x,x,ETHNICITIES.reduce((s,e)=>s+(d?.crossTab?.[x]?.[e]||0),0), Q1.district[x], de,dr, A.district[x]||[])) },
+  { id:"1d_ethnicity",  label:"Ethnicity",
+    get:(d,de,dr)=>ETHNICITIES.map(x=>mkCell(x,x,DISTRICTS.reduce((s,dx)=>s+(d?.crossTab?.[dx]?.[x]||0),0), Q1.ethnicity[x], de,dr, A.ethnicity[x]||[])) },
+  { id:"1d_income",     label:"Household Income",
+    get:(d,de,dr)=>INCOME_GROUPS.map(x=>mkCell(x,x,DISTRICTS.reduce((s,dx)=>s+(d?.incomeByDistrict?.[dx]?.[x]||0),0), Q1.income[x], de,dr, A.income[x]||[])) },
+  { id:"1d_age",        label:"Child Age Group",
+    get:(d,de,dr)=>AGE_GROUPS.map(x=>mkCell(x,"Age "+x,DISTRICTS.reduce((s,dx)=>s+(d?.ageByDistrict?.[dx]?.[x]||0),0), Q1.age[x], de,dr, A.age[x]||[])) },
+  { id:"1d_gender",     label:"Child Gender",
+    get:(d,de,dr)=>["Male","Female"].map(x=>mkCell(x,x, d?.byGender?.[x]||0, Q1.gender[x], de,dr, A.gender[x]||[])) },
+  { id:"1d_urbanrural", label:"Urban / Rural",
+    get:(d,de,dr)=>[
+      mkCell("urban","Urban",d?.byUrbanRural?.["Urban"]||0,6000*TIER_MULT,de,dr,A.urbanRural["Urban"]),
+      mkCell("periurban","Peri-urban",d?.byUrbanRural?.["Peri-urban"]||0,2500*TIER_MULT,de,dr,A.urbanRural["Peri-urban"]),
+      mkCell("rural","Rural",d?.byUrbanRural?.["Rural"]||0,1500*TIER_MULT,de,dr,A.urbanRural["Rural"]),
+    ]},
+  { id:"1d_disability", label:"Disability",
+    get:(d,de,dr)=>[mkCell("dis","Any disability", d?.vulnerableGroups?.["Children with disability"]||0, 200*TIER_MULT, de,dr, A.disability)] },
+  { id:"1d_sp",         label:"Single-parent HH",
+    get:(d,de,dr)=>[mkCell("sp","Single-parent HH", d?.vulnerableGroups?.["Single-parent households"]||0, 600*TIER_MULT, de,dr, A.singleParent)] },
+];
+
+const CHART_COLORS = ["#0e4a6e","#0284c7","#7c3aed","#dc2626","#d97706","#16a34a","#be185d"];
+const DIM_CHART_CONFIG = {
+  "1d_district":   { key:"byDateByDistrict",   cats:DISTRICTS },
+  "1d_ethnicity":  { key:"byDateByEthnicity",  cats:ETHNICITIES },
+  "1d_income":     { key:"byDateByIncome",      cats:INCOME_GROUPS },
+  "1d_age":        { key:"byDateByAge",         cats:AGE_GROUPS },
+  "1d_gender":     { key:"byDateByGender",      cats:["Male","Female"] },
+  "1d_urbanrural": { key:"byDateByUrbanRural",  cats:["Urban","Peri-urban","Rural"] },
+};
+
+const CROSS_TABS = {
+  "1d_district|1d_ethnicity":  { label:"District x Ethnicity", rows:DISTRICTS, cols:ETHNICITIES, getVal:(d,r,c)=>d?.crossTab?.[r]?.[c]||0, getQ:(r,c)=>EQ[r]?.[c]||75 },
+  "1d_district|1d_income":     { label:"District x Income", rows:DISTRICTS, cols:INCOME_GROUPS, getVal:(d,r,c)=>d?.incomeByDistrict?.[r]?.[c]||0, getQ:(r,c)=>IQ[r]?.[c]||50 },
+  "1d_age|1d_district":        { label:"District x Age Group", rows:DISTRICTS, cols:AGE_GROUPS, getVal:(d,r,c)=>d?.ageByDistrict?.[r]?.[c]||0, getQ:(r,c)=>AQ[r]?.[c]||75 },
+  "1d_district|1d_gender":     { label:"District x Gender", rows:DISTRICTS, cols:["Male","Female"], getVal:(d,r,c)=>d?.genderByDistrict?.[r]?.[c]||0, getQ:(r,c)=>GDQ[r]?.[c]||100 },
+  "1d_ethnicity|1d_gender":    { label:"Ethnicity x Gender", rows:ETHNICITIES, cols:["Male","Female"], getVal:(d,r,c)=>d?.ethnicityByGender?.[r]?.[c]||0, getQ:(r,c)=>EGQ[r]?.[c]||100 },
+  "1d_age|1d_gender":          { label:"Age Group x Gender", rows:AGE_GROUPS, cols:["Male","Female"], getVal:(d,r,c)=>d?.ageByGender?.[r]?.[c]||0, getQ:(r,c)=>AGQ[r]?.[c]||100 },
+  "1d_ethnicity|1d_income":    { label:"Ethnicity x Income", rows:ETHNICITIES, cols:INCOME_GROUPS, getVal:(d,r,c)=>d?.ethnicityByIncome?.[r]?.[c]||0, getQ:(r,c)=>(({Malay:{B40:1165,M40:1290,T20:690},Chinese:{B40:1075,M40:1190,T20:640},Indian:{B40:255,M40:285,T20:150},Others:{B40:95,M40:105,T20:55}})[r]?.[c]||300)*TIER_MULT },
+  "1d_age|1d_ethnicity":       { label:"Ethnicity x Age Group", rows:ETHNICITIES, cols:AGE_GROUPS, getVal:(d,r,c)=>d?.ethnicityByAge?.[r]?.[c]||0, getQ:(r,c)=>(({"Malay":{"10-12":1180,"13-16":1570,"17":395},"Chinese":{"10-12":1090,"13-16":1455,"17":365},"Indian":{"10-12":260,"13-16":345,"17":85},"Others":{"10-12":95,"13-16":130,"17":30}})[r]?.[c]||300)*TIER_MULT },
+  "1d_age|1d_income":          { label:"Income x Age Group", rows:INCOME_GROUPS, cols:AGE_GROUPS, getVal:(d,r,c)=>d?.incomeByAge?.[r]?.[c]||0, getQ:(r,c)=>(({"B40":{"10-12":970,"13-16":1295,"17":325},"M40":{"10-12":1075,"13-16":1435,"17":360},"T20":{"10-12":580,"13-16":770,"17":195}})[r]?.[c]||300)*TIER_MULT },
+  "1d_gender|1d_income":       { label:"Income x Gender", rows:INCOME_GROUPS, cols:["Male","Female"], getVal:(d,r,c)=>d?.incomeByGender?.[r]?.[c]||0, getQ:(r,c)=>(({"B40":{Male:1315,Female:1275},"M40":{Male:1460,Female:1410},"T20":{Male:780,Female:760}})[r]?.[c]||400)*TIER_MULT },
+};
+
+// ─── Helpers ───────────────────────────────────────────────────────────────────
+function daysDiff(a, b) { return Math.floor((b - a) / 86400000); }
+function cellPct(c) { return c.target > 0 ? Math.round(c.actual / c.target * 100) : 0; }
+function cellColor(c) {
+  const p = cellPct(c);
+  if (p >= 100) return { bg:"#dcfce7", fg:"#15803d", bar:"#16a34a" };
+  if (p >= 75)  return { bg:"#fef9c3", fg:"#854d0e", bar:"#ca8a04" };
+  return              { bg:"#fee2e2", fg:"#b91c1c", bar:"#ef4444" };
+}
+
+// ─── Component ─────────────────────────────────────────────────────────────────
+function CFPDashboard() {
+  const [data, setData]           = useState(null);
+  const [loading, setLoading]     = useState(true);
+  const [error, setError]         = useState(null);
+  const [dimIds, setDimIds]       = useState(["","",""]);
+  const [lastUpdated, setLastUpdated] = useState(null);
+  const [page, setPage]           = useState("overview"); // "overview" | "crg"
+
+  const loadData = useCallback(() => {
+    // Cache-bust with timestamp so browser always fetches the freshest data.json
+    fetch("data.json?t=" + Date.now(), { cache: "no-store" })
+      .then(r => { if (!r.ok) throw new Error("data.json not found"); return r.json(); })
+      .then(d => { setData(d); setLastUpdated(d.updatedAt ? new Date(d.updatedAt) : null); setError(null); })
+      .catch(e => setError(e.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    loadData();
+    // Auto-refresh every 5 minutes so the dashboard stays current without manual reload
+    const interval = setInterval(loadData, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [loadData]);
+
+  const today = new Date();
+  // Option A: once 2D (10,000) completions reached, sub-targets lock to 3D level (×2)
+  TIER_MULT = (data?.totalCompleted || 0) >= STRETCH_2D_THRESHOLD ? 2 : 1;
+  const daysElapsed   = Math.max(0, daysDiff(START_DATE, today));
+  const daysRemaining = Math.max(0, daysDiff(today, END_DATE));
+  const surveyStarted = today >= START_DATE;
+  const totalDays     = daysDiff(START_DATE, END_DATE);
+  const surveyPct     = Math.min(100, Math.round(daysElapsed / totalDays * 100));
+
+  const allPanels = dimIds.filter(id=>id).map(id => {
+    const dim = DIMS.find(d => d.id === id) || DIMS[0];
+    const cells = data ? dim.get(data, daysElapsed, daysRemaining) : [];
+    const behind = cells.filter(c => cellPct(c) < 75).sort((a,b) => cellPct(a)-cellPct(b));
+    return { dim, cells, behind };
+  });
+
+  const activeDims = dimIds.filter(id=>id);
+  const crossTabsToShow = [];
+  const crossTabsMissing = [];
+  for (let i=0; i<activeDims.length; i++) {
+    for (let j=i+1; j<activeDims.length; j++) {
+      const key = [activeDims[i], activeDims[j]].sort().join("|");
+      const cfg = CROSS_TABS[key];
+      if (cfg) crossTabsToShow.push({key, cfg});
+      else {
+        const la = DIMS.find(d=>d.id===activeDims[i])?.label || activeDims[i];
+        const lb = DIMS.find(d=>d.id===activeDims[j])?.label || activeDims[j];
+        crossTabsMissing.push(la+" x "+lb);
+      }
+    }
+  }
+
+  const totalStarted   = data?.totalStarted   || 0;
+  const totalCompleted = data?.totalCompleted || 0;
+  const respPct        = Math.min(100, Math.round(totalCompleted / TOTAL_TARGET * 100));
+  const completionRate = totalStarted > 0 ? Math.round(totalCompleted / totalStarted * 100) : 0;
+  const setDimId = (idx, val) => setDimIds(prev => prev.map((v,i) => i===idx ? val : v));
+
+  const s = {
+    card: { background:"#fff", borderRadius:10, border:"1px solid #e2e8f0" },
+    label: { fontSize:11, fontWeight:700, color:"#94a3b8", letterSpacing:"0.05em", textTransform:"uppercase", marginBottom:4 },
+  };
+
+  return (
+    <div style={{background:"#f1f5f9",minHeight:"100vh",padding:16,maxWidth:1200,margin:"0 auto"}}>
+
+      {/* Header */}
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:14}}>
+        <div>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}>
+            <span style={{width:8,height:8,borderRadius:"50%",background:"#0e4a6e",display:"inline-block"}}/>
+            <h1 style={{margin:0,fontSize:17,fontWeight:700,color:"#0f172a"}}>Child Friendly Penang - Survey Monitor</h1>
+          </div>
+          <p style={{margin:"0 0 0 16px",fontSize:11,color:"#64748b"}}>
+            {lastUpdated ? "Data updated "+lastUpdated.toLocaleString("en-GB",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})+" - " : ""}
+            {!surveyStarted ? "Survey starts in "+daysDiff(today,START_DATE)+" days (15 Jun)" : "Day "+daysElapsed+" of "+totalDays+" - "+daysRemaining+" days remaining"}
+            {data?.noDistrict>0?" - "+data.noDistrict+" missing district":""}
+          </p>
+          <p style={{margin:"2px 0 0 16px",fontSize:10,color:"#94a3b8"}}>
+            UNICEF Child-Friendly City Initiative - Think City / MBPP / MBSP
+          </p>
+        </div>
+        <button onClick={loadData} disabled={loading}
+          style={{padding:"6px 12px",fontSize:12,borderRadius:6,border:"1px solid #e2e8f0",
+            cursor:loading?"default":"pointer",background:"#fff",color:"#475569",fontWeight:600,
+            opacity:loading?0.5:1,whiteSpace:"nowrap"}}>
+          {loading ? "Refreshing..." : "↻ Refresh"}
+        </button>
+      </div>
+
+      {error && <div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:8,padding:"10px 14px",marginBottom:12,fontSize:12,color:"#b91c1c"}}>{error}</div>}
+      {loading && <div style={{display:"flex",alignItems:"center",gap:8,background:"#f8fafc",border:"1px solid #e2e8f0",borderRadius:8,padding:"10px 14px",marginBottom:12,fontSize:12,color:"#64748b"}}>Loading survey data...</div>}
+
+      {/* Page toggle */}
+      <div style={{display:"flex",gap:4,marginBottom:14,background:"#e2e8f0",borderRadius:8,padding:3,width:"fit-content"}}>
+        {[{id:"overview",label:"Survey Overview"},{id:"crg",label:"Child Reference Group"}].map(p=>(
+          <button key={p.id} onClick={()=>setPage(p.id)}
+            style={{padding:"7px 16px",fontSize:12,fontWeight:600,borderRadius:6,border:"none",cursor:"pointer",
+              background:page===p.id?"#fff":"transparent",color:page===p.id?"#0e4a6e":"#64748b",
+              boxShadow:page===p.id?"0 1px 2px rgba(0,0,0,0.08)":"none"}}>
+            {p.label}
+          </button>
+        ))}
+      </div>
+
+      {/* ======================= OVERVIEW PAGE ======================= */}
+      {page === "overview" && (<>
+      {/* Headline stats */}
+      <div style={{...s.card,padding:16,marginBottom:14}}>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16,marginBottom:14,paddingBottom:14,borderBottom:"1px solid #f1f5f9"}}>
+          <div>
+            <div style={s.label}>Surveys started</div>
+            <span style={{fontSize:32,fontWeight:800,color:"#0f172a"}}>{totalStarted.toLocaleString()}</span>
+            <div style={{fontSize:11,color:"#64748b",marginTop:2}}>parent module opened</div>
+          </div>
+          <div>
+            <div style={s.label}>Surveys completed</div>
+            <span style={{fontSize:32,fontWeight:800,color:"#0f172a"}}>{totalCompleted.toLocaleString()}</span>
+            {data && daysElapsed>0 && <div style={{fontSize:11,color:"#64748b",marginTop:4}}>~{Math.round(totalCompleted/daysElapsed)}/day{daysRemaining>0?" - Proj. "+(totalCompleted+Math.round(totalCompleted/daysElapsed)*daysRemaining).toLocaleString():""}</div>}
+          </div>
+          <div>
+            <div style={s.label}>Completion rate</div>
+            <span style={{fontSize:32,fontWeight:800,color:completionRate>=70?"#15803d":completionRate>=50?"#854d0e":"#b91c1c"}}>{completionRate}%</span>
+            <div style={{fontSize:11,color:"#64748b",marginTop:2}}>started → submitted</div>
+          </div>
+        </div>
+
+        {/* Tier progress */}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:14,paddingBottom:14,borderBottom:"1px solid #f1f5f9"}}>
+          {[
+            {label:"1D target",target:TOTAL_TARGET,desc:"statistically significant"},
+            {label:"2D stretch",target:STRETCH_2D,desc:"cross-tab analysis"},
+            {label:"3D stretch",target:STRETCH_3D,desc:"multi-dim. analysis"},
+          ].map(({label,target,desc})=>{
+            const pct = Math.min(100,Math.round(totalCompleted/target*100));
+            const col = pct>=100?"#16a34a":pct>=50?"#ca8a04":"#94a3b8";
+            return (
+              <div key={label} style={{background:"#f8fafc",borderRadius:6,padding:"8px 10px",border:"1px solid #e2e8f0"}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:4}}>
+                  <span style={{fontSize:11,fontWeight:700,color:"#475569"}}>{label}</span>
+                  <span style={{fontSize:11,fontWeight:700,color:col}}>{pct}%</span>
+                </div>
+                <div style={{height:4,background:"#e2e8f0",borderRadius:2,overflow:"hidden",marginBottom:4}}>
+                  <div style={{width:pct+"%",height:"100%",background:col,borderRadius:2}}/>
+                </div>
+                <div style={{fontSize:10,color:"#94a3b8"}}>{totalCompleted.toLocaleString()} / {target.toLocaleString()} - {desc}</div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Survey period + language */}
+        <div style={{display:"grid",gridTemplateColumns:"auto 1fr",gap:16,alignItems:"start"}}>
+          <div style={{minWidth:160}}>
+            <div style={s.label}>Survey period</div>
+            <div style={{display:"flex",alignItems:"center",gap:8,margin:"4px 0"}}>
+              <div style={{flex:1,height:5,background:"#e2e8f0",borderRadius:3,overflow:"hidden"}}>
+                <div style={{width:surveyPct+"%",height:"100%",background:"#0e4a6e",borderRadius:3}}/>
+              </div>
+              <span style={{fontSize:11,color:"#334155",fontWeight:600}}>{surveyPct}%</span>
+            </div>
+            <div style={{fontSize:11,color:"#64748b"}}>15 Jun - 31 Jul 2026</div>
+          </div>
+          <div>
+            <div style={s.label}>By language</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginTop:4}}>
+              {["English","Malay","Mandarin","Tamil"].map(l=>{
+                const ld = data?.byLanguage?.[l] || {};
+                const ls = ld.started||0, lc = ld.completed||0;
+                const lPct = ls>0?Math.round(lc/ls*100):0;
+                return (
+                  <div key={l} style={{background:"#f8fafc",borderRadius:6,padding:"8px 10px",border:"1px solid #e2e8f0"}}>
+                    <div style={{fontSize:11,fontWeight:600,color:"#475569",marginBottom:3}}>{l}</div>
+                    <div style={{fontSize:16,fontWeight:800,color:"#0f172a"}}>{lc.toLocaleString()}</div>
+                    <div style={{fontSize:10,color:"#64748b"}}>{ls.toLocaleString()} started - {lPct}%</div>
+                    <div style={{height:3,background:"#e2e8f0",borderRadius:2,marginTop:4,overflow:"hidden"}}>
+                      <div style={{width:lPct+"%",height:"100%",background:"#0e4a6e",borderRadius:2}}/>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Dimension selectors */}
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+        <span style={{fontSize:11,fontWeight:700,color:"#94a3b8",letterSpacing:"0.05em",textTransform:"uppercase"}}>Demographic quotas</span>
+        <span style={{fontSize:11,fontWeight:600,color:TIER_MULT===2?"#7c3aed":"#0284c7",background:TIER_MULT===2?"#f3e8ff":"#e0f2fe",padding:"2px 8px",borderRadius:4}}>
+          Sub-targets: {TIER_MULT===2?"3D level (20,000)":"2D level (10,000)"}
+        </span>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:14}}>
+        {dimIds.map((id,idx)=>(
+          <div key={idx} style={{...s.card,padding:"12px 14px"}}>
+            <div style={s.label}>Dimension {idx+1}</div>
+            <select value={id} onChange={e=>setDimId(idx,e.target.value)}
+              style={{fontSize:13,border:"1px solid #e2e8f0",borderRadius:6,padding:"6px 10px",color:id?"#0f172a":"#94a3b8",background:"#fff",width:"100%",cursor:"pointer"}}>
+              <option value="">- select -</option>
+              {DIMS.map(d=><option key={d.id} value={d.id}>{d.label}</option>)}
+            </select>
+          </div>
+        ))}
+      </div>
+
+      {/* Dimension panels */}
+      {data && allPanels.length > 0 && (
+        <div style={{display:"grid",gridTemplateColumns:"repeat("+allPanels.length+",1fr)",gap:10,marginBottom:14,alignItems:"start"}}>
+          {allPanels.map(({dim,cells,behind},idx)=>(
+            <div key={idx} style={{...s.card,overflow:"hidden"}}>
+              <div style={{padding:"10px 14px",background:"#f8fafc",borderBottom:"1px solid #e2e8f0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <span style={{fontSize:12,fontWeight:700,color:"#0f172a"}}>{dim.label}</span>
+                {behind.length>0
+                  ? <span style={{fontSize:11,background:"#fee2e2",color:"#b91c1c",padding:"2px 7px",borderRadius:4,fontWeight:600}}>! {behind.length} behind</span>
+                  : <span style={{fontSize:11,background:"#dcfce7",color:"#15803d",padding:"2px 7px",borderRadius:4,fontWeight:600}}>On track</span>}
+              </div>
+              <div>
+                {cells.map((c,i)=>{
+                  const pct = cellPct(c);
+                  const cc = cellColor(c);
+                  return (
+                    <div key={c.id} style={{padding:"7px 14px",borderBottom:i<cells.length-1?"1px solid #f8fafc":"none",display:"flex",alignItems:"center",gap:8}}>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{fontSize:11,fontWeight:500,color:"#334155",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",marginBottom:3}}>{c.label}</div>
+                        <div style={{display:"flex",alignItems:"center",gap:5}}>
+                          <div style={{flex:1,height:4,background:"#f1f5f9",borderRadius:2,overflow:"hidden"}}>
+                            <div style={{width:Math.min(pct,100)+"%",height:"100%",background:cc.bar,borderRadius:2}}/>
+                          </div>
+                          <span style={{fontSize:10,color:"#94a3b8",width:24,textAlign:"right"}}>{pct}%</span>
+                        </div>
+                      </div>
+                      <span style={{fontSize:11,fontWeight:700,background:cc.bg,color:cc.fg,padding:"2px 6px",borderRadius:4,whiteSpace:"nowrap"}}>{c.actual}/{c.target}</span>
+                    </div>
+                  );
+                })}
+              </div>
+              {behind.length>0&&(
+                <div style={{borderTop:"1px solid #e2e8f0",background:"#fffbf5"}}>
+                  {behind.map((c,i)=>{
+                    const pct=cellPct(c);
+                    return (
+                      <div key={c.id} style={{padding:"9px 14px",borderBottom:i<behind.length-1?"1px solid #fef3c7":"none"}}>
+                        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:5}}>
+                          <span style={{fontSize:11,fontWeight:700,color:pct<50?"#b91c1c":"#854d0e"}}>{c.label}</span>
+                          <span style={{fontSize:10,color:"#92400e"}}>{pct}%{c.proj!==null?" - proj. "+c.proj:""}</span>
+                        </div>
+                        {c.actions.map((action,ai)=>(
+                          <div key={ai} style={{fontSize:11,color:"#475569",lineHeight:1.4,marginBottom:3,paddingLeft:8,borderLeft:"2px solid #fde68a"}}>
+                            {action}
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Cross-tabs */}
+      {data && activeDims.length >= 2 && (
+        <div style={{marginTop:10}}>
+          {crossTabsToShow.map(({key, cfg}) => {
+            const {label, rows, cols, getVal, getQ} = cfg;
+            let grandA=0, grandT=0;
+            const rowA={}, rowT={}, colA={}, colT={}, ctCells={};
+            rows.forEach(r => { rowA[r]=0; rowT[r]=0; });
+            cols.forEach(c => { colA[c]=0; colT[c]=0; });
+            rows.forEach(r => cols.forEach(c => {
+              const actual = getVal(data,r,c), target = getQ(r,c);
+              ctCells[r+"|"+c] = {actual, target};
+              rowA[r]+=actual; rowT[r]+=target; colA[c]+=actual; colT[c]+=target;
+              grandA+=actual; grandT+=target;
+            }));
+            const thBase = {padding:"7px 12px",fontSize:11,fontWeight:600,color:"#64748b",background:"#f8fafc",borderBottom:"1px solid #e2e8f0",textAlign:"center",whiteSpace:"nowrap"};
+            return (
+              <div key={key} style={{...s.card,marginBottom:10,overflow:"hidden"}}>
+                <div style={{padding:"10px 14px",background:"#f8fafc",borderBottom:"1px solid #e2e8f0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                  <span style={{fontSize:12,fontWeight:700,color:"#0f172a"}}>{label}</span>
+                  <span style={{fontSize:11,color:"#94a3b8"}}>actual / target</span>
+                </div>
+                <div style={{overflowX:"auto"}}>
+                  <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+                    <thead><tr>
+                      <th style={{...thBase,textAlign:"left",borderRight:"1px solid #e2e8f0"}}></th>
+                      {cols.map(c=><th key={c} style={thBase}>{c}</th>)}
+                      <th style={{...thBase,borderLeft:"1px solid #e2e8f0",color:"#334155",fontWeight:700}}>Total</th>
+                    </tr></thead>
+                    <tbody>
+                      {rows.map(r=>(
+                        <tr key={r} style={{borderBottom:"1px solid #f1f5f9"}}>
+                          <td style={{padding:"6px 12px",fontSize:11,fontWeight:500,color:"#334155",background:"#f8fafc",borderRight:"1px solid #e2e8f0",whiteSpace:"nowrap"}}>{r}</td>
+                          {cols.map(c=>{
+                            const {actual,target}=ctCells[r+"|"+c];
+                            const pct=target>0?Math.round(actual/target*100):0;
+                            const cc=cellColor({actual,target});
+                            return (
+                              <td key={c} style={{padding:"6px 10px",textAlign:"center",background:cc.bg}}>
+                                <div style={{fontWeight:700,color:cc.fg,whiteSpace:"nowrap"}}>{actual}/{target}</div>
+                                <div style={{fontSize:9,color:cc.fg,opacity:0.75}}>{pct}%</div>
+                              </td>
+                            );
+                          })}
+                          <td style={{padding:"6px 10px",textAlign:"center",borderLeft:"1px solid #e2e8f0",background:"#f1f5f9"}}>
+                            <div style={{fontWeight:700,color:"#334155",whiteSpace:"nowrap"}}>{rowA[r]}/{rowT[r]}</div>
+                            <div style={{fontSize:9,color:"#64748b"}}>{rowT[r]>0?Math.round(rowA[r]/rowT[r]*100):0}%</div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr style={{borderTop:"2px solid #e2e8f0",background:"#f1f5f9"}}>
+                        <td style={{padding:"6px 12px",fontSize:11,fontWeight:700,color:"#334155",borderRight:"1px solid #e2e8f0"}}>Total</td>
+                        {cols.map(c=>(<td key={c} style={{padding:"6px 10px",textAlign:"center"}}><div style={{fontWeight:700,color:"#334155",whiteSpace:"nowrap"}}>{colA[c]}/{colT[c]}</div><div style={{fontSize:9,color:"#64748b"}}>{colT[c]>0?Math.round(colA[c]/colT[c]*100):0}%</div></td>))}
+                        <td style={{padding:"6px 10px",textAlign:"center",borderLeft:"1px solid #e2e8f0"}}><div style={{fontWeight:700,color:"#0f172a",whiteSpace:"nowrap"}}>{grandA}/{grandT}</div><div style={{fontSize:9,color:"#64748b"}}>{grandT>0?Math.round(grandA/grandT*100):0}%</div></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+            );
+          })}
+          {crossTabsMissing.length>0 && (<div style={{fontSize:11,color:"#94a3b8",padding:"8px 12px",background:"#f8fafc",borderRadius:8,border:"1px solid #e2e8f0",marginBottom:10}}>Cross-tab not available for: {crossTabsMissing.join(", ")}</div>)}
+
+          {/* 3-way achievability */}
+          {activeDims.length === 3 && (() => {
+            const dimMarginals = {
+              "1d_district":{cats:DISTRICTS,targets:Q1.district},"1d_ethnicity":{cats:ETHNICITIES,targets:Q1.ethnicity},
+              "1d_income":{cats:INCOME_GROUPS,targets:Q1.income},"1d_age":{cats:AGE_GROUPS,targets:Q1.age},
+              "1d_gender":{cats:["Male","Female"],targets:Q1.gender},
+            };
+            const d1=dimMarginals[activeDims[0]], d2=dimMarginals[activeDims[1]], d3=dimMarginals[activeDims[2]];
+            if (!d1||!d2||!d3) return null;
+            const d1Label=DIMS.find(d=>d.id===activeDims[0])?.label;
+            const d2Label=DIMS.find(d=>d.id===activeDims[1])?.label;
+            const d3Label=DIMS.find(d=>d.id===activeDims[2])?.label;
+            const d1Total=Object.values(d1.targets).reduce((a,b)=>a+b,0);
+            const d2Total=Object.values(d2.targets).reduce((a,b)=>a+b,0);
+            const d3Total=Object.values(d3.targets).reduce((a,b)=>a+b,0);
+            const allCells=[];
+            d1.cats.forEach(c1=>d2.cats.forEach(c2=>d3.cats.forEach(c3=>{
+              const prop=(d1.targets[c1]/d1Total)*(d2.targets[c2]/d2Total)*(d3.targets[c3]/d3Total);
+              allCells.push({label:c1+" x "+c2+" x "+c3,prop});
+            })));
+            const sorted=[...allCells].sort((a,b)=>a.prop-b.prop);
+            const total=allCells.length;
+            const count100=(tier)=>allCells.filter(c=>Math.ceil(100/c.prop)<=tier).length;
+            return (
+              <div style={{...s.card,marginBottom:10,overflow:"hidden"}}>
+                <div style={{padding:"10px 14px",background:"#f0f0ff",borderBottom:"1px solid #e2e8f0"}}>
+                  <div style={{fontSize:12,fontWeight:700,color:"#0f172a",marginBottom:4}}>3-way cell achievability - {d1Label} x {d2Label} x {d3Label}</div>
+                  <div style={{fontSize:11,color:"#64748b"}}>{"n \u2265 100 in cell = adequate for analysis"}</div>
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:0,borderBottom:"1px solid #e2e8f0"}}>
+                  {[{label:"1D (2,500)",n:TOTAL_TARGET},{label:"2D (10,000)",n:STRETCH_2D},{label:"3D (20,000)",n:STRETCH_3D}].map(t=>(
+                    <div key={t.label} style={{padding:"10px 14px",borderRight:"1px solid #f1f5f9"}}>
+                      <div style={{fontSize:10,fontWeight:700,color:"#94a3b8",textTransform:"uppercase",marginBottom:4}}>{t.label}</div>
+                      <div style={{fontSize:11}}>
+                        <span style={{color:"#15803d",fontWeight:600}}>Achievable: {count100(t.n)}/{total}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{overflowX:"auto",maxHeight:300,overflowY:"auto"}}>
+                  <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+                    <thead style={{position:"sticky",top:0,zIndex:1}}><tr>
+                      <th style={{padding:"6px 12px",background:"#f8fafc",borderBottom:"1px solid #e2e8f0",textAlign:"left",fontSize:10,fontWeight:600,color:"#64748b"}}>Cell</th>
+                      <th style={{padding:"6px 10px",background:"#f8fafc",borderBottom:"1px solid #e2e8f0",textAlign:"center",fontSize:10,fontWeight:600,color:"#64748b"}}>% of pop.</th>
+                      <th style={{padding:"6px 10px",background:"#f8fafc",borderBottom:"1px solid #e2e8f0",textAlign:"center",fontSize:10,fontWeight:600,color:"#64748b"}}><div>Collected / needed</div><div style={{fontWeight:400,color:"#94a3b8"}}>{"for n \u2265 100"}</div></th>
+                      <th style={{padding:"6px 10px",background:"#f8fafc",borderBottom:"1px solid #e2e8f0",textAlign:"center",fontSize:10,fontWeight:600,color:"#64748b"}}>Progress</th>
+                      <th style={{padding:"6px 10px",background:"#f8fafc",borderBottom:"1px solid #e2e8f0",textAlign:"center",fontSize:10,fontWeight:600,color:"#64748b"}}>Verdict</th>
+                    </tr></thead>
+                    <tbody>
+                      {sorted.map((c,i)=>{
+                        const need100=c.prop>0?Math.ceil(100/c.prop):Infinity;
+                        const verdict=need100<=TOTAL_TARGET?"1D target":need100<=STRETCH_2D?"2D stretch":need100<=STRETCH_3D?"3D stretch":"Out of reach";
+                        const vColor=verdict==="1D target"?"#15803d":verdict==="2D stretch"?"#0284c7":verdict==="3D stretch"?"#7c3aed":"#b91c1c";
+                        const pct=need100<Infinity?Math.min(100,Math.round(totalCompleted/need100*100)):0;
+                        return (
+                          <tr key={i} style={{borderBottom:"1px solid #f8fafc"}}>
+                            <td style={{padding:"5px 12px",whiteSpace:"nowrap",color:"#334155",fontWeight:500}}>{c.label}</td>
+                            <td style={{padding:"5px 10px",textAlign:"center",color:"#64748b"}}>{(c.prop*100).toFixed(1)}%</td>
+                            <td style={{padding:"5px 10px",textAlign:"center"}}><span style={{fontWeight:700,color:"#0f172a"}}>{totalCompleted.toLocaleString()}</span><span style={{color:"#94a3b8"}}> / </span><span style={{fontWeight:600,color:need100>100000?"#b91c1c":"#334155"}}>{need100>100000?"n/a":need100.toLocaleString()}</span></td>
+                            <td style={{padding:"5px 10px",width:80}}><div style={{display:"flex",alignItems:"center",gap:4}}><div style={{flex:1,height:4,background:"#f1f5f9",borderRadius:2,overflow:"hidden"}}><div style={{width:pct+"%",height:"100%",background:vColor,borderRadius:2}}/></div><span style={{fontSize:10,color:"#64748b",width:28,textAlign:"right"}}>{pct}%</span></div></td>
+                            <td style={{padding:"5px 10px",textAlign:"center"}}><span style={{fontSize:10,fontWeight:700,color:vColor,background:vColor+"18",padding:"2px 6px",borderRadius:4,whiteSpace:"nowrap"}}>{verdict}</span></td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            );
+          })()}
+        </div>
+      )}
+
+      {/* Chart */}
+      {(() => {
+        const activeDimId = dimIds.find(id => id && DIM_CHART_CONFIG[id]);
+        const cfg = activeDimId ? DIM_CHART_CONFIG[activeDimId] : null;
+        const activeDimLabel = cfg ? DIMS.find(d=>d.id===activeDimId)?.label : null;
+        const sums = {};
+        const chartData = [];
+        const d = new Date(START_DATE);
+        while (d <= today) {
+          const key = d.toISOString().split("T")[0];
+          const point = { label: d.toLocaleDateString("en-GB",{day:"numeric",month:"short"}) };
+          if (cfg) {
+            const daySlice = data?.[cfg.key]?.[key] || {};
+            cfg.cats.forEach(cat => { sums[cat]=(sums[cat]||0)+(daySlice[cat]||0); point[cat]=sums[cat]; });
+          } else {
+            const entry = data?.byDate?.[key] || {};
+            sums.started=(sums.started||0)+(entry.started||0); sums.completed=(sums.completed||0)+(entry.completed||0);
+            point.started=sums.started; point.completed=sums.completed;
+          }
+          chartData.push(point);
+          d.setDate(d.getDate()+1);
+        }
+        const lines = cfg ? cfg.cats : ["started","completed"];
+        const hasData = chartData.some(pt=>lines.some(l=>(pt[l]||0)>0));
+        return (
+          <div style={{...s.card,padding:"14px 16px",marginTop:10}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+              <span style={{fontSize:12,fontWeight:700,color:"#0f172a"}}>Daily progress{activeDimLabel?" - "+activeDimLabel:""}</span>
+              <span style={{fontSize:11,color:"#94a3b8"}}>Cumulative completed - 1D 2,500 - 2D 10,000 - 3D 20,000</span>
+            </div>
+            {!hasData
+              ? <div style={{height:180,display:"flex",alignItems:"center",justifyContent:"center",color:"#94a3b8",fontSize:12}}>{today<START_DATE?"Survey opens 15 Jun":"No response data yet"}</div>
+              : <ResponsiveContainer width="100%" height={200}>
+                  <LineChart data={chartData} margin={{top:4,right:50,left:0,bottom:0}}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false}/>
+                    <XAxis dataKey="label" tick={{fontSize:10,fill:"#94a3b8"}} tickLine={false} axisLine={false} interval={Math.max(0,Math.floor(chartData.length/7)-1)}/>
+                    <YAxis tick={{fontSize:10,fill:"#94a3b8"}} tickLine={false} axisLine={false} width={42}/>
+                    <Tooltip contentStyle={{fontSize:11,borderRadius:6,border:"1px solid #e2e8f0",boxShadow:"none"}} labelStyle={{fontWeight:600,color:"#0f172a"}}/>
+                    <Legend iconType="circle" iconSize={7} wrapperStyle={{fontSize:11,paddingTop:6}}/>
+                    <ReferenceLine y={TOTAL_TARGET} stroke="#94a3b8" strokeDasharray="4 4" label={{value:"1D",position:"right",fontSize:10,fill:"#94a3b8"}}/>
+                    <ReferenceLine y={STRETCH_2D} stroke="#ca8a04" strokeDasharray="4 4" label={{value:"2D",position:"right",fontSize:10,fill:"#ca8a04"}}/>
+                    <ReferenceLine y={STRETCH_3D} stroke="#7c3aed" strokeDasharray="4 4" label={{value:"3D",position:"right",fontSize:10,fill:"#7c3aed"}}/>
+                    {lines.map((l,i)=>(
+                      <Line key={l} type="monotone" dataKey={l} name={l} stroke={CHART_COLORS[i%CHART_COLORS.length]}
+                        strokeWidth={cfg?1.5:(l==="completed"?2:1.5)} strokeDasharray={!cfg&&l==="started"?"4 2":undefined} dot={false} activeDot={{r:3}}/>
+                    ))}
+                  </LineChart>
+                </ResponsiveContainer>
+            }
+          </div>
+        );
+      })()}
+      </>)}
+
+      {/* ======================= CHILD REFERENCE GROUP PAGE ======================= */}
+      {page === "crg" && (() => {
+        const crg = data?.crg;
+        if (!crg) return <div style={{...s.card,padding:24,textAlign:"center",color:"#94a3b8",fontSize:13}}>No Child Reference Group data yet.</div>;
+
+        const completed1316 = (() => {
+          // total completed responses aged 13-16, for sign-up rate denominator
+          let n = 0;
+          for (const dist of DISTRICTS) n += data?.ageByDistrict?.[dist]?.["13-16"] || 0;
+          return n;
+        })();
+        const signupRate = completed1316 > 0 ? Math.round(crg.eligible1316 / completed1316 * 100) : 0;
+
+        const Bar = ({rows, getLabel, getVal, max}) => (
+          <div>
+            {rows.map((r,i)=>{
+              const v = getVal(r);
+              const pct = max>0 ? Math.round(v/max*100) : 0;
+              return (
+                <div key={i} style={{padding:"7px 14px",borderBottom:i<rows.length-1?"1px solid #f8fafc":"none",display:"flex",alignItems:"center",gap:8}}>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontSize:11,fontWeight:500,color:"#334155",marginBottom:3}}>{getLabel(r)}</div>
+                    <div style={{height:4,background:"#f1f5f9",borderRadius:2,overflow:"hidden"}}>
+                      <div style={{width:pct+"%",height:"100%",background:"#7c3aed",borderRadius:2}}/>
+                    </div>
+                  </div>
+                  <span style={{fontSize:12,fontWeight:700,color:"#0f172a",width:36,textAlign:"right"}}>{v}</span>
+                </div>
+              );
+            })}
+          </div>
+        );
+
+        const card = (title, children) => (
+          <div style={{...s.card,overflow:"hidden"}}>
+            <div style={{padding:"10px 14px",background:"#faf5ff",borderBottom:"1px solid #e2e8f0"}}>
+              <span style={{fontSize:12,fontWeight:700,color:"#0f172a"}}>{title}</span>
+            </div>
+            {children}
+          </div>
+        );
+
+        const distRows = DISTRICTS;
+        const distMax = Math.max(1, ...distRows.map(d=>crg.byDistrict[d]||0));
+        const ethRows = ETHNICITIES;
+        const ethMax = Math.max(1, ...ethRows.map(e=>crg.byEthnicity[e]||0));
+        const incRows = INCOME_GROUPS;
+        const incMax = Math.max(1, ...incRows.map(i=>crg.byIncome[i]||0));
+        const genRows = ["Male","Female"];
+        const genMax = Math.max(1, ...genRows.map(g=>crg.byGender[g]||0));
+        const urRows = ["Urban","Peri-urban","Rural"];
+        const urMax = Math.max(1, ...urRows.map(u=>crg.byUrbanRural[u]||0));
+
+        return (
+          <>
+            {/* CRG headline */}
+            <div style={{...s.card,padding:16,marginBottom:14}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16}}>
+                <div>
+                  <div style={s.label}>Total sign-ups</div>
+                  <span style={{fontSize:32,fontWeight:800,color:"#7c3aed"}}>{crg.total.toLocaleString()}</span>
+                  <div style={{fontSize:11,color:"#64748b",marginTop:2}}>contact details provided</div>
+                </div>
+                <div>
+                  <div style={s.label}>Eligible (aged 13-16)</div>
+                  <span style={{fontSize:32,fontWeight:800,color:"#0f172a"}}>{crg.eligible1316.toLocaleString()}</span>
+                  <div style={{fontSize:11,color:"#64748b",marginTop:2}}>CRG is open to 13-16 only</div>
+                </div>
+                <div>
+                  <div style={s.label}>Sign-up rate (13-16)</div>
+                  <span style={{fontSize:32,fontWeight:800,color:signupRate>=25?"#15803d":signupRate>=10?"#854d0e":"#b91c1c"}}>{signupRate}%</span>
+                  <div style={{fontSize:11,color:"#64748b",marginTop:2}}>of {completed1316.toLocaleString()} completed 13-16</div>
+                </div>
+              </div>
+              <div style={{marginTop:12,paddingTop:12,borderTop:"1px solid #f1f5f9",fontSize:11,color:"#64748b",lineHeight:1.5}}>
+                The Child Reference Group is open to children aged 13-16. The eligible count and sign-up rate above reflect that band. The breakdowns below show all sign-ups by demographic. Contact details themselves are stored separately and are never shown here - only counts.
+              </div>
+            </div>
+
+            {/* Note if sign-ups outside eligible band */}
+            {(crg.byAge["10-12"]>0 || crg.byAge["17"]>0) && (
+              <div style={{background:"#fffbeb",border:"1px solid #fde68a",borderRadius:8,padding:"10px 14px",marginBottom:14,fontSize:11,color:"#92400e"}}>
+                Note: {crg.byAge["10-12"]} sign-up(s) aged 10-12 and {crg.byAge["17"]} aged 17 fall outside the eligible 13-16 band. These may need follow-up or exclusion.
+              </div>
+            )}
+
+            {/* Demographic breakdowns */}
+            <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:10,marginBottom:14,alignItems:"start"}}>
+              {card("By District", <Bar rows={distRows} getLabel={d=>d} getVal={d=>crg.byDistrict[d]||0} max={distMax}/>)}
+              {card("By Ethnicity", <Bar rows={ethRows} getLabel={e=>e} getVal={e=>crg.byEthnicity[e]||0} max={ethMax}/>)}
+              {card("By Household Income", <Bar rows={incRows} getLabel={i=>i} getVal={i=>crg.byIncome[i]||0} max={incMax}/>)}
+              {card("By Child Gender", <Bar rows={genRows} getLabel={g=>g} getVal={g=>crg.byGender[g]||0} max={genMax}/>)}
+              {card("By Urban / Rural", <Bar rows={urRows} getLabel={u=>u} getVal={u=>crg.byUrbanRural[u]||0} max={urMax}/>)}
+            </div>
+          </>
+        );
+      })()}
+
+      {/* Footer */}
+      <div style={{textAlign:"center",padding:"16px 0 8px",fontSize:10,color:"#94a3b8"}}>
+        Child Friendly Penang - UNICEF Child-Friendly City Initiative - Think City / MBPP / MBSP - Data updates every 2 hours
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.render(React.createElement(CFPDashboard), document.getElementById("root"));
+</script>
+</body>
+</html>
