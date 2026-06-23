@@ -20,14 +20,32 @@ const STRETCH_2D    = 10000;
 const STRETCH_3D    = 20000;
 const EMAIL_TO   = ["yancheng.tan@thinkcity.com.my", "hana.zulkifli@thinkcity.com.my", "stuart.macdonald@thinkcity.com.my"];
 
-const Q1 = {
-  district:  { "Timur Laut":510, "Barat Daya":485, "SP Utara":485, "SP Tengah":510, "SP Selatan":510 },
-  ethnicity: { Malay:710, Chinese:710, Indian:655, Others:425 },
-  income:    { B40:770, M40:625, T20:340 },
-  age:       { "10-12":625, "13-16":625, "17-18":480 },
-  gender:    { Male:1250, Female:1250 },
-  urbanRural:{ Urban:570, "Peri-urban":340, Rural:230 },
+// Base sub-targets at the 2D (10,000) level, population-proportional from DOSM.
+// When completions reach STRETCH_2D, all sub-targets double to the 3D (20,000) level.
+const Q_BASE = {
+  district:  { "Timur Laut":3265, "Barat Daya":1310, "SP Utara":1905, "SP Tengah":2425, "SP Selatan":1095 },
+  ethnicity: { Malay:4490, Chinese:4150, Indian:990, Others:370 },
+  income:    { B40:2590, M40:2870, T20:1540 },
+  age:       { "10-12":2335, "13-16":3110, "17-18":1555 },
+  gender:    { Male:5080, Female:4920 },
+  urbanRural:{ Urban:6000, "Peri-urban":2500, Rural:1500 },
 };
+const VG_BASE = { disability: 200, singleParent: 600 }; // vulnerable-group targets at 2D level
+
+// Returns the tier multiplier: 1 below 2D, 2 once 2D reached (Option A - locks to highest reached)
+function tierMultiplier(totalCompleted) {
+  return totalCompleted >= STRETCH_2D ? 2 : 1;
+}
+
+// Scale a target table by the active multiplier
+function scaleTable(table, mult) {
+  const out = {};
+  for (const [k, v] of Object.entries(table)) {
+    if (typeof v === "number") out[k] = v * mult;
+    else { out[k] = {}; for (const [k2, v2] of Object.entries(v)) out[k][k2] = v2 * mult; }
+  }
+  return out;
+}
 
 const ACTIONS = {
   district: {
@@ -70,14 +88,14 @@ const dunData = {
     rural: ["Penaga","Teluk Air Tawar"],
   },
   "SP Tengah": {
-    duns: ["Seberang Jaya","Permatang Pasir","Penanti","Berapit","Machang Bubok","Padang Lalang","Perai","Bukit Tengah","Bukit Tambun"],
+    duns: ["Seberang Jaya","Permatang Pasir","Penanti","Berapit","Machang Bubok","Padang Lalang","Perai","Bukit Tengah"],
     urban: ["Seberang Jaya","Perai"],
-    periurban: ["Permatang Pasir","Berapit","Padang Lalang","Bukit Tengah","Bukit Tambun"],
+    periurban: ["Permatang Pasir","Berapit","Padang Lalang","Bukit Tengah"],
     rural: ["Penanti","Machang Bubok"],
   },
   "SP Selatan": {
-    duns: ["Jawi","Sungai Bakap","Sungai Acheh"],
-    periurban: ["Jawi","Sungai Bakap","Sungai Acheh"],
+    duns: ["Bukit Tambun","Jawi","Sungai Bakap","Sungai Acheh"],
+    periurban: ["Bukit Tambun","Jawi","Sungai Bakap","Sungai Acheh"],
   },
 };
 for (const [district, info] of Object.entries(dunData)) {
@@ -133,6 +151,7 @@ function matchDUN(text) {
     .replace(/\bglugor\b/g, "gelugor")
     .replace(/\bbubuk\b/g, "bubok")
     .replace(/\btelok\b/g, "teluk")
+    .replace(/\bayer\b/g, "air")
     .replace(/\btanjung\b/g, "tanjong")
     .replace(/\s+/g, " ");
   if (DUN_DISTRICT[lower]) return lower;
@@ -521,6 +540,12 @@ function buildReport(data) {
   body += `  2D (${STRETCH_2D.toLocaleString()}): ${Math.min(100, Math.round(totalCompleted / STRETCH_2D * 100))}%\n`;
   body += `  3D (${STRETCH_3D.toLocaleString()}): ${Math.min(100, Math.round(totalCompleted / STRETCH_3D * 100))}%\n\n`;
 
+  // Active sub-target tier (Option A: locks to 3D once 2D reached)
+  const mult = tierMultiplier(totalCompleted);
+  const Q1 = scaleTable(Q_BASE, mult);
+  const VG = { disability: VG_BASE.disability * mult, singleParent: VG_BASE.singleParent * mult };
+  body += `Sub-targets tracking: ${mult === 2 ? "3D level (20,000)" : "2D level (10,000)"}\n\n`;
+
   body += `BY LANGUAGE:\n`;
   for (const [lang, ld] of Object.entries(data.byLanguage || {})) {
     const ls = ld.started || 0, lc = ld.completed || 0;
@@ -564,8 +589,8 @@ function buildReport(data) {
 
   const vg = data.vulnerableGroups || {};
   body += `VULNERABLE GROUPS:\n`;
-  body += `  Children with disability: ${vg["Children with disability"]||0} (target: 50)\n`;
-  body += `  Single-parent households: ${vg["Single-parent households"]||0} (target: 150)\n`;
+  body += `  Children with disability: ${vg["Children with disability"]||0} (target: ${VG.disability})\n`;
+  body += `  Single-parent households: ${vg["Single-parent households"]||0} (target: ${VG.singleParent})\n`;
   body += `  Refugees / undocumented: ${vg["Refugees / undocumented"]||0}\n\n`;
   if (data.noDistrict > 0) body += `Note: ${data.noDistrict} responses missing district data.\n\n`;
   body += `${sep}\nAutomated daily report - Child Friendly Penang Survey Monitor\n`;
