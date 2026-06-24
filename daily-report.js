@@ -142,6 +142,86 @@ const GENDER_MAP = [
 
 const DISABILITY_PATTERN = /some difficulty|a lot of difficulty|cannot do at all|sukar|kesukaran|困难|难以|சிரமம்/i;
 
+// ─── Intersectional outcome framework ──────────────────────────────────────────
+// Each scored outcome: English question id, module, research objective, AFC domain,
+// and a `concerning(text)` test returning true when the answer is a poor outcome.
+// Diagnostic (multi-select) questions are tallied within cells, not scored - listed separately.
+// Matrix questions (828,847,851,860,920,921) are deferred until sub-statement wording is confirmed.
+//
+// Detection across the 4 language surveys uses position-anchoring from the English IDs
+// (same approach proven for DUN/CRG), since question IDs differ per language.
+
+const AGREE_NEG  = /disagree|tidak setuju|不同意|உடன்படவில்லை/i;   // captures "disagree" + "strongly disagree"
+const AGREE_POS  = /^(strongly )?agree|sangat setuju|^setuju|^同意|非常同意|வலுவாக ஒப்புக|ஒப்புக/i;
+const FREQ_LOW   = /rarely|never|jarang|tidak pernah|很少|从不|அரிதாக|ஒருபோதும்/i;
+const WORRY_HIGH = /extremely worried|very worried|sangat risau|amat risau|极度担忧|非常担忧|மிகவும் கவலை/i;
+
+const SCORED_OUTCOMES = [
+  // RO1 - Awareness of child rights
+  { id:"815", module:"parent", ro:1, domain:"Communication & Information", short:"Heard of child rights",
+    concerning:t => /^no$|tidak|没有|不|இல்லை/i.test((t||"").trim()) },
+  { id:"846", module:"child", ro:1, domain:"Communication & Information", short:"Knows about child rights",
+    concerning:t => /heard.*but|don'?t really know|pernah dengar|听说过但|கேள்விப்பட்ட/i.test(t||"") },
+
+  // RO2 - Effectiveness of mechanisms
+  { id:"822", module:"parent", ro:2, domain:"Health Services & Community Support", short:"Challenges accessing services",
+    concerning:t => /^yes$|ya|是|ஆம்/i.test((t||"").trim()) },
+
+  // RO3 - Participation
+  { id:"818", module:"parent", ro:3, domain:"Civic Participation & Employment", short:"Child can express opinion freely",
+    concerning:t => FREQ_LOW.test(t||"") },
+  { id:"866", module:"child", ro:3, domain:"Civic Participation & Employment", short:"People in charge listen",
+    concerning:t => AGREE_NEG.test(t||"") },
+
+  // RO4 - Inclusive & safe environments
+  { id:"821", module:"parent", ro:4, domain:"Respect & Social Inclusion", short:"Fair access to activities",
+    concerning:t => AGREE_NEG.test(t||"") },
+  { id:"825", module:"parent", ro:4, domain:"Outdoor Spaces & Buildings", short:"Enough public spaces",
+    concerning:t => AGREE_NEG.test(t||"") },
+  { id:"827", module:"parent", ro:4, domain:"Outdoor Spaces & Buildings", short:"Visits green space",
+    concerning:t => FREQ_LOW.test(t||"") },
+  { id:"831", module:"parent", ro:4, domain:"Respect & Social Inclusion", short:"Child safe at school from bullying",
+    concerning:t => AGREE_NEG.test(t||"") },
+  { id:"853", module:"child", ro:4, domain:"Social Participation", short:"Takes part in activities",
+    concerning:t => FREQ_LOW.test(t||"") },
+  { id:"857", module:"child", ro:4, domain:"Outdoor Spaces & Buildings", short:"Spaces for children",
+    concerning:t => AGREE_NEG.test(t||"") },
+  { id:"861", module:"child", ro:4, domain:"Communication & Information", short:"Knows how to stay safe online",
+    concerning:t => AGREE_NEG.test(t||"") },
+
+  // RO5 - Climate & resilience (eco-anxiety framing: high worry = concerning)
+  { id:"834", module:"parent", ro:5, domain:"Climate", short:"Climate worry (eco-anxiety)",
+    concerning:t => WORRY_HIGH.test(t||"") },
+  { id:"836", module:"parent", ro:5, domain:"Climate", short:"Children help protect environment",
+    concerning:t => FREQ_LOW.test(t||"") },
+  { id:"837", module:"parent", ro:5, domain:"Climate", short:"Authorities doing enough on climate",
+    concerning:t => AGREE_NEG.test(t||"") },
+  { id:"864", module:"child", ro:5, domain:"Climate", short:"Climate worry (eco-anxiety)",
+    concerning:t => WORRY_HIGH.test(t||"") },
+  { id:"865", module:"child", ro:5, domain:"Outdoor Spaces & Buildings", short:"Weather limits going outside",
+    concerning:t => AGREE_POS.test(t||"") },  // agreeing it limits them = concerning
+  { id:"876", module:"child", ro:5, domain:"Climate", short:"Helps protect environment",
+    concerning:t => FREQ_LOW.test(t||"") },
+
+  // Wellbeing (child)
+  { id:"911742", module:"child", ro:5, domain:"Health Services & Community Support", short:"Screen time 4+ hours",
+    concerning:t => /4\+|4 or more|more than 4|4-5|5\+|lebih 4|4小时以上|4\+? மணி/i.test(t||"") },
+];
+
+// Parallel question pairs (parent id <-> child id) for parent-child disparity
+const PARALLEL_PAIRS = [
+  { theme:"Awareness of child rights", parent:"815", child:"846" },
+  { theme:"Child can express / is listened to", parent:"818", child:"866" },
+  { theme:"Public spaces for children", parent:"825", child:"857" },
+  { theme:"Activity participation", parent:"820", child:"853" },
+  { theme:"Climate worry", parent:"834", child:"864" },
+  { theme:"Helps protect environment", parent:"836", child:"876" },
+];
+
+// Lens dimensions used for intersectional breakdown
+const LENS_KEYS = ["gender","ageGroup","income","urbanRural","disability","migration"];
+
+
 function matchDUN(text) {
   if (!text) return null;
   let lower = text.toLowerCase().trim();
@@ -447,7 +527,37 @@ function classifyAllResponses(surveyData) {
       byUrbanRural: { Urban:0, "Peri-urban":0, Rural:0 },
       byAge: { "10-12":0, "13-16":0, "17":0 },
     },
+    // Intersectional outcomes: per scored outcome, concerning + total counts overall and per lens value.
+    // Structure: outcomes[englishId] = { meta, overall:{c,n}, byLens:{ gender:{Male:{c,n},...}, ... } }
+    outcomes: {},
+    // Parent-child disparity: per theme, the concerning-rate for each module
+    disparity: {},
   };
+
+  // Initialise outcome accumulators
+  const LENS_VALUES = {
+    gender: ["Male","Female"],
+    ageGroup: ["10-12","13-16","17"],
+    income: ["B40","M40","T20"],
+    urbanRural: ["Urban","Peri-urban","Rural"],
+    disability: ["Disabled","Not disabled"],
+    migration: ["Migrant/refugee","Citizen"],
+  };
+  for (const o of SCORED_OUTCOMES) {
+    const byLens = {};
+    for (const lk of LENS_KEYS) {
+      byLens[lk] = {};
+      for (const v of LENS_VALUES[lk]) byLens[lk][v] = { c:0, n:0 };
+    }
+    result.outcomes[o.id] = {
+      meta: { id:o.id, module:o.module, ro:o.ro, domain:o.domain, short:o.short },
+      overall: { c:0, n:0 },
+      byLens,
+    };
+  }
+  for (const p of PARALLEL_PAIRS) {
+    result.disparity[p.theme] = { parent:{c:0,n:0}, child:{c:0,n:0} };
+  }
 
   // Init cross-tab structures
   for (const d of ["Timur Laut","Barat Daya","SP Utara","SP Tengah","SP Selatan"]) {
@@ -473,7 +583,7 @@ function classifyAllResponses(surveyData) {
   const unmatchedDUN = {};
   let completedWithDunAnswer = 0;
 
-  for (const { language, responses, qMap, questionIds } of surveyData) {
+  for (const { language, responses, qMap, questionIds, outcomeIds } of surveyData) {
     for (const r of responses) {
       const isStarted = r.response_status === "partial" || r.response_status === "completed";
       const isCompleted = r.response_status === "completed";
@@ -573,6 +683,61 @@ function classifyAllResponses(surveyData) {
         if (ageGroup) {
           result.crg.byAge[ageGroup]++;
           if (ageGroup === "13-16") result.crg.eligible1316++;
+        }
+      }
+
+      // ── Intersectional outcome tabulation ──
+      // Lens values for this respondent
+      const lensVals = {
+        gender,
+        ageGroup,
+        income,
+        urbanRural,
+        disability: isDisabled ? "Disabled" : "Not disabled",
+        migration: isRefugee ? "Migrant/refugee" : "Citizen",
+      };
+      for (const o of SCORED_OUTCOMES) {
+        const qid = outcomeIds?.[o.id];
+        if (!qid) continue;
+        const ans = getAnswerText(r, qid, qMap);
+        if (ans == null || ans === "") continue; // unanswered - not in denominator
+        const isConcerning = o.concerning(ans);
+        const acc = result.outcomes[o.id];
+        acc.overall.n++;
+        if (isConcerning) acc.overall.c++;
+        for (const lk of LENS_KEYS) {
+          const v = lensVals[lk];
+          if (v && acc.byLens[lk][v]) {
+            acc.byLens[lk][v].n++;
+            if (isConcerning) acc.byLens[lk][v].c++;
+          }
+        }
+      }
+
+      // Parent-child disparity (same concerning tests, by module side)
+      for (const p of PARALLEL_PAIRS) {
+        const side = (function(){
+          // Determine which side this response can answer: try parent id then child id
+          const parentQ = outcomeIds?.[p.parent], childQ = outcomeIds?.[p.child];
+          return { parentQ, childQ };
+        })();
+        // Parent side
+        if (side.parentQ) {
+          const a = getAnswerText(r, side.parentQ, qMap);
+          if (a != null && a !== "") {
+            const def = SCORED_OUTCOMES.find(o => o.id === p.parent);
+            const test = def ? def.concerning : null;
+            if (test) { result.disparity[p.theme].parent.n++; if (test(a)) result.disparity[p.theme].parent.c++; }
+          }
+        }
+        // Child side
+        if (side.childQ) {
+          const a = getAnswerText(r, side.childQ, qMap);
+          if (a != null && a !== "") {
+            const def = SCORED_OUTCOMES.find(o => o.id === p.child);
+            const test = def ? def.concerning : null;
+            if (test) { result.disparity[p.theme].child.n++; if (test(a)) result.disparity[p.theme].child.c++; }
+          }
         }
       }
 
@@ -786,6 +951,38 @@ async function main() {
   }
   console.log(`=== END CRG DETECTION ===\n`);
 
+  // ── Resolve scored-outcome question IDs across all 4 surveys ──
+  // English IDs are known; other surveys share structure, so map by position.
+  // Build English position lookup for each outcome id, then find same-position id per survey.
+  const engPosById = {};
+  if (engData) {
+    for (const [qId, q] of Object.entries(engData.qMap)) engPosById[qId] = q.position;
+  }
+  for (const sd of surveyData) {
+    sd.outcomeIds = {}; // englishId -> this-survey questionId
+    // position -> id lookup for this survey
+    const idByPos = {};
+    for (const [qId, q] of Object.entries(sd.qMap)) idByPos[q.position] = qId;
+    for (const o of SCORED_OUTCOMES) {
+      const engPos = engPosById[o.id];
+      if (engPos == null) continue;
+      // English survey: same id; others: same position
+      sd.outcomeIds[o.id] = (sd.language === "English") ? o.id : (idByPos[engPos] || null);
+    }
+    // Also resolve parallel-pair parent ids that aren't in SCORED_OUTCOMES (820, 836 already covered)
+    for (const p of PARALLEL_PAIRS) {
+      for (const eid of [p.parent, p.child]) {
+        if (sd.outcomeIds[eid] === undefined) {
+          const engPos = engPosById[eid];
+          sd.outcomeIds[eid] = engPos == null ? null : (sd.language === "English" ? eid : (idByPos[engPos] || null));
+        }
+      }
+    }
+  }
+  const engOutcomeFound = SCORED_OUTCOMES.filter(o => engData?.outcomeIds?.[o.id]).length;
+  console.log(`Scored outcomes resolved: ${engOutcomeFound}/${SCORED_OUTCOMES.length} in English; other surveys mapped by position.`);
+
+
   const totalRaw = surveyData.reduce((s, d) => s + d.responses.length, 0);
   console.log(`Total raw responses: ${totalRaw}`);
   console.log(`Response status breakdown:`, JSON.stringify(statusCounts));
@@ -866,6 +1063,23 @@ async function main() {
   console.log(`Ethnicity:`, JSON.stringify(Object.fromEntries(["Malay","Chinese","Indian","Others"].map(e=>[e,Object.values(classified.crossTab).reduce((s,d)=>s+(d[e]||0),0)]))));
   console.log(`noDistrict: ${classified.noDistrict}`);
   console.log(`CRG sign-ups: ${classified.crg.total} total (${classified.crg.eligible1316} aged 13-16, the eligible band) | by district: ${JSON.stringify(classified.crg.byDistrict)}`);
+
+  // Intersectional outcomes summary (overall concerning rates)
+  console.log(`\n=== INTERSECTIONAL OUTCOMES (overall concerning rate) ===`);
+  for (const o of SCORED_OUTCOMES) {
+    const acc = classified.outcomes[o.id];
+    if (!acc || acc.overall.n === 0) { console.log(`  [RO${o.ro}] ${o.module}/${o.short}: no data`); continue; }
+    const pct = Math.round(acc.overall.c / acc.overall.n * 100);
+    console.log(`  [RO${o.ro}] ${o.module}/${o.short}: ${pct}% concerning (n=${acc.overall.n})`);
+  }
+  console.log(`=== PARENT-CHILD DISPARITY ===`);
+  for (const [theme, d] of Object.entries(classified.disparity)) {
+    const pp = d.parent.n>0?Math.round(d.parent.c/d.parent.n*100):null;
+    const cp = d.child.n>0?Math.round(d.child.c/d.child.n*100):null;
+    const gap = (pp!=null && cp!=null) ? `${Math.abs(pp-cp)}pt gap` : "incomplete";
+    console.log(`  ${theme}: parent ${pp==null?"-":pp+"%"} vs child ${cp==null?"-":cp+"%"} (${gap})`);
+  }
+  console.log(`=== END OUTCOMES ===\n`);
 
   // Write data.json
   const fs = require("fs");
