@@ -292,7 +292,7 @@ function CFPDashboard() {
 
       {/* Page toggle */}
       <div style={{display:"flex",gap:4,marginBottom:14,background:"#e2e8f0",borderRadius:8,padding:3,width:"fit-content"}}>
-        {[{id:"overview",label:"Survey Overview"},{id:"crg",label:"Child Reference Group"}].map(p=>(
+        {[{id:"overview",label:"Survey Overview"},{id:"crg",label:"Child Reference Group"},{id:"findings",label:"Findings (Intersectional)"}].map(p=>(
           <button key={p.id} onClick={()=>setPage(p.id)}
             style={{padding:"7px 16px",fontSize:12,fontWeight:600,borderRadius:6,border:"none",cursor:"pointer",
               background:page===p.id?"#fff":"transparent",color:page===p.id?"#0e4a6e":"#64748b",
@@ -745,6 +745,145 @@ function CFPDashboard() {
               {card("By Child Gender", <Bar rows={genRows} getLabel={g=>g} getVal={g=>crg.byGender[g]||0} max={genMax}/>)}
               {card("By Urban / Rural", <Bar rows={urRows} getLabel={u=>u} getVal={u=>crg.byUrbanRural[u]||0} max={urMax}/>)}
             </div>
+          </>
+        );
+      })()}
+
+      {/* ======================= FINDINGS (INTERSECTIONAL) PAGE ======================= */}
+      {page === "findings" && (() => {
+        const outcomes = data?.outcomes;
+        const disparity = data?.disparity;
+        if (!outcomes || Object.keys(outcomes).length === 0) {
+          return <div style={{...s.card,padding:24,textAlign:"center",color:"#94a3b8",fontSize:13}}>No outcome data yet. Run the pipeline to populate findings.</div>;
+        }
+
+        const RO_LABELS = {
+          1:"RO1 - Awareness of child rights",
+          2:"RO2 - Effectiveness of mechanisms",
+          3:"RO3 - Child participation",
+          4:"RO4 - Inclusive & safe environments",
+          5:"RO5 - Climate & resilience",
+        };
+        const LENS_LABELS = { gender:"Gender", ageGroup:"Age", income:"Income", urbanRural:"Urban/Rural", disability:"Disability", migration:"Migration status" };
+
+        const rate = (o) => o.n>0 ? Math.round(o.c/o.n*100) : null;
+        const rateColor = (p) => p==null?"#94a3b8":p>=50?"#b91c1c":p>=25?"#ca8a04":"#15803d";
+
+        // Find worst cell across all lenses for an outcome
+        const worstCell = (acc) => {
+          let worst = null;
+          for (const [lk, vals] of Object.entries(acc.byLens)) {
+            for (const [v, cell] of Object.entries(vals)) {
+              if (cell.n < 1) continue;
+              const p = Math.round(cell.c/cell.n*100);
+              if (!worst || p > worst.pct) worst = { lens:LENS_LABELS[lk], value:v, pct:p, n:cell.n };
+            }
+          }
+          return worst;
+        };
+
+        // Group outcomes by RO
+        const byRO = {};
+        for (const o of Object.values(outcomes)) {
+          (byRO[o.meta.ro] = byRO[o.meta.ro] || []).push(o);
+        }
+
+        return (
+          <>
+            <div style={{...s.card,padding:"12px 16px",marginBottom:14,fontSize:12,color:"#475569",lineHeight:1.5}}>
+              <b>Intersectional findings.</b> Each measure shows the % of respondents giving a concerning answer (a poor outcome for children), with the worst-performing demographic cell highlighted. Parent and child responses are kept separate. Higher % = worse outcome. <span style={{color:"#94a3b8"}}>Diagnostic/barrier questions and matrix questions will be added once finalised.</span>
+            </div>
+
+            {/* Parent-child disparity */}
+            {disparity && Object.keys(disparity).length>0 && (
+              <div style={{...s.card,overflow:"hidden",marginBottom:14}}>
+                <div style={{padding:"10px 14px",background:"#eef2ff",borderBottom:"1px solid #e2e8f0"}}>
+                  <span style={{fontSize:12,fontWeight:700,color:"#0f172a"}}>Parent vs Child perception gap</span>
+                  <span style={{fontSize:11,color:"#64748b",marginLeft:8}}>where both were asked the same theme</span>
+                </div>
+                <div style={{overflowX:"auto"}}>
+                  <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+                    <thead><tr>
+                      <th style={{padding:"7px 12px",textAlign:"left",background:"#f8fafc",borderBottom:"1px solid #e2e8f0",fontSize:10,color:"#64748b"}}>Theme</th>
+                      <th style={{padding:"7px 10px",textAlign:"center",background:"#f8fafc",borderBottom:"1px solid #e2e8f0",fontSize:10,color:"#64748b"}}>Parent concerning %</th>
+                      <th style={{padding:"7px 10px",textAlign:"center",background:"#f8fafc",borderBottom:"1px solid #e2e8f0",fontSize:10,color:"#64748b"}}>Child concerning %</th>
+                      <th style={{padding:"7px 10px",textAlign:"center",background:"#f8fafc",borderBottom:"1px solid #e2e8f0",fontSize:10,color:"#64748b"}}>Gap</th>
+                    </tr></thead>
+                    <tbody>
+                      {Object.entries(disparity).map(([theme,d])=>{
+                        const pp = d.parent.n>0?Math.round(d.parent.c/d.parent.n*100):null;
+                        const cp = d.child.n>0?Math.round(d.child.c/d.child.n*100):null;
+                        const gap = (pp!=null&&cp!=null)?Math.abs(pp-cp):null;
+                        return (
+                          <tr key={theme} style={{borderBottom:"1px solid #f1f5f9"}}>
+                            <td style={{padding:"6px 12px",color:"#334155"}}>{theme}</td>
+                            <td style={{padding:"6px 10px",textAlign:"center",color:rateColor(pp),fontWeight:700}}>{pp==null?"-":pp+"%"}<span style={{color:"#94a3b8",fontWeight:400,fontSize:9}}> (n={d.parent.n})</span></td>
+                            <td style={{padding:"6px 10px",textAlign:"center",color:rateColor(cp),fontWeight:700}}>{cp==null?"-":cp+"%"}<span style={{color:"#94a3b8",fontWeight:400,fontSize:9}}> (n={d.child.n})</span></td>
+                            <td style={{padding:"6px 10px",textAlign:"center",fontWeight:700,color:gap==null?"#94a3b8":gap>=20?"#b91c1c":gap>=10?"#ca8a04":"#64748b"}}>{gap==null?"-":gap+"pt"}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* Outcomes grouped by Research Objective */}
+            {Object.keys(RO_LABELS).map(ro=>{
+              const list = byRO[ro];
+              if (!list || !list.length) return null;
+              return (
+                <div key={ro} style={{marginBottom:14}}>
+                  <div style={{fontSize:12,fontWeight:700,color:"#0f172a",margin:"4px 2px 8px"}}>{RO_LABELS[ro]}</div>
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:10,alignItems:"start"}}>
+                    {list.map(o=>{
+                      const overall = rate(o.overall);
+                      const worst = worstCell(o);
+                      return (
+                        <div key={o.meta.id} style={{...s.card,overflow:"hidden"}}>
+                          <div style={{padding:"10px 14px",borderBottom:"1px solid #f1f5f9",display:"flex",justifyContent:"space-between",alignItems:"center",gap:8}}>
+                            <div>
+                              <div style={{fontSize:12,fontWeight:700,color:"#0f172a"}}>{o.meta.short}</div>
+                              <div style={{fontSize:10,color:"#94a3b8",marginTop:1}}>{o.meta.module} · {o.meta.domain}</div>
+                            </div>
+                            <div style={{textAlign:"right",flexShrink:0}}>
+                              <div style={{fontSize:20,fontWeight:800,color:rateColor(overall)}}>{overall==null?"-":overall+"%"}</div>
+                              <div style={{fontSize:9,color:"#94a3b8"}}>n={o.overall.n}</div>
+                            </div>
+                          </div>
+                          {worst && (
+                            <div style={{padding:"8px 14px",background:"#fffbf5",fontSize:11}}>
+                              <span style={{color:"#92400e"}}>Worst cell: </span>
+                              <b style={{color:"#b91c1c"}}>{worst.lens} = {worst.value}</b>
+                              <span style={{color:"#92400e"}}> at {worst.pct}% (n={worst.n})</span>
+                            </div>
+                          )}
+                          {/* Per-lens mini-breakdown */}
+                          <div style={{padding:"4px 14px 10px"}}>
+                            {Object.entries(o.byLens).map(([lk,vals])=>{
+                              const cells = Object.entries(vals).filter(([,c])=>c.n>0);
+                              if (!cells.length) return null;
+                              return (
+                                <div key={lk} style={{marginTop:6}}>
+                                  <div style={{fontSize:9,fontWeight:700,color:"#94a3b8",textTransform:"uppercase",marginBottom:2}}>{LENS_LABELS[lk]}</div>
+                                  <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
+                                    {cells.map(([v,c])=>{
+                                      const p=Math.round(c.c/c.n*100);
+                                      return <span key={v} style={{fontSize:10,padding:"1px 6px",borderRadius:4,background:"#f1f5f9",color:rateColor(p)}}>{v}: <b>{p}%</b></span>;
+                                    })}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
           </>
         );
       })()}
