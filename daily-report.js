@@ -258,8 +258,12 @@ function identifyQuestions(qMap) {
       continue;
     }
 
-    // Child Reference Group question: distinctive heading (multilingual), free-text contact field
-    if (!ids.crg && /child reference group|kumpulan rujukan kanak|儿童参考小组|குழந்தைகள் குறிப்பு|reference group/i.test(heading)) {
+    // Child Reference Group question: distinctive heading (multilingual), free-text contact field.
+    // Matches CRG naming across languages: EN "Child Reference Group", MS "Kumpulan Rujukan Kanak-Kanak",
+    // ZH "儿童顾问小组"/"儿童参考小组", TA "குழந்தைகள்...குழு". Only accept open-ended (contact) questions.
+    if (!ids.crg
+        && /child reference group|reference group|kumpulan rujukan kanak|儿童顾问小组|儿童参考小组|குழந்தைகள்.{0,20}குழு/i.test(heading)
+        && /open_ended/i.test(q.family || "")) {
       ids.crg = qId;
       continue;
     }
@@ -282,10 +286,57 @@ function identifyQuestions(qMap) {
 }
 
 // ─── SurveyMonkey API ──────────────────────────────────────────────────────────
-async function smGet(path) {
-  const res = await fetch(`${SM_BASE}${path}`, {
-    headers: { Authorization: `Bearer ${SM_TOKEN}`, "Content-Type": "application/json" },
-  });
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// Minimum gap between API calls to stay under SurveyMonkey's per-minute limit (120/min).
+const SM_CALL_SPACING_MS = 600;
+let _lastSmCall = 0;
+
+async function smGet(path, attempt = 1) {
+  const MAX_ATTEMPTS = 5;
+
+  // Space out calls so we don't burst past the per-minute limit
+  const since = Date.now() - _lastSmCall;
+  if (since < SM_CALL_SPACING_MS) await sleep(SM_CALL_SPACING_MS - since);
+  _lastSmCall = Date.now();
+
+  let res;
+  try {
+    res = await fetch(`${SM_BASE}${path}`, {
+      headers: { Authorization: `Bearer ${SM_TOKEN}`, "Content-Type": "application/json" },
+    });
+  } catch (networkErr) {
+    // Transient network failure - retry with backoff
+    if (attempt < MAX_ATTEMPTS) {
+      const wait = 1000 * Math.pow(2, attempt - 1);
+      console.log(`  Network error on ${path} (attempt ${attempt}) - retrying in ${wait/1000}s`);
+      await sleep(wait);
+      return smGet(path, attempt + 1);
+    }
+    throw networkErr;
+  }
+
+  if (res.status === 429) {
+    if (attempt < MAX_ATTEMPTS) {
+      // Honour Retry-After header if present, else exponential backoff (longer for rate limits)
+      const retryAfter = parseInt(res.headers.get("retry-after") || "0", 10);
+      const wait = retryAfter > 0 ? retryAfter * 1000 : 5000 * Math.pow(2, attempt - 1);
+      console.log(`  Rate limited on ${path} (attempt ${attempt}) - waiting ${Math.round(wait/1000)}s before retry`);
+      await sleep(wait);
+      return smGet(path, attempt + 1);
+    }
+    const body = await res.text();
+    throw new Error(`SM API error 429 on ${path} after ${MAX_ATTEMPTS} attempts: ${body}`);
+  }
+
+  if (res.status >= 500 && attempt < MAX_ATTEMPTS) {
+    // Server-side hiccup - retry
+    const wait = 2000 * Math.pow(2, attempt - 1);
+    console.log(`  Server error ${res.status} on ${path} (attempt ${attempt}) - retrying in ${wait/1000}s`);
+    await sleep(wait);
+    return smGet(path, attempt + 1);
+  }
+
   if (!res.ok) {
     const body = await res.text();
     throw new Error(`SM API error ${res.status} on ${path}: ${body}`);
@@ -706,12 +757,18 @@ async function main() {
   if (engCrgPos != null) {
     console.log(`English CRG question position: ${engCrgPos} (id ${engData.questionIds.crg})`);
     for (const sd of surveyData) {
-      if (!sd.questionIds.crg && engCrgPos != null) {
-        // Find the question at the same position in this survey
-        const match = Object.entries(sd.qMap).find(([,q]) => q.position === engCrgPos);
-        if (match) {
-          sd.questionIds.crg = match[0];
-          console.log(`  ${sd.language}: CRG not found by heading - anchored to position ${engCrgPos} -> id ${match[0]}`);
+      if (!sd.questionIds.crg) {
+        // Find an open-ended (contact) question at or near the English position (±3),
+        // never a presentation/descriptive_text block.
+        let best = null;
+        for (const [qId, q] of Object.entries(sd.qMap)) {
+          if (!/open_ended/i.test(q.family || "")) continue;
+          const dist = Math.abs((q.position ?? -999) - engCrgPos);
+          if (dist <= 3 && (!best || dist < best.dist)) best = { qId, dist };
+        }
+        if (best) {
+          sd.questionIds.crg = best.qId;
+          console.log(`  ${sd.language}: CRG not found by heading - matched nearest open-ended question (within ${best.dist} of pos ${engCrgPos}) -> id ${best.qId}`);
         }
       }
     }
