@@ -1,6 +1,6 @@
 {
-  "totalStarted": 6972,
-  "totalCompleted": 3607,
+  "totalStarted": 6997,
+  "totalCompleted": 3617,
   "byDate": {
     "2026-06-15": {
       "started": 24,
@@ -20,7 +20,7 @@
     },
     "2026-06-19": {
       "started": 730,
-      "completed": 390
+      "completed": 391
     },
     "2026-06-20": {
       "started": 468,
@@ -39,38 +39,42 @@
       "completed": 189
     },
     "2026-06-24": {
-      "started": 245,
-      "completed": 129
+      "started": 266,
+      "completed": 138
+    },
+    "2026-06-25": {
+      "started": 4,
+      "completed": 0
     }
   },
   "byLanguage": {
     "English": {
-      "started": 1578,
-      "completed": 783
+      "started": 1587,
+      "completed": 788
     },
     "Malay": {
-      "started": 2966,
-      "completed": 1514
+      "started": 2975,
+      "completed": 1517
     },
     "Mandarin": {
-      "started": 2312,
-      "completed": 1255
+      "started": 2318,
+      "completed": 1257
     },
     "Tamil": {
-      "started": 116,
+      "started": 117,
       "completed": 55
     }
   },
   "crossTab": {
     "Timur Laut": {
       "Malay": 343,
-      "Chinese": 500,
+      "Chinese": 502,
       "Indian": 39,
-      "Others": 22
+      "Others": 23
     },
     "Barat Daya": {
-      "Malay": 185,
-      "Chinese": 279,
+      "Malay": 187,
+      "Chinese": 282,
       "Indian": 21,
       "Others": 14
     },
@@ -81,8 +85,8 @@
       "Others": 11
     },
     "SP Tengah": {
-      "Malay": 615,
-      "Chinese": 754,
+      "Malay": 616,
+      "Chinese": 755,
       "Indian": 117,
       "Others": 16
     },
@@ -95,14 +99,14 @@
   },
   "incomeByDistrict": {
     "Timur Laut": {
-      "B40": 318,
+      "B40": 319,
       "M40": 203,
       "T20": 50
     },
     "Barat Daya": {
       "B40": 133,
-      "M40": 109,
-      "T20": 42
+      "M40": 110,
+      "T20": 43
     },
     "SP Utara": {
       "B40": 248,
@@ -110,8 +114,8 @@
       "T20": 36
     },
     "SP Tengah": {
-      "B40": 651,
-      "M40": 359,
+      "B40": 652,
+      "M40": 360,
       "T20": 107
     },
     "SP Selatan": {
@@ -123,12 +127,12 @@
   "ageByDistrict": {
     "Timur Laut": {
       "17": 57,
-      "10-12": 303,
-      "13-16": 302
+      "10-12": 304,
+      "13-16": 303
     },
     "Barat Daya": {
       "17": 30,
-      "10-12": 182,
+      "10-12": 185,
       "13-16": 182
     },
     "SP Utara": {
@@ -137,7 +141,7 @@
       "13-16": 142
     },
     "SP Tengah": {
-      "17": 49,
+      "17": 50,
       "10-12": 550,
       "13-16": 457
     },
@@ -149,20 +153,20 @@
   },
   "genderByDistrict": {
     "Timur Laut": {
-      "Male": 271,
-      "Female": 410
+      "Male": 272,
+      "Female": 411
     },
     "Barat Daya": {
-      "Male": 191,
-      "Female": 196
+      "Male": 193,
+      "Female": 197
     },
     "SP Utara": {
       "Male": 187,
       "Female": 173
     },
     "SP Tengah": {
-      "Male": 520,
-      "Female": 525
+      "Male": 521,
+      "Female": 526
     },
     "SP Selatan": {
       "Male": 60,
@@ -171,12 +175,12 @@
   },
   "ethnicityByGender": {
     "Malay": {
-      "Male": 501,
+      "Male": 502,
       "Female": 594
     },
     "Chinese": {
-      "Male": 619,
-      "Female": 655
+      "Male": 622,
+      "Female": 657
     },
     "Indian": {
       "Male": 92,
@@ -184,48 +188,48 @@
     },
     "Others": {
       "Male": 23,
-      "Female": 26
+      "Female": 27
     }
   },
   "ageByGender": {
     "17": {
-      "Male": 67,
+      "Male": 68,
       "Female": 89
     },
     "10-12": {
-      "Male": 566,
-      "Female": 603
+      "Male": 569,
+      "Female": 604
     },
     "13-16": {
       "Male": 492,
-      "Female": 520
+      "Female": 521
     }
   },
   "byGender": {
-    "Male": 1235,
-    "Female": 1366,
+    "Male": 1239,
+    "Female": 1369,
     "Other": 0
   },
   "byIncome": {
-    "B40": 1409,
-    "M40": 846,
-    "T20": 257,
+    "B40": 1411,
+    "M40": 848,
+    "T20": 258,
     "Not stated": 0
   },
   "byUrbanRural": {
-    "Urban": 1906,
-    "Peri-urban": 1174,
+    "Urban": 1914,
+    "Peri-urban": 1176,
     "Rural": 514
   },
   "ethnicityByIncome": {
     "Malay": {
-      "B40": 821,
-      "M40": 406,
-      "T20": 95
+      "B40": 822,
+      "M40": 407,
+      "T20": 96
     },
     "Chinese": {
       "B40": 475,
-      "M40": 408,
+      "M40": 409,
       "T20": 153
     },
     "Indian": {
@@ -234,20 +238,20 @@
       "T20": 3
     },
     "Others": {
-      "B40": 37,
+      "B40": 38,
       "M40": 8,
       "T20": 6
     }
   },
   "ethnicityByAge": {
     "Malay": {
-      "17": 89,
+      "17": 90,
       "10-12": 598,
       "13-16": 409
     },
     "Chinese": {
       "17": 46,
-      "10-12": 587,
+      "10-12": 591,
       "13-16": 649
     },
     "Indian": {
@@ -258,14 +262,14 @@
     "Others": {
       "17": 3,
       "10-12": 26,
-      "13-16": 19
+      "13-16": 20
     }
   },
   "incomeByAge": {
     "B40": {
-      "17": 59,
+      "17": 60,
       "10-12": 533,
-      "13-16": 406
+      "13-16": 407
     },
     "M40": {
       "17": 47,
@@ -280,12 +284,12 @@
   },
   "incomeByGender": {
     "B40": {
-      "Male": 474,
-      "Female": 542
+      "Male": 475,
+      "Female": 543
     },
     "M40": {
       "Male": 288,
-      "Female": 339
+      "Female": 340
     },
     "T20": {
       "Male": 95,
@@ -295,7 +299,7 @@
   "vulnerableGroups": {
     "Refugees / undocumented": 0,
     "Children with disability": 0,
-    "Single-parent households": 245,
+    "Single-parent households": 246,
     "Institutional care": 0
   },
   "byDateByDistrict": {
@@ -326,7 +330,7 @@
     },
     "2026-06-19": {
       "SP Utara": 85,
-      "SP Tengah": 156,
+      "SP Tengah": 157,
       "Barat Daya": 52,
       "SP Selatan": 18,
       "Timur Laut": 79
@@ -360,9 +364,9 @@
       "SP Selatan": 5
     },
     "2026-06-24": {
-      "Barat Daya": 62,
-      "SP Tengah": 19,
-      "Timur Laut": 23,
+      "Barat Daya": 67,
+      "SP Tengah": 20,
+      "Timur Laut": 26,
       "SP Selatan": 9,
       "SP Utara": 16
     }
@@ -392,7 +396,7 @@
       "Malay": 252
     },
     "2026-06-19": {
-      "Chinese": 238,
+      "Chinese": 239,
       "Indian": 24,
       "Malay": 119,
       "Others": 9
@@ -422,10 +426,10 @@
       "Others": 4
     },
     "2026-06-24": {
-      "Malay": 36,
-      "Chinese": 74,
+      "Malay": 39,
+      "Chinese": 79,
       "Indian": 16,
-      "Others": 3
+      "Others": 4
     }
   },
   "byDateByIncome": {
@@ -449,7 +453,7 @@
       "T20": 40
     },
     "2026-06-19": {
-      "M40": 108,
+      "M40": 109,
       "B40": 128,
       "T20": 26
     },
@@ -474,9 +478,9 @@
       "B40": 55
     },
     "2026-06-24": {
-      "M40": 21,
-      "B40": 32,
-      "T20": 10
+      "M40": 22,
+      "B40": 34,
+      "T20": 11
     }
   },
   "byDateByAge": {
@@ -525,9 +529,9 @@
       "10-12": 70
     },
     "2026-06-24": {
-      "17": 3,
-      "13-16": 26,
-      "10-12": 72
+      "17": 4,
+      "13-16": 27,
+      "10-12": 76
     }
   },
   "byDateByGender": {
@@ -548,7 +552,7 @@
       "Female": 223
     },
     "2026-06-19": {
-      "Female": 130,
+      "Female": 131,
       "Male": 114
     },
     "2026-06-20": {
@@ -568,8 +572,8 @@
       "Female": 67
     },
     "2026-06-24": {
-      "Male": 50,
-      "Female": 56
+      "Male": 54,
+      "Female": 58
     }
   },
   "byDateByUrbanRural": {
@@ -594,7 +598,7 @@
     "2026-06-19": {
       "Urban": 258,
       "Rural": 63,
-      "Peri-urban": 69
+      "Peri-urban": 70
     },
     "2026-06-20": {
       "Urban": 135,
@@ -617,9 +621,9 @@
       "Rural": 29
     },
     "2026-06-24": {
-      "Urban": 89,
+      "Urban": 97,
       "Rural": 9,
-      "Peri-urban": 31
+      "Peri-urban": 32
     }
   },
   "noDistrict": 13,
@@ -660,5 +664,1722 @@
       "13-16": 1
     }
   },
-  "updatedAt": "2026-06-24T17:50:43.302Z"
+  "outcomes": {
+    "815": {
+      "meta": {
+        "id": "815",
+        "module": "parent",
+        "ro": 1,
+        "domain": "Communication & Information",
+        "short": "Heard of child rights"
+      },
+      "overall": {
+        "c": 0,
+        "n": 0
+      },
+      "byLens": {
+        "gender": {
+          "Male": {
+            "c": 0,
+            "n": 0
+          },
+          "Female": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "ageGroup": {
+          "17": {
+            "c": 0,
+            "n": 0
+          },
+          "10-12": {
+            "c": 0,
+            "n": 0
+          },
+          "13-16": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "income": {
+          "B40": {
+            "c": 0,
+            "n": 0
+          },
+          "M40": {
+            "c": 0,
+            "n": 0
+          },
+          "T20": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "urbanRural": {
+          "Urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Peri-urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Rural": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "disability": {
+          "Disabled": {
+            "c": 0,
+            "n": 0
+          },
+          "Not disabled": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "migration": {
+          "Migrant/refugee": {
+            "c": 0,
+            "n": 0
+          },
+          "Citizen": {
+            "c": 0,
+            "n": 0
+          }
+        }
+      }
+    },
+    "818": {
+      "meta": {
+        "id": "818",
+        "module": "parent",
+        "ro": 3,
+        "domain": "Civic Participation & Employment",
+        "short": "Child can express opinion freely"
+      },
+      "overall": {
+        "c": 0,
+        "n": 0
+      },
+      "byLens": {
+        "gender": {
+          "Male": {
+            "c": 0,
+            "n": 0
+          },
+          "Female": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "ageGroup": {
+          "17": {
+            "c": 0,
+            "n": 0
+          },
+          "10-12": {
+            "c": 0,
+            "n": 0
+          },
+          "13-16": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "income": {
+          "B40": {
+            "c": 0,
+            "n": 0
+          },
+          "M40": {
+            "c": 0,
+            "n": 0
+          },
+          "T20": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "urbanRural": {
+          "Urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Peri-urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Rural": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "disability": {
+          "Disabled": {
+            "c": 0,
+            "n": 0
+          },
+          "Not disabled": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "migration": {
+          "Migrant/refugee": {
+            "c": 0,
+            "n": 0
+          },
+          "Citizen": {
+            "c": 0,
+            "n": 0
+          }
+        }
+      }
+    },
+    "821": {
+      "meta": {
+        "id": "821",
+        "module": "parent",
+        "ro": 4,
+        "domain": "Respect & Social Inclusion",
+        "short": "Fair access to activities"
+      },
+      "overall": {
+        "c": 0,
+        "n": 0
+      },
+      "byLens": {
+        "gender": {
+          "Male": {
+            "c": 0,
+            "n": 0
+          },
+          "Female": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "ageGroup": {
+          "17": {
+            "c": 0,
+            "n": 0
+          },
+          "10-12": {
+            "c": 0,
+            "n": 0
+          },
+          "13-16": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "income": {
+          "B40": {
+            "c": 0,
+            "n": 0
+          },
+          "M40": {
+            "c": 0,
+            "n": 0
+          },
+          "T20": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "urbanRural": {
+          "Urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Peri-urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Rural": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "disability": {
+          "Disabled": {
+            "c": 0,
+            "n": 0
+          },
+          "Not disabled": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "migration": {
+          "Migrant/refugee": {
+            "c": 0,
+            "n": 0
+          },
+          "Citizen": {
+            "c": 0,
+            "n": 0
+          }
+        }
+      }
+    },
+    "822": {
+      "meta": {
+        "id": "822",
+        "module": "parent",
+        "ro": 2,
+        "domain": "Health Services & Community Support",
+        "short": "Challenges accessing services"
+      },
+      "overall": {
+        "c": 0,
+        "n": 0
+      },
+      "byLens": {
+        "gender": {
+          "Male": {
+            "c": 0,
+            "n": 0
+          },
+          "Female": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "ageGroup": {
+          "17": {
+            "c": 0,
+            "n": 0
+          },
+          "10-12": {
+            "c": 0,
+            "n": 0
+          },
+          "13-16": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "income": {
+          "B40": {
+            "c": 0,
+            "n": 0
+          },
+          "M40": {
+            "c": 0,
+            "n": 0
+          },
+          "T20": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "urbanRural": {
+          "Urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Peri-urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Rural": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "disability": {
+          "Disabled": {
+            "c": 0,
+            "n": 0
+          },
+          "Not disabled": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "migration": {
+          "Migrant/refugee": {
+            "c": 0,
+            "n": 0
+          },
+          "Citizen": {
+            "c": 0,
+            "n": 0
+          }
+        }
+      }
+    },
+    "825": {
+      "meta": {
+        "id": "825",
+        "module": "parent",
+        "ro": 4,
+        "domain": "Outdoor Spaces & Buildings",
+        "short": "Enough public spaces"
+      },
+      "overall": {
+        "c": 0,
+        "n": 0
+      },
+      "byLens": {
+        "gender": {
+          "Male": {
+            "c": 0,
+            "n": 0
+          },
+          "Female": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "ageGroup": {
+          "17": {
+            "c": 0,
+            "n": 0
+          },
+          "10-12": {
+            "c": 0,
+            "n": 0
+          },
+          "13-16": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "income": {
+          "B40": {
+            "c": 0,
+            "n": 0
+          },
+          "M40": {
+            "c": 0,
+            "n": 0
+          },
+          "T20": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "urbanRural": {
+          "Urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Peri-urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Rural": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "disability": {
+          "Disabled": {
+            "c": 0,
+            "n": 0
+          },
+          "Not disabled": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "migration": {
+          "Migrant/refugee": {
+            "c": 0,
+            "n": 0
+          },
+          "Citizen": {
+            "c": 0,
+            "n": 0
+          }
+        }
+      }
+    },
+    "827": {
+      "meta": {
+        "id": "827",
+        "module": "parent",
+        "ro": 4,
+        "domain": "Outdoor Spaces & Buildings",
+        "short": "Visits green space"
+      },
+      "overall": {
+        "c": 0,
+        "n": 0
+      },
+      "byLens": {
+        "gender": {
+          "Male": {
+            "c": 0,
+            "n": 0
+          },
+          "Female": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "ageGroup": {
+          "17": {
+            "c": 0,
+            "n": 0
+          },
+          "10-12": {
+            "c": 0,
+            "n": 0
+          },
+          "13-16": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "income": {
+          "B40": {
+            "c": 0,
+            "n": 0
+          },
+          "M40": {
+            "c": 0,
+            "n": 0
+          },
+          "T20": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "urbanRural": {
+          "Urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Peri-urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Rural": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "disability": {
+          "Disabled": {
+            "c": 0,
+            "n": 0
+          },
+          "Not disabled": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "migration": {
+          "Migrant/refugee": {
+            "c": 0,
+            "n": 0
+          },
+          "Citizen": {
+            "c": 0,
+            "n": 0
+          }
+        }
+      }
+    },
+    "831": {
+      "meta": {
+        "id": "831",
+        "module": "parent",
+        "ro": 4,
+        "domain": "Respect & Social Inclusion",
+        "short": "Child safe at school from bullying"
+      },
+      "overall": {
+        "c": 0,
+        "n": 0
+      },
+      "byLens": {
+        "gender": {
+          "Male": {
+            "c": 0,
+            "n": 0
+          },
+          "Female": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "ageGroup": {
+          "17": {
+            "c": 0,
+            "n": 0
+          },
+          "10-12": {
+            "c": 0,
+            "n": 0
+          },
+          "13-16": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "income": {
+          "B40": {
+            "c": 0,
+            "n": 0
+          },
+          "M40": {
+            "c": 0,
+            "n": 0
+          },
+          "T20": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "urbanRural": {
+          "Urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Peri-urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Rural": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "disability": {
+          "Disabled": {
+            "c": 0,
+            "n": 0
+          },
+          "Not disabled": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "migration": {
+          "Migrant/refugee": {
+            "c": 0,
+            "n": 0
+          },
+          "Citizen": {
+            "c": 0,
+            "n": 0
+          }
+        }
+      }
+    },
+    "834": {
+      "meta": {
+        "id": "834",
+        "module": "parent",
+        "ro": 5,
+        "domain": "Climate",
+        "short": "Climate worry (eco-anxiety)"
+      },
+      "overall": {
+        "c": 0,
+        "n": 0
+      },
+      "byLens": {
+        "gender": {
+          "Male": {
+            "c": 0,
+            "n": 0
+          },
+          "Female": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "ageGroup": {
+          "17": {
+            "c": 0,
+            "n": 0
+          },
+          "10-12": {
+            "c": 0,
+            "n": 0
+          },
+          "13-16": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "income": {
+          "B40": {
+            "c": 0,
+            "n": 0
+          },
+          "M40": {
+            "c": 0,
+            "n": 0
+          },
+          "T20": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "urbanRural": {
+          "Urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Peri-urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Rural": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "disability": {
+          "Disabled": {
+            "c": 0,
+            "n": 0
+          },
+          "Not disabled": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "migration": {
+          "Migrant/refugee": {
+            "c": 0,
+            "n": 0
+          },
+          "Citizen": {
+            "c": 0,
+            "n": 0
+          }
+        }
+      }
+    },
+    "836": {
+      "meta": {
+        "id": "836",
+        "module": "parent",
+        "ro": 5,
+        "domain": "Climate",
+        "short": "Children help protect environment"
+      },
+      "overall": {
+        "c": 0,
+        "n": 0
+      },
+      "byLens": {
+        "gender": {
+          "Male": {
+            "c": 0,
+            "n": 0
+          },
+          "Female": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "ageGroup": {
+          "17": {
+            "c": 0,
+            "n": 0
+          },
+          "10-12": {
+            "c": 0,
+            "n": 0
+          },
+          "13-16": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "income": {
+          "B40": {
+            "c": 0,
+            "n": 0
+          },
+          "M40": {
+            "c": 0,
+            "n": 0
+          },
+          "T20": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "urbanRural": {
+          "Urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Peri-urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Rural": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "disability": {
+          "Disabled": {
+            "c": 0,
+            "n": 0
+          },
+          "Not disabled": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "migration": {
+          "Migrant/refugee": {
+            "c": 0,
+            "n": 0
+          },
+          "Citizen": {
+            "c": 0,
+            "n": 0
+          }
+        }
+      }
+    },
+    "837": {
+      "meta": {
+        "id": "837",
+        "module": "parent",
+        "ro": 5,
+        "domain": "Climate",
+        "short": "Authorities doing enough on climate"
+      },
+      "overall": {
+        "c": 0,
+        "n": 0
+      },
+      "byLens": {
+        "gender": {
+          "Male": {
+            "c": 0,
+            "n": 0
+          },
+          "Female": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "ageGroup": {
+          "17": {
+            "c": 0,
+            "n": 0
+          },
+          "10-12": {
+            "c": 0,
+            "n": 0
+          },
+          "13-16": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "income": {
+          "B40": {
+            "c": 0,
+            "n": 0
+          },
+          "M40": {
+            "c": 0,
+            "n": 0
+          },
+          "T20": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "urbanRural": {
+          "Urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Peri-urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Rural": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "disability": {
+          "Disabled": {
+            "c": 0,
+            "n": 0
+          },
+          "Not disabled": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "migration": {
+          "Migrant/refugee": {
+            "c": 0,
+            "n": 0
+          },
+          "Citizen": {
+            "c": 0,
+            "n": 0
+          }
+        }
+      }
+    },
+    "846": {
+      "meta": {
+        "id": "846",
+        "module": "child",
+        "ro": 1,
+        "domain": "Communication & Information",
+        "short": "Knows about child rights"
+      },
+      "overall": {
+        "c": 0,
+        "n": 0
+      },
+      "byLens": {
+        "gender": {
+          "Male": {
+            "c": 0,
+            "n": 0
+          },
+          "Female": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "ageGroup": {
+          "17": {
+            "c": 0,
+            "n": 0
+          },
+          "10-12": {
+            "c": 0,
+            "n": 0
+          },
+          "13-16": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "income": {
+          "B40": {
+            "c": 0,
+            "n": 0
+          },
+          "M40": {
+            "c": 0,
+            "n": 0
+          },
+          "T20": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "urbanRural": {
+          "Urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Peri-urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Rural": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "disability": {
+          "Disabled": {
+            "c": 0,
+            "n": 0
+          },
+          "Not disabled": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "migration": {
+          "Migrant/refugee": {
+            "c": 0,
+            "n": 0
+          },
+          "Citizen": {
+            "c": 0,
+            "n": 0
+          }
+        }
+      }
+    },
+    "853": {
+      "meta": {
+        "id": "853",
+        "module": "child",
+        "ro": 4,
+        "domain": "Social Participation",
+        "short": "Takes part in activities"
+      },
+      "overall": {
+        "c": 0,
+        "n": 0
+      },
+      "byLens": {
+        "gender": {
+          "Male": {
+            "c": 0,
+            "n": 0
+          },
+          "Female": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "ageGroup": {
+          "17": {
+            "c": 0,
+            "n": 0
+          },
+          "10-12": {
+            "c": 0,
+            "n": 0
+          },
+          "13-16": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "income": {
+          "B40": {
+            "c": 0,
+            "n": 0
+          },
+          "M40": {
+            "c": 0,
+            "n": 0
+          },
+          "T20": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "urbanRural": {
+          "Urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Peri-urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Rural": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "disability": {
+          "Disabled": {
+            "c": 0,
+            "n": 0
+          },
+          "Not disabled": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "migration": {
+          "Migrant/refugee": {
+            "c": 0,
+            "n": 0
+          },
+          "Citizen": {
+            "c": 0,
+            "n": 0
+          }
+        }
+      }
+    },
+    "857": {
+      "meta": {
+        "id": "857",
+        "module": "child",
+        "ro": 4,
+        "domain": "Outdoor Spaces & Buildings",
+        "short": "Spaces for children"
+      },
+      "overall": {
+        "c": 0,
+        "n": 0
+      },
+      "byLens": {
+        "gender": {
+          "Male": {
+            "c": 0,
+            "n": 0
+          },
+          "Female": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "ageGroup": {
+          "17": {
+            "c": 0,
+            "n": 0
+          },
+          "10-12": {
+            "c": 0,
+            "n": 0
+          },
+          "13-16": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "income": {
+          "B40": {
+            "c": 0,
+            "n": 0
+          },
+          "M40": {
+            "c": 0,
+            "n": 0
+          },
+          "T20": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "urbanRural": {
+          "Urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Peri-urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Rural": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "disability": {
+          "Disabled": {
+            "c": 0,
+            "n": 0
+          },
+          "Not disabled": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "migration": {
+          "Migrant/refugee": {
+            "c": 0,
+            "n": 0
+          },
+          "Citizen": {
+            "c": 0,
+            "n": 0
+          }
+        }
+      }
+    },
+    "861": {
+      "meta": {
+        "id": "861",
+        "module": "child",
+        "ro": 4,
+        "domain": "Communication & Information",
+        "short": "Knows how to stay safe online"
+      },
+      "overall": {
+        "c": 0,
+        "n": 0
+      },
+      "byLens": {
+        "gender": {
+          "Male": {
+            "c": 0,
+            "n": 0
+          },
+          "Female": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "ageGroup": {
+          "17": {
+            "c": 0,
+            "n": 0
+          },
+          "10-12": {
+            "c": 0,
+            "n": 0
+          },
+          "13-16": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "income": {
+          "B40": {
+            "c": 0,
+            "n": 0
+          },
+          "M40": {
+            "c": 0,
+            "n": 0
+          },
+          "T20": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "urbanRural": {
+          "Urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Peri-urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Rural": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "disability": {
+          "Disabled": {
+            "c": 0,
+            "n": 0
+          },
+          "Not disabled": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "migration": {
+          "Migrant/refugee": {
+            "c": 0,
+            "n": 0
+          },
+          "Citizen": {
+            "c": 0,
+            "n": 0
+          }
+        }
+      }
+    },
+    "864": {
+      "meta": {
+        "id": "864",
+        "module": "child",
+        "ro": 5,
+        "domain": "Climate",
+        "short": "Climate worry (eco-anxiety)"
+      },
+      "overall": {
+        "c": 0,
+        "n": 0
+      },
+      "byLens": {
+        "gender": {
+          "Male": {
+            "c": 0,
+            "n": 0
+          },
+          "Female": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "ageGroup": {
+          "17": {
+            "c": 0,
+            "n": 0
+          },
+          "10-12": {
+            "c": 0,
+            "n": 0
+          },
+          "13-16": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "income": {
+          "B40": {
+            "c": 0,
+            "n": 0
+          },
+          "M40": {
+            "c": 0,
+            "n": 0
+          },
+          "T20": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "urbanRural": {
+          "Urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Peri-urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Rural": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "disability": {
+          "Disabled": {
+            "c": 0,
+            "n": 0
+          },
+          "Not disabled": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "migration": {
+          "Migrant/refugee": {
+            "c": 0,
+            "n": 0
+          },
+          "Citizen": {
+            "c": 0,
+            "n": 0
+          }
+        }
+      }
+    },
+    "865": {
+      "meta": {
+        "id": "865",
+        "module": "child",
+        "ro": 5,
+        "domain": "Outdoor Spaces & Buildings",
+        "short": "Weather limits going outside"
+      },
+      "overall": {
+        "c": 0,
+        "n": 0
+      },
+      "byLens": {
+        "gender": {
+          "Male": {
+            "c": 0,
+            "n": 0
+          },
+          "Female": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "ageGroup": {
+          "17": {
+            "c": 0,
+            "n": 0
+          },
+          "10-12": {
+            "c": 0,
+            "n": 0
+          },
+          "13-16": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "income": {
+          "B40": {
+            "c": 0,
+            "n": 0
+          },
+          "M40": {
+            "c": 0,
+            "n": 0
+          },
+          "T20": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "urbanRural": {
+          "Urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Peri-urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Rural": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "disability": {
+          "Disabled": {
+            "c": 0,
+            "n": 0
+          },
+          "Not disabled": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "migration": {
+          "Migrant/refugee": {
+            "c": 0,
+            "n": 0
+          },
+          "Citizen": {
+            "c": 0,
+            "n": 0
+          }
+        }
+      }
+    },
+    "866": {
+      "meta": {
+        "id": "866",
+        "module": "child",
+        "ro": 3,
+        "domain": "Civic Participation & Employment",
+        "short": "People in charge listen"
+      },
+      "overall": {
+        "c": 0,
+        "n": 0
+      },
+      "byLens": {
+        "gender": {
+          "Male": {
+            "c": 0,
+            "n": 0
+          },
+          "Female": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "ageGroup": {
+          "17": {
+            "c": 0,
+            "n": 0
+          },
+          "10-12": {
+            "c": 0,
+            "n": 0
+          },
+          "13-16": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "income": {
+          "B40": {
+            "c": 0,
+            "n": 0
+          },
+          "M40": {
+            "c": 0,
+            "n": 0
+          },
+          "T20": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "urbanRural": {
+          "Urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Peri-urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Rural": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "disability": {
+          "Disabled": {
+            "c": 0,
+            "n": 0
+          },
+          "Not disabled": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "migration": {
+          "Migrant/refugee": {
+            "c": 0,
+            "n": 0
+          },
+          "Citizen": {
+            "c": 0,
+            "n": 0
+          }
+        }
+      }
+    },
+    "876": {
+      "meta": {
+        "id": "876",
+        "module": "child",
+        "ro": 5,
+        "domain": "Climate",
+        "short": "Helps protect environment"
+      },
+      "overall": {
+        "c": 0,
+        "n": 0
+      },
+      "byLens": {
+        "gender": {
+          "Male": {
+            "c": 0,
+            "n": 0
+          },
+          "Female": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "ageGroup": {
+          "17": {
+            "c": 0,
+            "n": 0
+          },
+          "10-12": {
+            "c": 0,
+            "n": 0
+          },
+          "13-16": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "income": {
+          "B40": {
+            "c": 0,
+            "n": 0
+          },
+          "M40": {
+            "c": 0,
+            "n": 0
+          },
+          "T20": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "urbanRural": {
+          "Urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Peri-urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Rural": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "disability": {
+          "Disabled": {
+            "c": 0,
+            "n": 0
+          },
+          "Not disabled": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "migration": {
+          "Migrant/refugee": {
+            "c": 0,
+            "n": 0
+          },
+          "Citizen": {
+            "c": 0,
+            "n": 0
+          }
+        }
+      }
+    },
+    "911742": {
+      "meta": {
+        "id": "911742",
+        "module": "child",
+        "ro": 5,
+        "domain": "Health Services & Community Support",
+        "short": "Screen time 4+ hours"
+      },
+      "overall": {
+        "c": 0,
+        "n": 0
+      },
+      "byLens": {
+        "gender": {
+          "Male": {
+            "c": 0,
+            "n": 0
+          },
+          "Female": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "ageGroup": {
+          "17": {
+            "c": 0,
+            "n": 0
+          },
+          "10-12": {
+            "c": 0,
+            "n": 0
+          },
+          "13-16": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "income": {
+          "B40": {
+            "c": 0,
+            "n": 0
+          },
+          "M40": {
+            "c": 0,
+            "n": 0
+          },
+          "T20": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "urbanRural": {
+          "Urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Peri-urban": {
+            "c": 0,
+            "n": 0
+          },
+          "Rural": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "disability": {
+          "Disabled": {
+            "c": 0,
+            "n": 0
+          },
+          "Not disabled": {
+            "c": 0,
+            "n": 0
+          }
+        },
+        "migration": {
+          "Migrant/refugee": {
+            "c": 0,
+            "n": 0
+          },
+          "Citizen": {
+            "c": 0,
+            "n": 0
+          }
+        }
+      }
+    }
+  },
+  "disparity": {
+    "Awareness of child rights": {
+      "parent": {
+        "c": 0,
+        "n": 0
+      },
+      "child": {
+        "c": 0,
+        "n": 0
+      }
+    },
+    "Child can express / is listened to": {
+      "parent": {
+        "c": 0,
+        "n": 0
+      },
+      "child": {
+        "c": 0,
+        "n": 0
+      }
+    },
+    "Public spaces for children": {
+      "parent": {
+        "c": 0,
+        "n": 0
+      },
+      "child": {
+        "c": 0,
+        "n": 0
+      }
+    },
+    "Activity participation": {
+      "parent": {
+        "c": 0,
+        "n": 0
+      },
+      "child": {
+        "c": 0,
+        "n": 0
+      }
+    },
+    "Climate worry": {
+      "parent": {
+        "c": 0,
+        "n": 0
+      },
+      "child": {
+        "c": 0,
+        "n": 0
+      }
+    },
+    "Helps protect environment": {
+      "parent": {
+        "c": 0,
+        "n": 0
+      },
+      "child": {
+        "c": 0,
+        "n": 0
+      }
+    }
+  },
+  "updatedAt": "2026-06-25T02:42:48.229Z"
 }
