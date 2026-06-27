@@ -1,6 +1,6 @@
 {
   "totalStarted": 7418,
-  "totalCompleted": 3819,
+  "totalCompleted": 3820,
   "byDate": {
     "2026-06-15": {
       "started": 24,
@@ -48,7 +48,7 @@
     },
     "2026-06-26": {
       "started": 180,
-      "completed": 69
+      "completed": 70
     },
     "2026-06-27": {
       "started": 27,
@@ -62,7 +62,7 @@
     },
     "Malay": {
       "started": 3183,
-      "completed": 1602
+      "completed": 1603
     },
     "Mandarin": {
       "started": 2437,
@@ -93,7 +93,7 @@
       "Others": 11
     },
     "SP Tengah": {
-      "Malay": 668,
+      "Malay": 669,
       "Chinese": 776,
       "Indian": 123,
       "Others": 17
@@ -122,7 +122,7 @@
       "T20": 39
     },
     "SP Tengah": {
-      "B40": 693,
+      "B40": 694,
       "M40": 377,
       "T20": 111
     },
@@ -149,7 +149,7 @@
       "13-16": 145
     },
     "SP Tengah": {
-      "17": 54,
+      "17": 55,
       "10-12": 589,
       "13-16": 473
     },
@@ -174,7 +174,7 @@
     },
     "SP Tengah": {
       "Male": 549,
-      "Female": 560
+      "Female": 561
     },
     "SP Selatan": {
       "Male": 68,
@@ -184,7 +184,7 @@
   "ethnicityByGender": {
     "Malay": {
       "Male": 531,
-      "Female": 627
+      "Female": 628
     },
     "Chinese": {
       "Male": 661,
@@ -202,7 +202,7 @@
   "ageByGender": {
     "17": {
       "Male": 70,
-      "Female": 92
+      "Female": 93
     },
     "10-12": {
       "Male": 610,
@@ -215,11 +215,11 @@
   },
   "byGender": {
     "Male": 1312,
-    "Female": 1447,
+    "Female": 1448,
     "Other": 0
   },
   "byIncome": {
-    "B40": 1490,
+    "B40": 1491,
     "M40": 892,
     "T20": 270,
     "Not stated": 0
@@ -227,11 +227,11 @@
   "byUrbanRural": {
     "Urban": 2011,
     "Peri-urban": 1260,
-    "Rural": 535
+    "Rural": 536
   },
   "ethnicityByIncome": {
     "Malay": {
-      "B40": 872,
+      "B40": 873,
       "M40": 428,
       "T20": 99
     },
@@ -253,7 +253,7 @@
   },
   "ethnicityByAge": {
     "Malay": {
-      "17": 94,
+      "17": 95,
       "10-12": 646,
       "13-16": 419
     },
@@ -275,7 +275,7 @@
   },
   "incomeByAge": {
     "B40": {
-      "17": 63,
+      "17": 64,
       "10-12": 571,
       "13-16": 419
     },
@@ -293,7 +293,7 @@
   "incomeByGender": {
     "B40": {
       "Male": 500,
-      "Female": 575
+      "Female": 576
     },
     "M40": {
       "Male": 306,
@@ -387,7 +387,7 @@
     },
     "2026-06-26": {
       "Timur Laut": 14,
-      "SP Tengah": 36,
+      "SP Tengah": 37,
       "Barat Daya": 9,
       "SP Utara": 6,
       "SP Selatan": 4
@@ -469,7 +469,7 @@
     "2026-06-26": {
       "Chinese": 36,
       "Indian": 1,
-      "Malay": 31,
+      "Malay": 32,
       "Others": 1
     },
     "2026-06-27": {
@@ -534,7 +534,7 @@
     },
     "2026-06-26": {
       "M40": 15,
-      "B40": 30,
+      "B40": 31,
       "T20": 6
     },
     "2026-06-27": {
@@ -599,7 +599,7 @@
       "13-16": 19
     },
     "2026-06-26": {
-      "17": 4,
+      "17": 5,
       "13-16": 19,
       "10-12": 24
     },
@@ -655,7 +655,7 @@
     },
     "2026-06-26": {
       "Male": 27,
-      "Female": 23
+      "Female": 24
     },
     "2026-06-27": {
       "Female": 5,
@@ -719,7 +719,7 @@
     "2026-06-26": {
       "Urban": 35,
       "Peri-urban": 31,
-      "Rural": 3
+      "Rural": 4
     },
     "2026-06-27": {
       "Peri-urban": 2,
@@ -2482,5 +2482,5 @@
       }
     }
   },
-  "updatedAt": "2026-06-27T09:50:52.918Z"
+  "updatedAt": "2026-06-27T10:00:39.747Z"
 }
