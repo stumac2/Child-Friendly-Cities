@@ -174,6 +174,8 @@ const SCORED_OUTCOMES = [
     concerning:t => AGREE_NEG.test(t||"") },
 
   // RO4 - Inclusive & safe environments
+  { id:"820", module:"parent", ro:4, domain:"Social Participation", short:"Child takes part in activities",
+    concerning:t => /^none$|no activit|tiada|tidak|没有|没有参加|எதுவும் இல்லை|இல்லை/i.test((t||"").trim()) },
   { id:"821", module:"parent", ro:4, domain:"Respect & Social Inclusion", short:"Fair access to activities",
     concerning:t => AGREE_NEG.test(t||"") },
   { id:"825", module:"parent", ro:4, domain:"Outdoor Spaces & Buildings", short:"Enough public spaces",
@@ -220,6 +222,14 @@ const PARALLEL_PAIRS = [
 
 // Lens dimensions used for intersectional breakdown
 const LENS_KEYS = ["gender","ageGroup","income","urbanRural","disability","migration"];
+
+// Map a short outcome id (e.g. "815") to the real English question id (e.g. "289909815").
+// Screen-time is 289911742; all other survey questions are 289909xxx.
+function engQuestionId(shortId) {
+  if (shortId === "911742") return "289911742";
+  return "289909" + shortId;
+}
+
 
 
 function matchDUN(text) {
@@ -959,22 +969,24 @@ async function main() {
     for (const [qId, q] of Object.entries(engData.qMap)) engPosById[qId] = q.position;
   }
   for (const sd of surveyData) {
-    sd.outcomeIds = {}; // englishId -> this-survey questionId
+    sd.outcomeIds = {}; // shortId -> this-survey questionId
     // position -> id lookup for this survey
     const idByPos = {};
     for (const [qId, q] of Object.entries(sd.qMap)) idByPos[q.position] = qId;
     for (const o of SCORED_OUTCOMES) {
-      const engPos = engPosById[o.id];
+      const engId = engQuestionId(o.id);
+      const engPos = engPosById[engId];
       if (engPos == null) continue;
-      // English survey: same id; others: same position
-      sd.outcomeIds[o.id] = (sd.language === "English") ? o.id : (idByPos[engPos] || null);
+      // English survey: the real english id; others: same position
+      sd.outcomeIds[o.id] = (sd.language === "English") ? engId : (idByPos[engPos] || null);
     }
-    // Also resolve parallel-pair parent ids that aren't in SCORED_OUTCOMES (820, 836 already covered)
+    // Also resolve parallel-pair ids not in SCORED_OUTCOMES (e.g. 820)
     for (const p of PARALLEL_PAIRS) {
       for (const eid of [p.parent, p.child]) {
         if (sd.outcomeIds[eid] === undefined) {
-          const engPos = engPosById[eid];
-          sd.outcomeIds[eid] = engPos == null ? null : (sd.language === "English" ? eid : (idByPos[engPos] || null));
+          const engId = engQuestionId(eid);
+          const engPos = engPosById[engId];
+          sd.outcomeIds[eid] = engPos == null ? null : (sd.language === "English" ? engId : (idByPos[engPos] || null));
         }
       }
     }
