@@ -542,6 +542,11 @@ function classifyAllResponses(surveyData) {
     outcomes: {},
     // Parent-child disparity: per theme, the concerning-rate for each module
     disparity: {},
+    // Anonymised per-response microdata for live multi-lens filtering on the dashboard.
+    // Each row: lens values + module + concerning flags per outcome. No identifying data.
+    outcomeRows: [],
+    // Metadata for each scored outcome (id -> {short, ro, domain, module}) for the dashboard
+    outcomeMeta: Object.fromEntries(SCORED_OUTCOMES.map(o => [o.id, { short:o.short, ro:o.ro, domain:o.domain, module:o.module }])),
   };
 
   // Initialise outcome accumulators
@@ -722,6 +727,29 @@ function classifyAllResponses(surveyData) {
             if (isConcerning) acc.byLens[lk][v].c++;
           }
         }
+      }
+
+      // ── Anonymised microdata row for live multi-lens filtering ──
+      // Compact keys to keep data.json small. Lens values use short codes; outcomes
+      // store 1 (concerning), 0 (answered, not concerning); absent = unanswered.
+      const outFlags = {};
+      for (const o of SCORED_OUTCOMES) {
+        const qid = outcomeIds?.[o.id];
+        if (!qid) continue;
+        const ans = getAnswerText(r, qid, qMap);
+        if (ans == null || ans === "") continue;
+        outFlags[o.id] = o.concerning(ans) ? 1 : 0;
+      }
+      if (Object.keys(outFlags).length > 0) {
+        result.outcomeRows.push({
+          g: gender || null,                                   // gender
+          a: ageGroup || null,                                 // age band
+          i: income || null,                                   // income
+          u: urbanRural || null,                               // urban/rural
+          d: isDisabled ? 1 : 0,                               // disability
+          m: isRefugee ? 1 : 0,                                // migration (refugee/undocumented)
+          o: outFlags,                                         // outcome concerning flags
+        });
       }
 
       // Parent-child disparity (same concerning tests, by module side)
