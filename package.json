@@ -4,9 +4,11 @@
   "private": true,
   "description": "Child Friendly Penang - daily survey report scheduler",
   "scripts": {
-    "report": "node daily-report.js"
+    "report": "node daily-report.js",
+    "school-extract": "node school-extract.js"
   },
   "dependencies": {
-    "nodemailer": "^6.9.0"
+    "nodemailer": "^6.9.0",
+    "xlsx": "^0.18.5"
   }
 }
