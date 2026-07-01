@@ -989,6 +989,16 @@ async function main() {
   }
   console.log(`=== END CRG DETECTION ===\n`);
 
+  // ── STATUS (Q8) CHOICE DUMP - to define refugee/stateless/undocumented merge ──
+  console.log(`=== STATUS QUESTION (Q8) CHOICES ===`);
+  for (const sd of surveyData) {
+    const sid = sd.questionIds.status;
+    if (!sid) { console.log(`  ${sd.language}: status question NOT identified`); continue; }
+    const choices = Object.values(sd.qMap[sid]?.choices || {});
+    console.log(`  ${sd.language} [${sid}] (${choices.length}): ${choices.join(" | ")}`);
+  }
+  console.log(`=== END STATUS CHOICES ===\n`);
+
   // ── Resolve scored-outcome question IDs across all 4 surveys ──
   // English IDs are known; other surveys share structure, so map by position.
   // Build English position lookup for each outcome id, then find same-position id per survey.
