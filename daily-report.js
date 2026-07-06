@@ -13,6 +13,10 @@ const SURVEY_IDS = {
 };
 const SM_BASE    = "https://api.surveymonkey.com/v3";
 const SM_TOKEN   = process.env.SM_MCP_TOKEN;
+// Incremental cache of anonymised classified records (kept at repo root, NOT in docs/,
+// so it is not part of the published Pages site). Contains no free text or contact data.
+const CACHE_FILE = "response-cache.json";
+const CACHE_OVERLAP_MS = 2 * 60 * 60 * 1000; // refetch a 2h window before last run to catch boundary/late updates
 const START_DATE = new Date("2026-06-15");
 const END_DATE   = new Date("2026-07-31");
 const TOTAL_TARGET  = 2500;
@@ -480,6 +484,47 @@ async function fetchAllResponses(surveyId) {
   return responses;
 }
 
+// Fetch only responses modified at/after a timestamp (ISO string). Used for incremental runs.
+async function fetchResponsesSince(surveyId, sinceISO) {
+  const responses = [];
+  let page = 1, hasMore = true;
+  const q = `start_modified_at=${encodeURIComponent(sinceISO)}&sort_by=date_modified&sort_order=ASC`;
+  while (hasMore) {
+    const data = await smGet(`/surveys/${surveyId}/responses/bulk?per_page=100&page=${page}&${q}`);
+    responses.push(...(data.data || []));
+    hasMore = data.links?.next != null;
+    page++;
+  }
+  return responses;
+}
+
+// Load the anonymised record cache. Returns { lastModified, records:{id->rec} } or null.
+function loadCache() {
+  const fs = require("fs");
+  try {
+    if (!fs.existsSync(CACHE_FILE)) return null;
+    const parsed = JSON.parse(fs.readFileSync(CACHE_FILE, "utf8"));
+    if (!parsed || typeof parsed !== "object" || !parsed.records || !parsed.lastModified) return null;
+    const count = Object.keys(parsed.records).length;
+    if (count === 0) return null;
+    console.log(`Loaded cache: ${count} records, last modified ${parsed.lastModified}`);
+    return parsed;
+  } catch (e) {
+    console.log(`Cache unreadable (${e.message}) - will do a full fetch.`);
+    return null;
+  }
+}
+
+function saveCache(recordsById, lastModifiedISO) {
+  const fs = require("fs");
+  try {
+    fs.writeFileSync(CACHE_FILE, JSON.stringify({ version:2, lastModified:lastModifiedISO, records:recordsById }));
+    console.log(`Saved cache: ${Object.keys(recordsById).length} records, lastModified ${lastModifiedISO}`);
+  } catch (e) {
+    console.log(`WARNING: could not save cache: ${e.message}`);
+  }
+}
+
 function getAnswerText(response, questionId, qMap) {
   if (!questionId) return null;
   const qInfo = qMap[questionId] || {};
@@ -510,8 +555,247 @@ function hasDisability(response, disabilityIds, qMap) {
   return false;
 }
 
-// ─── Classify all responses ────────────────────────────────────────────────────
-function classifyAllResponses(surveyData) {
+// ─── Incremental architecture: classify ONE response into an anonymised record ──
+// A record contains only classified categories + flags - no free text, no contact
+// details, no names, no raw DUN text. Safe to cache. Returns null if not started.
+function classifyOneResponse(r, language, qMap, questionIds, outcomeIds) {
+  const isStarted = r.response_status === "partial" || r.response_status === "completed";
+  if (!isStarted) return null;
+  const isCompleted = r.response_status === "completed";
+  const dateStr = r.date_created ? r.date_created.split("T")[0] : null;
+
+  const rec = { id: r.id, lang: language, status: r.response_status, date: dateStr };
+
+  if (!isCompleted) {
+    // Started-only: record furthest-answered question position for drop-off analysis.
+    let maxPos = -1;
+    const posById = {};
+    let i = 0;
+    for (const qId of Object.keys(qMap)) posById[qId] = i++;
+    for (const page of (r.pages || [])) {
+      for (const q of (page.questions || [])) {
+        const pos = posById[q.id];
+        if (pos !== undefined && pos > maxPos && (q.answers || []).length > 0) maxPos = pos;
+      }
+    }
+    rec.dropPos = maxPos;
+    return rec;
+  }
+
+  // Completed: full classification (identical logic to the original loop)
+  const dunText = getAnswerText(r, questionIds.dunIsland, qMap) || getAnswerText(r, questionIds.dunSeberang, qMap);
+  const dunKey = matchDUN(dunText);
+  rec.hadDun = !!dunText;
+  rec.district = dunKey ? DUN_DISTRICT[dunKey] : null;
+  rec.urbanRural = dunKey ? DUN_URBAN[dunKey] : null;
+  rec.unmatchedDun = (dunText && !rec.district) ? dunText : null; // transient; used for logging only, not aggregated
+
+  const ethText = getAnswerText(r, questionIds.ethnicity, qMap);
+  rec.ethnicity = matchPattern(ethText, ETH_MAP) || "Others";
+
+  rec.income = matchIncome(getAnswerText(r, questionIds.income, qMap));
+  rec.ageGroup = extractAge(getAnswerText(r, questionIds.childAge, qMap));
+  rec.gender = matchPattern(getAnswerText(r, questionIds.childGender, qMap), GENDER_MAP);
+
+  const maritalText = getAnswerText(r, questionIds.marital, qMap);
+  rec.singleParent = !!(maritalText && /single.?parent|one.?parent|single|divorced|widowed|ibu tunggal|bapa tunggal|bercerai|balu|janda|单亲|离婚|丧偶|தனி|விவாகரத்து|விதவை/i.test(maritalText));
+
+  rec.disabled = hasDisability(r, questionIds.disability, qMap);
+  rec.refugee = !!(ethText && /refugee|undocumented|pelarian|难民|அகதி/i.test(ethText));
+
+  // CRG sign-up: presence/absence of contact text only, never the text itself.
+  let crgSignup = false;
+  if (questionIds.crg) {
+    for (const page of (r.pages || [])) {
+      for (const q of (page.questions || [])) {
+        if (q.id === questionIds.crg) {
+          for (const a of (q.answers || [])) {
+            if (a.text && String(a.text).trim().length > 0) { crgSignup = true; break; }
+          }
+        }
+      }
+    }
+  }
+  rec.crg = crgSignup;
+
+  // Outcome concerning flags for answered scored outcomes
+  const o = {};
+  for (const od of SCORED_OUTCOMES) {
+    const qid = outcomeIds?.[od.id];
+    if (!qid) continue;
+    const ans = getAnswerText(r, qid, qMap);
+    if (ans == null || ans === "") continue;
+    o[od.id] = od.concerning(ans) ? 1 : 0;
+  }
+  rec.o = o;
+
+  // Parent-child disparity flags per parallel theme
+  const disp = {};
+  for (const p of PARALLEL_PAIRS) {
+    const entry = {};
+    const parentQ = outcomeIds?.[p.parent], childQ = outcomeIds?.[p.child];
+    if (parentQ) {
+      const a = getAnswerText(r, parentQ, qMap);
+      const def = SCORED_OUTCOMES.find(x => x.id === p.parent);
+      if (a != null && a !== "" && def) entry.p = def.concerning(a) ? 1 : 0;
+    }
+    if (childQ) {
+      const a = getAnswerText(r, childQ, qMap);
+      const def = SCORED_OUTCOMES.find(x => x.id === p.child);
+      if (a != null && a !== "" && def) entry.c = def.concerning(a) ? 1 : 0;
+    }
+    if (entry.p !== undefined || entry.c !== undefined) disp[p.theme] = entry;
+  }
+  rec.disp = disp;
+
+  return rec;
+}
+
+// ─── Aggregate anonymised records into the data.json structure ──────────────────
+// Arithmetic mirrors classifyAllResponses exactly, reading record fields instead of
+// raw answers. qMapsByLang is used only to map drop-off positions to headings.
+function aggregateRecords(records, qMapsByLang) {
+  const result = buildEmptyResult();
+  let completedWithDunAnswer = 0;
+  const unmatchedDUN = {};
+  // drop-off: per language, position -> count of partials whose furthest answer was there
+  const dropByLang = {};
+
+  for (const rec of records) {
+    if (!rec) continue;
+    result.totalStarted++;
+    if (result.byLanguage[rec.lang]) result.byLanguage[rec.lang].started++;
+    if (rec.date) {
+      if (!result.byDate[rec.date]) result.byDate[rec.date] = { started:0, completed:0 };
+      result.byDate[rec.date].started++;
+    }
+
+    if (rec.status !== "completed") {
+      // drop-off accumulation for partials
+      if (typeof rec.dropPos === "number" && rec.dropPos >= 0) {
+        if (!dropByLang[rec.lang]) dropByLang[rec.lang] = {};
+        dropByLang[rec.lang][rec.dropPos] = (dropByLang[rec.lang][rec.dropPos] || 0) + 1;
+      }
+      continue;
+    }
+
+    result.totalCompleted++;
+    if (result.byLanguage[rec.lang]) result.byLanguage[rec.lang].completed++;
+    if (rec.date) result.byDate[rec.date].completed++;
+
+    const { district, urbanRural, ethnicity, income, ageGroup, gender } = rec;
+    if (rec.hadDun) completedWithDunAnswer++;
+    if (rec.unmatchedDun) unmatchedDUN[rec.unmatchedDun] = (unmatchedDUN[rec.unmatchedDun] || 0) + 1;
+
+    if (district) {
+      result.crossTab[district][ethnicity]++;
+      if (income) result.incomeByDistrict[district][income]++;
+      if (ageGroup) result.ageByDistrict[district][ageGroup]++;
+      if (gender) result.genderByDistrict[district][gender]++;
+    } else {
+      result.noDistrict++;
+    }
+
+    if (gender) {
+      result.byGender[gender]++;
+      result.ethnicityByGender[ethnicity][gender]++;
+      if (ageGroup) result.ageByGender[ageGroup][gender]++;
+      if (income) result.incomeByGender[income][gender]++;
+    }
+    if (income) {
+      result.byIncome[income]++;
+      result.ethnicityByIncome[ethnicity][income]++;
+      if (ageGroup) result.incomeByAge[income][ageGroup]++;
+    }
+    if (ageGroup) result.ethnicityByAge[ethnicity][ageGroup]++;
+    if (urbanRural) result.byUrbanRural[urbanRural]++;
+    if (rec.disabled) result.vulnerableGroups["Children with disability"]++;
+    if (rec.singleParent) result.vulnerableGroups["Single-parent households"]++;
+    if (rec.refugee) result.vulnerableGroups["Refugees / undocumented"]++;
+
+    if (rec.crg) {
+      result.crg.total++;
+      if (district) result.crg.byDistrict[district]++;
+      result.crg.byEthnicity[ethnicity]++;
+      result.crg.byIncome[income || "Not stated"]++;
+      if (gender) result.crg.byGender[gender]++;
+      if (urbanRural) result.crg.byUrbanRural[urbanRural]++;
+      if (ageGroup) {
+        result.crg.byAge[ageGroup]++;
+        if (ageGroup === "13-16") result.crg.eligible1316++;
+      }
+    }
+
+    // Outcomes
+    const lensVals = {
+      gender, ageGroup, income, urbanRural,
+      disability: rec.disabled ? "Disabled" : "Not disabled",
+      migration: rec.refugee ? "Migrant/refugee" : "Citizen",
+    };
+    const oflags = rec.o || {};
+    for (const od of SCORED_OUTCOMES) {
+      const f = oflags[od.id];
+      if (f === undefined) continue;
+      const acc = result.outcomes[od.id];
+      acc.overall.n++; if (f === 1) acc.overall.c++;
+      for (const lk of LENS_KEYS) {
+        const v = lensVals[lk];
+        if (v && acc.byLens[lk][v]) { acc.byLens[lk][v].n++; if (f === 1) acc.byLens[lk][v].c++; }
+      }
+    }
+    if (Object.keys(oflags).length > 0) {
+      result.outcomeRows.push({
+        g: gender || null, a: ageGroup || null, i: income || null, u: urbanRural || null,
+        d: rec.disabled ? 1 : 0, m: rec.refugee ? 1 : 0, o: oflags,
+      });
+    }
+
+    // Disparity
+    const disp = rec.disp || {};
+    for (const p of PARALLEL_PAIRS) {
+      const dd = disp[p.theme];
+      if (!dd) continue;
+      if (dd.p !== undefined) { result.disparity[p.theme].parent.n++; if (dd.p) result.disparity[p.theme].parent.c++; }
+      if (dd.c !== undefined) { result.disparity[p.theme].child.n++; if (dd.c) result.disparity[p.theme].child.c++; }
+    }
+
+    // Daily breakdowns
+    if (rec.date) {
+      const bd = (obj, key) => { if (!obj[rec.date]) obj[rec.date] = {}; if (key) obj[rec.date][key] = (obj[rec.date][key] || 0) + 1; };
+      if (district)   bd(result.byDateByDistrict, district);
+      if (ethnicity)  bd(result.byDateByEthnicity, ethnicity);
+      if (income)     bd(result.byDateByIncome, income);
+      if (ageGroup)   bd(result.byDateByAge, ageGroup);
+      if (gender)     bd(result.byDateByGender, gender);
+      if (urbanRural) bd(result.byDateByUrbanRural, urbanRural);
+    }
+  }
+
+  const dunCoverage = result.totalCompleted > 0 ? Math.round(completedWithDunAnswer / result.totalCompleted * 100) : 0;
+  console.log(`DUN coverage: ${completedWithDunAnswer}/${result.totalCompleted} completed responses have district (${dunCoverage}%)`);
+  if (Object.keys(unmatchedDUN).length > 0) console.log("Unmatched DUN values:", JSON.stringify(unmatchedDUN));
+
+  // Drop-off print (position -> heading via each language's qMap)
+  console.log("=== DROP-OFF ANALYSIS ===");
+  for (const [lang, posCounts] of Object.entries(dropByLang)) {
+    const qMap = qMapsByLang?.[lang];
+    const headingByPos = {};
+    if (qMap) { let i = 0; for (const qId of Object.keys(qMap)) { headingByPos[i] = (qMap[qId]?.heading || "").replace(/<[^>]+>/g, "").slice(0, 50); i++; } }
+    const total = Object.values(posCounts).reduce((s, n) => s + n, 0);
+    console.log(`\n${lang} - ${total} partial responses, top drop-off points:`);
+    const sorted = Object.entries(posCounts).sort((a, b) => b[1] - a[1]).slice(0, 8);
+    for (const [pos, count] of sorted) {
+      const pct = Math.round(count / total * 100);
+      console.log(`  ${count} (${pct}%) last answered → pos${String(pos).padStart(3,"0")}: ${headingByPos[pos] || "(unknown)"}`);
+    }
+  }
+  console.log("=== END DROP-OFF ===\n");
+
+  return result;
+}
+
+// ─── Shared empty-result builder (used by both aggregation paths) ───────────────
+function buildEmptyResult() {
   const result = {
     totalStarted: 0, totalCompleted: 0,
     byDate: {},
@@ -527,54 +811,29 @@ function classifyAllResponses(surveyData) {
     byDateByDistrict: {}, byDateByEthnicity: {}, byDateByIncome: {},
     byDateByAge: {}, byDateByGender: {}, byDateByUrbanRural: {},
     noDistrict: 0,
-    // CRG sign-ups (contact details left on the Child Reference Group question; 13-16 eligible)
     crg: {
-      total: 0,                       // total sign-ups
-      eligible1316: 0,                // sign-ups who are 13-16 (the eligible band)
+      total: 0, eligible1316: 0,
       byDistrict: {}, byEthnicity: { Malay:0, Chinese:0, Indian:0, Others:0 },
       byIncome: { B40:0, M40:0, T20:0, "Not stated":0 },
       byGender: { Male:0, Female:0 },
       byUrbanRural: { Urban:0, "Peri-urban":0, Rural:0 },
       byAge: { "10-12":0, "13-16":0, "17":0 },
     },
-    // Intersectional outcomes: per scored outcome, concerning + total counts overall and per lens value.
-    // Structure: outcomes[englishId] = { meta, overall:{c,n}, byLens:{ gender:{Male:{c,n},...}, ... } }
     outcomes: {},
-    // Parent-child disparity: per theme, the concerning-rate for each module
     disparity: {},
-    // Anonymised per-response microdata for live multi-lens filtering on the dashboard.
-    // Each row: lens values + module + concerning flags per outcome. No identifying data.
     outcomeRows: [],
-    // Metadata for each scored outcome (id -> {short, ro, domain, module}) for the dashboard
     outcomeMeta: Object.fromEntries(SCORED_OUTCOMES.map(o => [o.id, { short:o.short, ro:o.ro, domain:o.domain, module:o.module }])),
   };
-
-  // Initialise outcome accumulators
   const LENS_VALUES = {
-    gender: ["Male","Female"],
-    ageGroup: ["10-12","13-16","17"],
-    income: ["B40","M40","T20"],
-    urbanRural: ["Urban","Peri-urban","Rural"],
-    disability: ["Disabled","Not disabled"],
-    migration: ["Migrant/refugee","Citizen"],
+    gender: ["Male","Female"], ageGroup: ["10-12","13-16","17"], income: ["B40","M40","T20"],
+    urbanRural: ["Urban","Peri-urban","Rural"], disability: ["Disabled","Not disabled"], migration: ["Migrant/refugee","Citizen"],
   };
   for (const o of SCORED_OUTCOMES) {
     const byLens = {};
-    for (const lk of LENS_KEYS) {
-      byLens[lk] = {};
-      for (const v of LENS_VALUES[lk]) byLens[lk][v] = { c:0, n:0 };
-    }
-    result.outcomes[o.id] = {
-      meta: { id:o.id, module:o.module, ro:o.ro, domain:o.domain, short:o.short },
-      overall: { c:0, n:0 },
-      byLens,
-    };
+    for (const lk of LENS_KEYS) { byLens[lk] = {}; for (const v of LENS_VALUES[lk]) byLens[lk][v] = { c:0, n:0 }; }
+    result.outcomes[o.id] = { meta:{ id:o.id, module:o.module, ro:o.ro, domain:o.domain, short:o.short }, overall:{ c:0, n:0 }, byLens };
   }
-  for (const p of PARALLEL_PAIRS) {
-    result.disparity[p.theme] = { parent:{c:0,n:0}, child:{c:0,n:0} };
-  }
-
-  // Init cross-tab structures
+  for (const p of PARALLEL_PAIRS) result.disparity[p.theme] = { parent:{c:0,n:0}, child:{c:0,n:0} };
   for (const d of ["Timur Laut","Barat Daya","SP Utara","SP Tengah","SP Selatan"]) {
     result.crossTab[d] = { Malay:0, Chinese:0, Indian:0, Others:0 };
     result.incomeByDistrict[d] = { B40:0, M40:0, T20:0 };
@@ -587,235 +846,26 @@ function classifyAllResponses(surveyData) {
     result.ethnicityByIncome[e] = { B40:0, M40:0, T20:0 };
     result.ethnicityByAge[e] = { "10-12":0, "13-16":0, "17":0 };
   }
-  for (const a of ["10-12","13-16","17"]) {
-    result.ageByGender[a] = { Male:0, Female:0 };
-  }
-  for (const i of ["B40","M40","T20"]) {
-    result.incomeByAge[i] = { "10-12":0, "13-16":0, "17":0 };
-    result.incomeByGender[i] = { Male:0, Female:0 };
-  }
+  for (const a of ["10-12","13-16","17"]) result.ageByGender[a] = { Male:0, Female:0 };
+  for (const i of ["B40","M40","T20"]) { result.incomeByAge[i] = { "10-12":0, "13-16":0, "17":0 }; result.incomeByGender[i] = { Male:0, Female:0 }; }
+  return result;
+}
 
-  const unmatchedDUN = {};
-  let completedWithDunAnswer = 0;
-
+// ─── Classify all responses ────────────────────────────────────────────────────
+function classifyAllResponses(surveyData) {
+  // Full-fetch path: classify every raw response into records, then aggregate.
+  // Kept as the fallback when no cache exists or incremental fetch is unavailable.
+  const records = [];
+  const qMapsByLang = {};
   for (const { language, responses, qMap, questionIds, outcomeIds } of surveyData) {
+    qMapsByLang[language] = qMap;
     for (const r of responses) {
-      const isStarted = r.response_status === "partial" || r.response_status === "completed";
-      const isCompleted = r.response_status === "completed";
-      if (!isStarted) continue;
-
-      result.totalStarted++;
-      result.byLanguage[language].started++;
-
-      const dateStr = r.date_created ? r.date_created.split("T")[0] : null;
-      if (dateStr) {
-        if (!result.byDate[dateStr]) result.byDate[dateStr] = { started:0, completed:0 };
-        result.byDate[dateStr].started++;
-      }
-
-      if (!isCompleted) continue;
-      result.totalCompleted++;
-      result.byLanguage[language].completed++;
-      if (dateStr) result.byDate[dateStr].completed++;
-
-      // Extract demographics — DUN may be in island OR Seberang Perai question
-      const dunText = getAnswerText(r, questionIds.dunIsland, qMap) || getAnswerText(r, questionIds.dunSeberang, qMap);
-      if (dunText) completedWithDunAnswer++;
-      const dunKey = matchDUN(dunText);
-      const district = dunKey ? DUN_DISTRICT[dunKey] : null;
-      const urbanRural = dunKey ? DUN_URBAN[dunKey] : null;
-      if (dunText && !district) unmatchedDUN[dunText] = (unmatchedDUN[dunText] || 0) + 1;
-
-      const ethText = getAnswerText(r, questionIds.ethnicity, qMap);
-      const ethnicity = matchPattern(ethText, ETH_MAP) || "Others";
-
-      const incText = getAnswerText(r, questionIds.income, qMap);
-      const income = matchIncome(incText);
-
-      const ageText = getAnswerText(r, questionIds.childAge, qMap);
-      const ageGroup = extractAge(ageText);
-
-      const genderText = getAnswerText(r, questionIds.childGender, qMap);
-      const gender = matchPattern(genderText, GENDER_MAP);
-
-      const maritalText = getAnswerText(r, questionIds.marital, qMap);
-      const isSingleParent = maritalText && /single.?parent|one.?parent|single|divorced|widowed|ibu tunggal|bapa tunggal|bercerai|balu|janda|单亲|离婚|丧偶|தனி|விவாகரத்து|விதவை/i.test(maritalText);
-
-      const isDisabled = hasDisability(r, questionIds.disability, qMap);
-      const isRefugee = ethText && /refugee|undocumented|pelarian|难民|அகதி/i.test(ethText);
-
-      // Count
-      if (district) {
-        result.crossTab[district][ethnicity]++;
-        if (income) result.incomeByDistrict[district][income]++;
-        if (ageGroup) result.ageByDistrict[district][ageGroup]++;
-        if (gender) result.genderByDistrict[district][gender]++;
-      } else {
-        result.noDistrict++;
-      }
-
-      if (gender) {
-        result.byGender[gender]++;
-        result.ethnicityByGender[ethnicity][gender]++;
-        if (ageGroup) result.ageByGender[ageGroup][gender]++;
-        if (income) result.incomeByGender[income][gender]++;
-      }
-
-      if (income) {
-        result.byIncome[income]++;
-        result.ethnicityByIncome[ethnicity][income]++;
-        if (ageGroup) result.incomeByAge[income][ageGroup]++;
-      }
-
-      if (ageGroup) result.ethnicityByAge[ethnicity][ageGroup]++;
-      if (urbanRural) result.byUrbanRural[urbanRural]++;
-      if (isDisabled) result.vulnerableGroups["Children with disability"]++;
-      if (isSingleParent) result.vulnerableGroups["Single-parent households"]++;
-      if (isRefugee) result.vulnerableGroups["Refugees / undocumented"]++;
-
-      // CRG sign-up: contact details left on the Child Reference Group question.
-      // Privacy: we only record presence/absence of contact text, never the text itself.
-      // The field may be multi-textbox (email + WhatsApp), so check for any non-empty text.
-      let crgSignup = false;
-      if (questionIds.crg) {
-        for (const page of (r.pages || [])) {
-          for (const q of (page.questions || [])) {
-            if (q.id === questionIds.crg) {
-              for (const a of (q.answers || [])) {
-                if (a.text && String(a.text).trim().length > 0) { crgSignup = true; break; }
-              }
-            }
-          }
-        }
-      }
-      if (crgSignup) {
-        result.crg.total++;
-        if (district) result.crg.byDistrict[district]++;
-        result.crg.byEthnicity[ethnicity]++;
-        result.crg.byIncome[income || "Not stated"]++;
-        if (gender) result.crg.byGender[gender]++;
-        if (urbanRural) result.crg.byUrbanRural[urbanRural]++;
-        if (ageGroup) {
-          result.crg.byAge[ageGroup]++;
-          if (ageGroup === "13-16") result.crg.eligible1316++;
-        }
-      }
-
-      // ── Intersectional outcome tabulation ──
-      // Lens values for this respondent
-      const lensVals = {
-        gender,
-        ageGroup,
-        income,
-        urbanRural,
-        disability: isDisabled ? "Disabled" : "Not disabled",
-        migration: isRefugee ? "Migrant/refugee" : "Citizen",
-      };
-      for (const o of SCORED_OUTCOMES) {
-        const qid = outcomeIds?.[o.id];
-        if (!qid) continue;
-        const ans = getAnswerText(r, qid, qMap);
-        if (ans == null || ans === "") continue; // unanswered - not in denominator
-        const isConcerning = o.concerning(ans);
-        const acc = result.outcomes[o.id];
-        acc.overall.n++;
-        if (isConcerning) acc.overall.c++;
-        for (const lk of LENS_KEYS) {
-          const v = lensVals[lk];
-          if (v && acc.byLens[lk][v]) {
-            acc.byLens[lk][v].n++;
-            if (isConcerning) acc.byLens[lk][v].c++;
-          }
-        }
-      }
-
-      // ── Anonymised microdata row for live multi-lens filtering ──
-      // Compact keys to keep data.json small. Lens values use short codes; outcomes
-      // store 1 (concerning), 0 (answered, not concerning); absent = unanswered.
-      const outFlags = {};
-      for (const o of SCORED_OUTCOMES) {
-        const qid = outcomeIds?.[o.id];
-        if (!qid) continue;
-        const ans = getAnswerText(r, qid, qMap);
-        if (ans == null || ans === "") continue;
-        outFlags[o.id] = o.concerning(ans) ? 1 : 0;
-      }
-      if (Object.keys(outFlags).length > 0) {
-        result.outcomeRows.push({
-          g: gender || null,                                   // gender
-          a: ageGroup || null,                                 // age band
-          i: income || null,                                   // income
-          u: urbanRural || null,                               // urban/rural
-          d: isDisabled ? 1 : 0,                               // disability
-          m: isRefugee ? 1 : 0,                                // migration (refugee/undocumented)
-          o: outFlags,                                         // outcome concerning flags
-        });
-      }
-
-      // Parent-child disparity (same concerning tests, by module side)
-      for (const p of PARALLEL_PAIRS) {
-        const side = (function(){
-          // Determine which side this response can answer: try parent id then child id
-          const parentQ = outcomeIds?.[p.parent], childQ = outcomeIds?.[p.child];
-          return { parentQ, childQ };
-        })();
-        // Parent side
-        if (side.parentQ) {
-          const a = getAnswerText(r, side.parentQ, qMap);
-          if (a != null && a !== "") {
-            const def = SCORED_OUTCOMES.find(o => o.id === p.parent);
-            const test = def ? def.concerning : null;
-            if (test) { result.disparity[p.theme].parent.n++; if (test(a)) result.disparity[p.theme].parent.c++; }
-          }
-        }
-        // Child side
-        if (side.childQ) {
-          const a = getAnswerText(r, side.childQ, qMap);
-          if (a != null && a !== "") {
-            const def = SCORED_OUTCOMES.find(o => o.id === p.child);
-            const test = def ? def.concerning : null;
-            if (test) { result.disparity[p.theme].child.n++; if (test(a)) result.disparity[p.theme].child.c++; }
-          }
-        }
-      }
-
-      // Daily breakdowns
-      if (dateStr) {
-        if (district) {
-          if (!result.byDateByDistrict[dateStr]) result.byDateByDistrict[dateStr] = {};
-          result.byDateByDistrict[dateStr][district] = (result.byDateByDistrict[dateStr][district] || 0) + 1;
-        }
-        if (ethnicity) {
-          if (!result.byDateByEthnicity[dateStr]) result.byDateByEthnicity[dateStr] = {};
-          result.byDateByEthnicity[dateStr][ethnicity] = (result.byDateByEthnicity[dateStr][ethnicity] || 0) + 1;
-        }
-        if (income) {
-          if (!result.byDateByIncome[dateStr]) result.byDateByIncome[dateStr] = {};
-          result.byDateByIncome[dateStr][income] = (result.byDateByIncome[dateStr][income] || 0) + 1;
-        }
-        if (ageGroup) {
-          if (!result.byDateByAge[dateStr]) result.byDateByAge[dateStr] = {};
-          result.byDateByAge[dateStr][ageGroup] = (result.byDateByAge[dateStr][ageGroup] || 0) + 1;
-        }
-        if (gender) {
-          if (!result.byDateByGender[dateStr]) result.byDateByGender[dateStr] = {};
-          result.byDateByGender[dateStr][gender] = (result.byDateByGender[dateStr][gender] || 0) + 1;
-        }
-        if (urbanRural) {
-          if (!result.byDateByUrbanRural[dateStr]) result.byDateByUrbanRural[dateStr] = {};
-          result.byDateByUrbanRural[dateStr][urbanRural] = (result.byDateByUrbanRural[dateStr][urbanRural] || 0) + 1;
-        }
-      }
+      const rec = classifyOneResponse(r, language, qMap, questionIds, outcomeIds);
+      if (rec) records.push(rec);
     }
   }
-
-  // Data quality note
-  const dunCoverage = result.totalCompleted > 0 ? Math.round(completedWithDunAnswer / result.totalCompleted * 100) : 0;
-  console.log(`DUN coverage: ${completedWithDunAnswer}/${result.totalCompleted} completed responses have district (${dunCoverage}%)`);
-  if (Object.keys(unmatchedDUN).length > 0) {
-    console.log("Unmatched DUN values:", JSON.stringify(unmatchedDUN));
-  }
-
+  const result = aggregateRecords(records, qMapsByLang);
+  result._records = records; // expose for cache building in full-fetch mode
   return result;
 }
 
@@ -929,7 +979,7 @@ async function main() {
   const statusCounts = {};
   const dunChoicesByLang = {}; // for spelling comparison
   for (const [lang, id] of Object.entries(SURVEY_IDS)) {
-    console.log(`Fetching ${lang} survey (${id})...`);
+    console.log(`Reading ${lang} survey structure (${id})...`);
     const details = await fetchSurveyDetails(id);
     const qMap = buildChoiceMap(details);
     const questionIds = identifyQuestions(qMap);
@@ -940,14 +990,9 @@ async function main() {
       seberang: Object.values(qMap[questionIds.dunSeberang]?.choices || {}),
     };
 
-    const responses = await fetchAllResponses(id);
-    for (const r of responses) {
-      const st = r.response_status || "unknown";
-      statusCounts[st] = (statusCounts[st] || 0) + 1;
-    }
-    console.log(`  ${responses.length} responses, ${Object.keys(qMap).length} questions mapped`);
+    console.log(`  ${Object.keys(qMap).length} questions mapped`);
     console.log(`  Identified: islandDUN=${questionIds.dunIsland||"NO"} seberangDUN=${questionIds.dunSeberang||"NO"} eth=${questionIds.ethnicity||"NO"} inc=${questionIds.income||"NO"} age=${questionIds.childAge||"NO"} gen=${questionIds.childGender||questionIds.parentGender||"NO"} dis=${questionIds.disability.length} crg=${questionIds.crg||"NO"}`);
-    surveyData.push({ language: lang, responses, qMap, questionIds });
+    surveyData.push({ language: lang, id, responses: [], qMap, questionIds });
   }
 
   // ── CRG cross-language anchoring ──
@@ -1056,11 +1101,7 @@ async function main() {
   console.log(`Scored outcomes resolved: ${engOutcomeFound}/${SCORED_OUTCOMES.length} in English; other surveys mapped by position.`);
 
 
-  const totalRaw = surveyData.reduce((s, d) => s + d.responses.length, 0);
-  console.log(`Total raw responses: ${totalRaw}`);
-  console.log(`Response status breakdown:`, JSON.stringify(statusCounts));
-
-  // ── DUN spelling check across all 4 surveys ──
+  // ── DUN spelling check across all 4 surveys (uses question maps only) ──
   console.log("\n=== DUN SPELLING CHECK ===");
   for (const part of ["island", "seberang"]) {
     const base = (dunChoicesByLang.English?.[part] || []).map(s => s.toUpperCase().trim());
@@ -1069,9 +1110,8 @@ async function main() {
       const other = (dunChoicesByLang[lang]?.[part] || []).map(s => s.toUpperCase().trim());
       const onlyBase = base.filter(x => !other.includes(x));
       const onlyOther = other.filter(x => !base.includes(x));
-      if (!onlyBase.length && !onlyOther.length) {
-        console.log(`  ${lang}: identical ✓`);
-      } else {
+      if (!onlyBase.length && !onlyOther.length) console.log(`  ${lang}: identical ✓`);
+      else {
         console.log(`  ${lang}: DIFFERS`);
         if (onlyOther.length) console.log(`    Only in ${lang}: ${onlyOther.join(", ")}`);
         if (onlyBase.length) console.log(`    Missing from ${lang}: ${onlyBase.join(", ")}`);
@@ -1080,56 +1120,66 @@ async function main() {
   }
   console.log("=== END DUN CHECK ===\n");
 
-  // ── DROP-OFF ANALYSIS ──
-  // Build a question-order + heading map from the English survey (structure is shared)
-  console.log("=== DROP-OFF ANALYSIS ===");
-  const engSurvey = surveyData.find(s => s.language === "English");
-  if (engSurvey) {
-    // Build ordered list of question IDs with short headings, per survey
-    for (const { language, responses, qMap } of surveyData) {
-      // Order questions by their appearance in qMap (insertion order = survey order)
-      const orderedQ = Object.keys(qMap);
-      const qPosition = {};
-      orderedQ.forEach((qId, i) => { qPosition[qId] = i; });
+  // ── Cache-aware fetch + classify + aggregate ──
+  // Incremental: only fetch responses modified since the last run, classify them into
+  // anonymised records, merge into the cached record set, then aggregate everything.
+  // Full fallback: if no valid cache, fetch everything once to build the cache.
+  console.log("Classifying responses...");
+  const runStartISO = new Date().toISOString();
+  const cache = loadCache();
+  let recordsById = {};
+  let classified;
+  const qMapsByLang = {};
+  for (const sd of surveyData) qMapsByLang[sd.language] = sd.qMap;
 
-      // For each partial response, find the furthest-position question answered
-      const dropAtHeading = {};
-      let partialCount = 0;
-      for (const r of responses) {
-        if (r.response_status !== "partial") continue;
-        partialCount++;
-        let maxPos = -1, lastQId = null;
-        for (const page of (r.pages || [])) {
-          for (const q of (page.questions || [])) {
-            const pos = qPosition[q.id];
-            if (pos !== undefined && pos > maxPos && (q.answers || []).length > 0) {
-              maxPos = pos; lastQId = q.id;
-            }
-          }
+  try {
+    if (cache) {
+      // INCREMENTAL: fetch only modified-since responses
+      recordsById = { ...cache.records };
+      const sinceISO = new Date(new Date(cache.lastModified).getTime() - CACHE_OVERLAP_MS).toISOString();
+      console.log(`Incremental fetch: responses modified since ${sinceISO}`);
+      let fetchedCount = 0;
+      for (const sd of surveyData) {
+        const fresh = await fetchResponsesSince(sd.id, sinceISO);
+        fetchedCount += fresh.length;
+        for (const r of fresh) {
+          const st = r.response_status || "unknown";
+          statusCounts[st] = (statusCounts[st] || 0) + 1;
+          const rec = classifyOneResponse(r, sd.language, sd.qMap, sd.questionIds, sd.outcomeIds);
+          if (rec) recordsById[rec.id] = rec; // replace existing (handles partial->completed)
         }
-        if (lastQId) {
-          const heading = (qMap[lastQId]?.heading || "(unknown)").replace(/<[^>]+>/g, "").slice(0, 50);
-          const key = `pos${String(maxPos).padStart(3,"0")}: ${heading}`;
-          dropAtHeading[key] = (dropAtHeading[key] || 0) + 1;
-        }
+        console.log(`  ${sd.language}: ${fresh.length} new/modified responses`);
       }
-
-      if (partialCount > 0) {
-        console.log(`\n${language} - ${partialCount} partial responses, top drop-off points:`);
-        const sorted = Object.entries(dropAtHeading).sort((a,b) => b[1]-a[1]).slice(0, 8);
-        for (const [key, count] of sorted) {
-          const pct = Math.round(count / partialCount * 100);
-          console.log(`  ${count} (${pct}%) last answered → ${key}`);
+      console.log(`Incremental fetch complete: ${fetchedCount} responses pulled, ${Object.keys(recordsById).length} total in cache.`);
+    } else {
+      // FULL: fetch everything, build the cache from scratch
+      console.log("No cache - performing a full fetch to build the record cache.");
+      for (const sd of surveyData) {
+        const responses = await fetchAllResponses(sd.id);
+        for (const r of responses) {
+          const st = r.response_status || "unknown";
+          statusCounts[st] = (statusCounts[st] || 0) + 1;
+          const rec = classifyOneResponse(r, sd.language, sd.qMap, sd.questionIds, sd.outcomeIds);
+          if (rec) recordsById[rec.id] = rec;
         }
+        console.log(`  ${sd.language}: ${responses.length} responses classified`);
       }
     }
+    // Persist the updated cache and aggregate
+    saveCache(recordsById, runStartISO);
+    classified = aggregateRecords(Object.values(recordsById), qMapsByLang);
+  } catch (err) {
+    // Safety net: if incremental fetch failed mid-way but we have a cache, aggregate
+    // what we have so the dashboard still updates rather than the run dying.
+    if (Object.keys(recordsById).length > 0) {
+      console.log(`Fetch error (${err.message}) - aggregating records already in hand.`);
+      classified = aggregateRecords(Object.values(recordsById), qMapsByLang);
+    } else {
+      throw err;
+    }
   }
-  console.log("=== END DROP-OFF ===\n");
-
-  // Classify in Node.js - no AI dependency
-  console.log("Classifying responses...");
-  const classified = classifyAllResponses(surveyData);
   classified.updatedAt = new Date().toISOString();
+  console.log(`Response status breakdown (this run's fetch):`, JSON.stringify(statusCounts));
 
   console.log(`Classified: ${classified.totalStarted} started, ${classified.totalCompleted} completed`);
   console.log(`Districts:`, JSON.stringify(Object.fromEntries(Object.entries(classified.crossTab).map(([d,v])=>[d,Object.values(v).reduce((a,b)=>a+b,0)]))));
