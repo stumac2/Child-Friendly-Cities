@@ -1,0 +1,42 @@
+name: CFP Vulnerable Groups Extract
+
+# Run on demand only (click "Run workflow" in the Actions tab)
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run vulnerable groups extract
+        env:
+          SM_MCP_TOKEN: ${{ secrets.SM_MCP_TOKEN }}
+        run: node vulnerable-extract.js
+
+      - name: Commit the extract file
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/vulnerable-groups.xlsx
+          git diff --staged --quiet && echo "No changes to commit" && exit 0
+          git commit -m "Vulnerable groups extract $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          # Another workflow may have pushed while we ran; pull/rebase and retry.
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin main && break
+            echo "Push attempt $i failed - retrying after pull/rebase..."
+            sleep 5
+          done
