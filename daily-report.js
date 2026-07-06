@@ -999,6 +999,29 @@ async function main() {
   }
   console.log(`=== END STATUS CHOICES ===\n`);
 
+  // ── DISABILITY QUESTION STRUCTURE DIAGNOSTIC ──
+  // Current detection finds 0 disability questions (dis=0 in every run), so disabled
+  // children are not being captured. Dump candidate questions to see the real structure.
+  console.log(`=== DISABILITY STRUCTURE (English) ===`);
+  if (engData) {
+    let found = 0;
+    for (const [qId, q] of Object.entries(engData.qMap)) {
+      const h = (q.heading || "").toLowerCase();
+      // Washington Group indicators: difficulty, or the function words, or "wear glasses"/"assistive"
+      if (/difficult|seeing|hearing|walking|remember|self.?care|communicat|wash|dress|concentrat|glasses|aid/i.test(h)) {
+        const rowVals = Object.values(q.rows || {});
+        const choiceVals = Object.values(q.choices || {});
+        console.log(`  [${qId}] fam=${q.family}/${q.subtype} pos=${q.position}`);
+        console.log(`    heading: "${(q.heading||"").replace(/<[^>]+>/g,"").slice(0,70)}"`);
+        if (rowVals.length) console.log(`    rows(${rowVals.length}): ${rowVals.slice(0,8).join(" | ").slice(0,120)}`);
+        if (choiceVals.length) console.log(`    choices(${choiceVals.length}): ${choiceVals.slice(0,6).join(" | ").slice(0,120)}`);
+        found++;
+      }
+    }
+    if (!found) console.log(`  No disability-like questions found by keyword scan.`);
+  }
+  console.log(`=== END DISABILITY STRUCTURE ===\n`);
+
   // ── Resolve scored-outcome question IDs across all 4 surveys ──
   // English IDs are known; other surveys share structure, so map by position.
   // Build English position lookup for each outcome id, then find same-position id per survey.
