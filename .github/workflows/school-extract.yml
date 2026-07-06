@@ -32,5 +32,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/school-participation.xlsx
-          git diff --staged --quiet || git commit -m "School participation extract $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          git push
+          git diff --staged --quiet && echo "No changes to commit" && exit 0
+          git commit -m "School participation extract $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          # Another workflow (e.g. daily-report) may have pushed while we ran.
+          # Pull with rebase and retry the push a few times to avoid collisions.
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin main && break
+            echo "Push attempt $i failed - retrying after pull/rebase..."
+            sleep 5
+          done
