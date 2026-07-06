@@ -1,5 +1,5 @@
 {
-  "totalStarted": 7972,
+  "totalStarted": 7975,
   "totalCompleted": 4123,
   "byDate": {
     "2026-06-15": {
@@ -87,13 +87,13 @@
       "completed": 12
     },
     "2026-07-06": {
-      "started": 32,
+      "started": 35,
       "completed": 13
     }
   },
   "byLanguage": {
     "English": {
-      "started": 1904,
+      "started": 1906,
       "completed": 961
     },
     "Malay": {
@@ -101,7 +101,7 @@
       "completed": 1668
     },
     "Mandarin": {
-      "started": 2634,
+      "started": 2635,
       "completed": 1434
     },
     "Tamil": {
@@ -110240,5 +110240,5 @@
       "module": "child"
     }
   },
-  "updatedAt": "2026-07-06T03:26:49.604Z"
+  "updatedAt": "2026-07-06T05:15:04.143Z"
 }
