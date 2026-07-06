@@ -1,6 +1,6 @@
 {
-  "totalStarted": 7975,
-  "totalCompleted": 4123,
+  "totalStarted": 7979,
+  "totalCompleted": 4124,
   "byDate": {
     "2026-06-15": {
       "started": 24,
@@ -87,21 +87,21 @@
       "completed": 12
     },
     "2026-07-06": {
-      "started": 35,
-      "completed": 13
+      "started": 39,
+      "completed": 14
     }
   },
   "byLanguage": {
     "English": {
-      "started": 1906,
-      "completed": 961
+      "started": 1908,
+      "completed": 962
     },
     "Malay": {
-      "started": 3309,
+      "started": 3310,
       "completed": 1668
     },
     "Mandarin": {
-      "started": 2635,
+      "started": 2636,
       "completed": 1434
     },
     "Tamil": {
@@ -112,7 +112,7 @@
   "crossTab": {
     "Timur Laut": {
       "Malay": 352,
-      "Chinese": 598,
+      "Chinese": 599,
       "Indian": 43,
       "Others": 26
     },
@@ -261,7 +261,7 @@
     "Not stated": 0
   },
   "byUrbanRural": {
-    "Urban": 2220,
+    "Urban": 2221,
     "Peri-urban": 1334,
     "Rural": 556
   },
@@ -485,7 +485,7 @@
       "Timur Laut": 1
     },
     "2026-07-06": {
-      "Timur Laut": 12,
+      "Timur Laut": 13,
       "Barat Daya": 1
     }
   },
@@ -612,7 +612,7 @@
       "Malay": 3
     },
     "2026-07-06": {
-      "Chinese": 12,
+      "Chinese": 13,
       "Indian": 1
     }
   },
@@ -1024,7 +1024,7 @@
       "Peri-urban": 3
     },
     "2026-07-06": {
-      "Urban": 13
+      "Urban": 14
     }
   },
   "noDistrict": 13,
@@ -1076,7 +1076,7 @@
       },
       "overall": {
         "c": 912,
-        "n": 4081
+        "n": 4082
       },
       "byLens": {
         "gender": {
@@ -1120,7 +1120,7 @@
         "urbanRural": {
           "Urban": {
             "c": 549,
-            "n": 2196
+            "n": 2197
           },
           "Peri-urban": {
             "c": 268,
@@ -1138,7 +1138,7 @@
           },
           "Not disabled": {
             "c": 912,
-            "n": 4081
+            "n": 4082
           }
         },
         "migration": {
@@ -1148,7 +1148,7 @@
           },
           "Citizen": {
             "c": 912,
-            "n": 4081
+            "n": 4082
           }
         }
       }
@@ -1162,8 +1162,8 @@
         "short": "Child can express opinion freely"
       },
       "overall": {
-        "c": 1868,
-        "n": 4086
+        "c": 1869,
+        "n": 4087
       },
       "byLens": {
         "gender": {
@@ -1206,8 +1206,8 @@
         },
         "urbanRural": {
           "Urban": {
-            "c": 1027,
-            "n": 2196
+            "c": 1028,
+            "n": 2197
           },
           "Peri-urban": {
             "c": 591,
@@ -1224,8 +1224,8 @@
             "n": 0
           },
           "Not disabled": {
-            "c": 1868,
-            "n": 4086
+            "c": 1869,
+            "n": 4087
           }
         },
         "migration": {
@@ -1234,8 +1234,8 @@
             "n": 0
           },
           "Citizen": {
-            "c": 1868,
-            "n": 4086
+            "c": 1869,
+            "n": 4087
           }
         }
       }
@@ -1250,7 +1250,7 @@
       },
       "overall": {
         "c": 244,
-        "n": 4053
+        "n": 4054
       },
       "byLens": {
         "gender": {
@@ -1294,7 +1294,7 @@
         "urbanRural": {
           "Urban": {
             "c": 125,
-            "n": 2179
+            "n": 2180
           },
           "Peri-urban": {
             "c": 89,
@@ -1312,7 +1312,7 @@
           },
           "Not disabled": {
             "c": 244,
-            "n": 4053
+            "n": 4054
           }
         },
         "migration": {
@@ -1322,7 +1322,7 @@
           },
           "Citizen": {
             "c": 244,
-            "n": 4053
+            "n": 4054
           }
         }
       }
@@ -1337,7 +1337,7 @@
       },
       "overall": {
         "c": 707,
-        "n": 4074
+        "n": 4075
       },
       "byLens": {
         "gender": {
@@ -1381,7 +1381,7 @@
         "urbanRural": {
           "Urban": {
             "c": 414,
-            "n": 2190
+            "n": 2191
           },
           "Peri-urban": {
             "c": 206,
@@ -1399,7 +1399,7 @@
           },
           "Not disabled": {
             "c": 707,
-            "n": 4074
+            "n": 4075
           }
         },
         "migration": {
@@ -1409,7 +1409,7 @@
           },
           "Citizen": {
             "c": 707,
-            "n": 4074
+            "n": 4075
           }
         }
       }
@@ -1511,7 +1511,7 @@
       },
       "overall": {
         "c": 1077,
-        "n": 4069
+        "n": 4070
       },
       "byLens": {
         "gender": {
@@ -1555,7 +1555,7 @@
         "urbanRural": {
           "Urban": {
             "c": 633,
-            "n": 2192
+            "n": 2193
           },
           "Peri-urban": {
             "c": 320,
@@ -1573,7 +1573,7 @@
           },
           "Not disabled": {
             "c": 1077,
-            "n": 4069
+            "n": 4070
           }
         },
         "migration": {
@@ -1583,7 +1583,7 @@
           },
           "Citizen": {
             "c": 1077,
-            "n": 4069
+            "n": 4070
           }
         }
       }
@@ -1598,7 +1598,7 @@
       },
       "overall": {
         "c": 106,
-        "n": 4064
+        "n": 4065
       },
       "byLens": {
         "gender": {
@@ -1642,7 +1642,7 @@
         "urbanRural": {
           "Urban": {
             "c": 51,
-            "n": 2190
+            "n": 2191
           },
           "Peri-urban": {
             "c": 38,
@@ -1660,7 +1660,7 @@
           },
           "Not disabled": {
             "c": 106,
-            "n": 4064
+            "n": 4065
           }
         },
         "migration": {
@@ -1670,7 +1670,7 @@
           },
           "Citizen": {
             "c": 106,
-            "n": 4064
+            "n": 4065
           }
         }
       }
@@ -1684,8 +1684,8 @@
         "short": "Child safe at school from bullying"
       },
       "overall": {
-        "c": 893,
-        "n": 4057
+        "c": 894,
+        "n": 4058
       },
       "byLens": {
         "gender": {
@@ -1728,8 +1728,8 @@
         },
         "urbanRural": {
           "Urban": {
-            "c": 501,
-            "n": 2184
+            "c": 502,
+            "n": 2185
           },
           "Peri-urban": {
             "c": 276,
@@ -1746,8 +1746,8 @@
             "n": 0
           },
           "Not disabled": {
-            "c": 893,
-            "n": 4057
+            "c": 894,
+            "n": 4058
           }
         },
         "migration": {
@@ -1756,8 +1756,8 @@
             "n": 0
           },
           "Citizen": {
-            "c": 893,
-            "n": 4057
+            "c": 894,
+            "n": 4058
           }
         }
       }
@@ -1772,7 +1772,7 @@
       },
       "overall": {
         "c": 650,
-        "n": 4047
+        "n": 4048
       },
       "byLens": {
         "gender": {
@@ -1816,7 +1816,7 @@
         "urbanRural": {
           "Urban": {
             "c": 391,
-            "n": 2184
+            "n": 2185
           },
           "Peri-urban": {
             "c": 199,
@@ -1834,7 +1834,7 @@
           },
           "Not disabled": {
             "c": 650,
-            "n": 4047
+            "n": 4048
           }
         },
         "migration": {
@@ -1844,7 +1844,7 @@
           },
           "Citizen": {
             "c": 650,
-            "n": 4047
+            "n": 4048
           }
         }
       }
@@ -1858,8 +1858,8 @@
         "short": "Children help protect environment"
       },
       "overall": {
-        "c": 2137,
-        "n": 4065
+        "c": 2138,
+        "n": 4066
       },
       "byLens": {
         "gender": {
@@ -1902,8 +1902,8 @@
         },
         "urbanRural": {
           "Urban": {
-            "c": 1206,
-            "n": 2190
+            "c": 1207,
+            "n": 2191
           },
           "Peri-urban": {
             "c": 677,
@@ -1920,8 +1920,8 @@
             "n": 0
           },
           "Not disabled": {
-            "c": 2137,
-            "n": 4065
+            "c": 2138,
+            "n": 4066
           }
         },
         "migration": {
@@ -1930,8 +1930,8 @@
             "n": 0
           },
           "Citizen": {
-            "c": 2137,
-            "n": 4065
+            "c": 2138,
+            "n": 4066
           }
         }
       }
@@ -1945,8 +1945,8 @@
         "short": "Authorities doing enough on climate"
       },
       "overall": {
-        "c": 956,
-        "n": 4028
+        "c": 957,
+        "n": 4029
       },
       "byLens": {
         "gender": {
@@ -1989,8 +1989,8 @@
         },
         "urbanRural": {
           "Urban": {
-            "c": 610,
-            "n": 2175
+            "c": 611,
+            "n": 2176
           },
           "Peri-urban": {
             "c": 248,
@@ -2007,8 +2007,8 @@
             "n": 0
           },
           "Not disabled": {
-            "c": 956,
-            "n": 4028
+            "c": 957,
+            "n": 4029
           }
         },
         "migration": {
@@ -2017,8 +2017,8 @@
             "n": 0
           },
           "Citizen": {
-            "c": 956,
-            "n": 4028
+            "c": 957,
+            "n": 4029
           }
         }
       }
@@ -2811,7 +2811,7 @@
     "Awareness of child rights": {
       "parent": {
         "c": 912,
-        "n": 4081
+        "n": 4082
       },
       "child": {
         "c": 685,
@@ -2820,8 +2820,8 @@
     },
     "Child can express / is listened to": {
       "parent": {
-        "c": 1868,
-        "n": 4086
+        "c": 1869,
+        "n": 4087
       },
       "child": {
         "c": 714,
@@ -2831,7 +2831,7 @@
     "Public spaces for children": {
       "parent": {
         "c": 1077,
-        "n": 4069
+        "n": 4070
       },
       "child": {
         "c": 935,
@@ -2841,7 +2841,7 @@
     "Activity participation": {
       "parent": {
         "c": 244,
-        "n": 4053
+        "n": 4054
       },
       "child": {
         "c": 284,
@@ -2851,7 +2851,7 @@
     "Climate worry": {
       "parent": {
         "c": 650,
-        "n": 4047
+        "n": 4048
       },
       "child": {
         "c": 1062,
@@ -2860,8 +2860,8 @@
     },
     "Helps protect environment": {
       "parent": {
-        "c": 2137,
-        "n": 4065
+        "c": 2138,
+        "n": 4066
       },
       "child": {
         "c": 1565,
@@ -27598,6 +27598,26 @@
         "820": 0,
         "821": 0,
         "825": 1,
+        "827": 0,
+        "831": 1,
+        "834": 0,
+        "836": 1,
+        "837": 1
+      }
+    },
+    {
+      "g": null,
+      "a": null,
+      "i": null,
+      "u": "Urban",
+      "d": 0,
+      "m": 0,
+      "o": {
+        "815": 0,
+        "818": 1,
+        "820": 0,
+        "821": 0,
+        "825": 0,
         "827": 0,
         "831": 1,
         "834": 0,
@@ -110240,5 +110260,5 @@
       "module": "child"
     }
   },
-  "updatedAt": "2026-07-06T05:15:04.143Z"
+  "updatedAt": "2026-07-06T06:52:25.083Z"
 }
