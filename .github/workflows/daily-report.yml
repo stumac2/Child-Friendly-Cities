@@ -38,5 +38,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/data.json
-          git diff --staged --quiet || git commit -m "Update survey data $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          git push
+          git diff --staged --quiet && echo "No changes to commit" && exit 0
+          git commit -m "Update survey data $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          # Another workflow may have pushed while we ran; pull/rebase and retry.
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin main && break
+            echo "Push attempt $i failed - retrying after pull/rebase..."
+            sleep 5
+          done
