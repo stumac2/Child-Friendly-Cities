@@ -46,7 +46,21 @@ async function smGet(path, attempt = 1) {
   if (!fs.existsSync("docs")) fs.mkdirSync("docs");
   fs.writeFileSync("docs/question-dump.txt", lines.join("\n"));
   console.log(`Wrote docs/question-dump.txt (${pos} questions)`);
-  // Also print the likely disability neighbourhood: any question mentioning difficulty/glasses/etc.
+
+  // ── Deep dump of the disability matrix/menu question (id 289909840) ──
+  // matrix/menu stores answer options differently: rows + per-question "cols"/"other",
+  // and each row's menu choices live under answers.cols[].choices or similar.
+  console.log("\n=== DISABILITY QUESTION RAW STRUCTURE (289909840) ===");
+  for (const page of (details.pages || [])) {
+    for (const q of (page.questions || [])) {
+      if (q.id === "289909840") {
+        console.log(JSON.stringify(q.answers, null, 2));
+      }
+    }
+  }
+  console.log("=== END DISABILITY RAW ===");
+
+  // Also print the difficulty-neighbourhood summary
   console.log("\n=== Questions mentioning difficulty/function words ===");
   const kw = /difficult|seeing|hearing|walking|remember|concentrat|self.?care|wash|dress|communicat|glasses|disab/i;
   pos = 0;
