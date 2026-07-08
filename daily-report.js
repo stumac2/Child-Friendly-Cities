@@ -362,8 +362,14 @@ function identifyQuestions(qMap) {
       continue;
     }
 
-    // Disability: Washington Group - heading mentions difficulty + a function
-    if (/difficulty|kesukaran|sukar|困难|难以|சிரமம்/i.test(heading) && /seeing|hearing|walking|remember|melihat|mendengar|berjalan|看|听|走|பார்|கேட்/i.test(heading)) {
+    // Disability: Washington Group Short Set. It's a matrix (often matrix/menu) whose
+    // ROWS mention difficulty - the difficulty scale lives in the row menus, not the
+    // heading, so detect by matrix family + rows containing "difficulty" (multilingual).
+    const rowVals = Object.values(q.rows || {});
+    const rowText = rowVals.join(" ").toLowerCase();
+    if (/matrix/i.test(q.family || "") &&
+        rowVals.length >= 2 &&
+        (rowText.match(/difficulty|kesukaran|sukar|困难|难以|சிரமம்|கடினம்/g) || []).length >= 2) {
       ids.disability.push(qId);
       continue;
     }
@@ -461,6 +467,13 @@ function buildChoiceMap(details) {
       if (Array.isArray(ans.rows)) {
         for (const r of ans.rows) entry.rows[r.id] = r.text;
       }
+      // matrix/menu: answer options live under cols[].choices (shared across rows)
+      entry.menuChoices = {};
+      if (Array.isArray(ans.cols)) {
+        for (const col of ans.cols) {
+          if (Array.isArray(col.choices)) for (const c of col.choices) entry.menuChoices[c.id] = c.text;
+        }
+      }
       if (ans.other) {
         const others = Array.isArray(ans.other) ? ans.other : [ans.other];
         for (const o of others) if (o.id) entry.choices[o.id] = o.text || "Other";
@@ -547,10 +560,25 @@ function getAnswerText(response, questionId, qMap) {
   return null;
 }
 
+// Washington Group standard cut-off: "a lot of difficulty" or "cannot do at all"
+// on at least one functional domain. Matches answer TEXT across all four languages.
+const WG_STD_CUTOFF = /a lot of difficulty|banyak kesukaran|很多困难|非常困难|மிகவும் சிரமம்|அதிக|cannot do at all|tidak boleh|tidak dapat|langsung tidak|完全无法|完全不能|முடியாது|செய்ய முடியாது/i;
+
 function hasDisability(response, disabilityIds, qMap) {
   for (const qId of disabilityIds) {
-    const text = getAnswerText(response, qId, qMap);
-    if (text && DISABILITY_PATTERN.test(text)) return true;
+    const qInfo = qMap[qId] || {};
+    for (const page of (response.pages || [])) {
+      for (const q of (page.questions || [])) {
+        if (q.id !== qId) continue;
+        for (const a of (q.answers || [])) {
+          // matrix/menu answers: choice_id points into the shared menu choices
+          const colText = (a.choice_id && qInfo.menuChoices?.[a.choice_id]) ? qInfo.menuChoices[a.choice_id]
+                        : (a.choice_id && qInfo.choices?.[a.choice_id]) ? qInfo.choices[a.choice_id]
+                        : (a.text || null);
+          if (colText && WG_STD_CUTOFF.test(colText)) return true;
+        }
+      }
+    }
   }
   return false;
 }
