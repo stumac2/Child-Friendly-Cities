@@ -84,11 +84,15 @@ function buildQMap(details) {
   for (const page of (details.pages || [])) {
     for (const q of (page.questions || [])) {
       const entry = { heading:q.headings?.[0]?.heading || "", family:q.family||"", subtype:q.subtype||"",
-                      position:pos, choices:{}, rows:{} };
+                      position:pos, choices:{}, rows:{}, menuChoices:{} };
       pos++;
       const ans = q.answers || {};
       if (Array.isArray(ans.choices)) for (const c of ans.choices) entry.choices[c.id] = c.text;
       if (Array.isArray(ans.rows)) for (const r of ans.rows) entry.rows[r.id] = r.text;
+      // matrix/menu: answer options live under cols[].choices (shared across rows)
+      if (Array.isArray(ans.cols)) for (const col of ans.cols) {
+        if (Array.isArray(col.choices)) for (const c of col.choices) entry.menuChoices[c.id] = c.text;
+      }
       qMap[q.id] = entry;
     }
   }
@@ -118,7 +122,8 @@ function getText(response, qid, qMap) {
   return null;
 }
 
-// Matrix answers: return array of {row, col} text pairs
+// Matrix answers: return array of {row, col} text pairs. Handles matrix/menu
+// (choice_id points into the shared menu choices) and plain matrix (into choices).
 function getMatrixAnswers(response, qid, qMap) {
   if (!qid) return [];
   const qInfo = qMap[qid] || {};
@@ -128,7 +133,9 @@ function getMatrixAnswers(response, qid, qMap) {
       if (q.id === qid) {
         for (const a of (q.answers || [])) {
           const rowText = a.row_id && qInfo.rows?.[a.row_id] ? qInfo.rows[a.row_id] : null;
-          const colText = a.choice_id && qInfo.choices?.[a.choice_id] ? qInfo.choices[a.choice_id] : null;
+          const colText = (a.choice_id && qInfo.menuChoices?.[a.choice_id]) ? qInfo.menuChoices[a.choice_id]
+                        : (a.choice_id && qInfo.choices?.[a.choice_id]) ? qInfo.choices[a.choice_id]
+                        : null;
           if (rowText || colText) out.push({ row: rowText, col: colText });
         }
       }
@@ -164,20 +171,21 @@ function classIncome(t){ if(!t)return null; const s=t.toLowerCase();
   const nums=(s.match(/\d[\d,]*/g)||[]).map(n=>+n.replace(/,/g,"")); const max=nums.length?Math.max(...nums):null;
   if(max==null)return null; if(max<=4849)return"B40"; if(max<=10970)return"M40"; return"T20"; }
 
-// Washington Group difficulty levels
-const WG_ALOT = /a lot of difficulty|cannot do at all|banyak kesukaran|tidak boleh|langsung tidak|很难|完全不能|மிகவும் சிரமம்|முடியாது/i;
-const WG_SOME = /some difficulty|sedikit kesukaran|ada kesukaran|有些困难|一些困难|சற்று சிரமம்|கொஞ்சம் சிரமம்/i;
-// Row content that identifies a WG functional domain
-const WG_ROW = /seeing|sight|hearing|walking|climbing|remember|concentrat|self.?care|washing|dressing|communicat|understood|melihat|mendengar|berjalan|mengingat|penjagaan diri|berkomunikasi|看|听|行走|记忆|自理|沟通|பார்|கேட்|நடக்க|நினைவு|தொடர்பு/i;
+// Washington Group difficulty levels (match by answer TEXT, works across languages)
+const WG_SOME   = /some difficulty|sedikit kesukaran|ada sedikit|一些困难|有些困难|சற்று சிரமம்|கொஞ்சம்/i;
+const WG_ALOT   = /a lot of difficulty|banyak kesukaran|很多困难|非常困难|மிகவும் சிரமம்|அதிக/i;
+const WG_CANNOT = /cannot do at all|tidak boleh|tidak dapat|langsung tidak|完全无法|完全不能|முடியாது|செய்ய முடியாது/i;
+// A row belongs to the WG set if its text mentions difficulty (multilingual)
+const WG_ROW = /difficulty|kesukaran|sukar|困难|难以|சிரமம்|கடினம்/i;
 
-// Is a question the WG disability matrix? (rows look like functional domains, cols like difficulty)
+// Identify the Washington Group question: a matrix/menu whose rows mention difficulty.
+// (The 4 answer options live under answers.cols[].choices, not the top-level choices.)
 function isDisabilityMatrix(q) {
+  if (!/matrix/i.test(q.family || "")) return false;
   const rowVals = Object.values(q.rows || {});
-  const colVals = Object.values(q.choices || {});
-  if (rowVals.length < 2 || colVals.length < 2) return false;
-  const rowsLookWG = rowVals.filter(r => WG_ROW.test(r)).length >= 1;
-  const colsLookDifficulty = colVals.some(c => WG_ALOT.test(c) || WG_SOME.test(c) || /no difficulty|tiada kesukaran|没有困难|சிரமம் இல்லை/i.test(c));
-  return rowsLookWG && colsLookDifficulty;
+  if (rowVals.length < 2) return false;
+  const rowsLookWG = rowVals.filter(r => WG_ROW.test(r)).length >= 2;
+  return rowsLookWG;
 }
 
 // ─── Main ───────────────────────────────────────────────────────────────────────
@@ -247,17 +255,19 @@ async function main() {
       const age = classAge(getText(r,q.age,qMap));
       const income = classIncome(getText(r,q.income,qMap));
 
-      // Disability: examine all WG matrix answers
-      let anyAlot=false, anySome=false;
+      // Disability: examine all WG matrix answers.
+      // Standard WG cut-off = "a lot of difficulty" OR "cannot do at all" on any function.
+      // Broader = "some difficulty" or worse on any function.
+      let anyStd=false, anySome=false;
       for (const did of disIds) {
         for (const {col} of getMatrixAnswers(r,did,qMap)) {
           if (!col) continue;
-          if (WG_ALOT.test(col)) anyAlot=true;
+          if (WG_ALOT.test(col) || WG_CANNOT.test(col)) anyStd=true;
           else if (WG_SOME.test(col)) anySome=true;
         }
       }
-      if (anyAlot) addLens(disStd, district, gender, age, income);
-      if (anyAlot || anySome) addLens(disBroad, district, gender, age, income);
+      if (anyStd) addLens(disStd, district, gender, age, income);
+      if (anyStd || anySome) addLens(disBroad, district, gender, age, income);
 
       // Migration status (Q8)
       const statusText = getText(r,q.status,qMap);
