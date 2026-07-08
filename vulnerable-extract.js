@@ -222,7 +222,7 @@ async function main() {
     if(income)acc.byIncome[income]=(acc.byIncome[income]||0)+1;
   };
 
-  const MIGRANT = /refugee|stateless|undocumented|non.?citizen|pelarian|tanpa negara|tanpa kewarganegaraan|tidak berdokumen|难民|无国籍|无证|அகதி|நாடற்ற|ஆவணமற்ற/i;
+  const MIGRANT = /refugee|stateless|undocumented|pelarian|tanpa negara|tanpa kewarganegaraan|tiada dokumen|tidak berdokumen|tanpa dokumen|难民|无国籍|无证|அகதி|நாடற்ற|ஆவணமற்ற|ஆவணமில/i;
 
   for (const [lang, id] of Object.entries(SURVEY_IDS)) {
     console.log(`  ${lang}...`);
