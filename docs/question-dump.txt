@@ -1,0 +1,459 @@
+[pos 0] id=289909805 family=presentation/descriptive_text
+   heading: Privacy & consent
+
+[pos 1] id=289909804 family=multiple_choice/vertical
+   heading: Your participation is voluntary. You may skip any question or stop at any time. Responses 
+   choices(1): I have read and understood the
+
+[pos 2] id=289909809 family=single_choice/vertical_two_col
+   heading: Are you answering this survey as a:
+   choices(2): Parent | Guardian
+
+[pos 3] id=289909808 family=single_choice/vertical_two_col
+   heading: What is your gender?
+   choices(2): Male | Female
+
+[pos 4] id=289909806 family=single_choice/vertical
+   heading: What is your age?
+   choices(6): 19-24 | 25-34 | 35-44 | 45-54 | 55-64 | 65+
+
+[pos 5] id=289909810 family=single_choice/vertical
+   heading: What is your highest level of education?
+   choices(8): No formal education | Primary education (Standard 1  | Secondary education (Form 1-5) | Certificate (Post-secondary sk | Diploma/Advanced Diploma (Poly | Bachelor’s Degree | Master’s Degree | Doctorate / PhD
+
+[pos 6] id=289909874 family=single_choice/vertical
+   heading: Are you a Malaysian citizen or Non Malaysian?
+   choices(2): Malaysian citizen | Non Malaysian
+
+[pos 7] id=289909807 family=single_choice/vertical
+   heading: What is your ethnic group?
+   choices(7): Malay | Other Bumiputera | Chinese | Indian | Other Malaysian | Non Malaysian | Other non-Bumiputera Malaysian
+
+[pos 8] id=289909841 family=multiple_choice/vertical
+   heading: How would you describe your status in Malaysia:
+   choices(6): Spouse of a Malaysian citizen | Migrant (Foreign worker) | Migrant (Expatriate worker) | Refugee | Stateless | Undocumented
+
+[pos 9] id=289909822 family=single_choice/vertical
+   heading: Have you experienced challenges accessing services because of your residency status or lac
+   choices(2): Yes | No
+
+[pos 10] id=289909811 family=single_choice/vertical
+   heading: Which of the following best describes your household?
+   choices(5): Two-parent household (child(re | Single-parent household | Extended family household (e.g | Blended / step-family househol | Guardian-led household (child(
+
+[pos 11] id=289909813 family=single_choice/vertical
+   heading: What type of housing do you live in?
+   choices(9): High-rise flat (low-cost / PPR | Apartment | Condominium | Landed terrace / link house | Semi-detached house | Detached / bungalow | Village house (kampung) | Shop house (residential use) | Employer-provided housing / qu
+
+[pos 12] id=289909904 family=single_choice/vertical
+   heading: What is your household's total monthly income (combining all earners)?
+   choices(7): RM2,499 or less | RM2,500 – RM4,999 | RM5,000 – RM7,499 | RM7,500 – RM10,999 | RM11,000 – RM14,999 | RM15,000 and above | Prefer not to say
+
+[pos 13] id=289909814 family=single_choice/vertical
+   heading: Do you live in?
+   choices(2): Penang Island | Seberang Perai
+
+[pos 14] id=289909870 family=single_choice/menu
+   heading: Which area (DUN) do you live within on Penang Island?
+   choices(19): AIR ITAM | AIR PUTIH | BATU LANCANG | BATU MAUNG | BATU UBAN | BAYAN LEPAS | DATOK KERAMAT | KEBUN BUNGA | KOMTAR | PADANG KOTA | PANTAI JEREJAK | PAYA TERUBONG | PENGKALAN KOTA | PULAU BETONG | PULAU TIKUS | SERI DELIMA | SUNGAI PINANG | TANJONG BUNGA | TELOK BAHANG
+
+[pos 15] id=289909884 family=single_choice/menu
+   heading: Which area (DUN) do you live within in Seberang Perai?
+   choices(21): BAGAN DALAM | BAGAN JERMAL | BERAPIT | BERTAM | BUKIT TAMBUN | BUKIT TENGAH | JAWI | MACHANG BUBUK | PADANG LALANG | PENAGA | PENANTI | PERAI | PERMATANG BERANGAN | PERMATANG PASIR | PINANG TUNGGAL | SEBERANG JAYA | SUNGAI ACHEH | SUNGAI BAKAP | SUNGAI DUA | SUNGAI PUYU | TELOK AYER TAWAR
+
+[pos 16] id=289909812 family=matrix/menu
+   heading: What are the ages and genders of your children/children in your care? (under 18)
+   rows(5): Child 1 | Child 2 | Child 3 | Child 4 | Child 5
+
+[pos 17] id=289909885 family=single_choice/vertical
+   heading: Are you/your partner currently pregnant/expecting a child?
+   choices(2): Yes | No
+
+[pos 18] id=289909919 family=presentation/descriptive_text
+   heading: The following questions are about your experience during your pregnancy, because the condi
+
+[pos 19] id=289909907 family=presentation/descriptive_text
+   heading: Awareness
+
+[pos 20] id=289909908 family=single_choice/vertical
+   heading: Do you feel you have clear information about the healthcare and financial support availabl
+   choices(3): Yes | Somewhat | No
+
+[pos 21] id=289909909 family=presentation/descriptive_text
+   heading: Access & Effectiveness
+
+[pos 22] id=289909910 family=multiple_choice/vertical
+   heading: Have you/your partner experienced any difficulty accessing antenatal care?
+   choices(5): No | Yes – cost | Yes – transport | Yes – long waiting times | Yes – documentation issues
+
+[pos 23] id=289909911 family=single_choice/vertical
+   heading: Do you feel your/your partner's physical and mental health needs during pregnancy are adeq
+   choices(3): Yes | Somewhat | No
+
+[pos 24] id=289909912 family=presentation/descriptive_text
+   heading: Voice & Support
+
+[pos 25] id=289909913 family=single_choice/vertical
+   heading: Do healthcare providers listen to your concerns and preferences?
+   choices(5): Always | Often | Sometimes | Rarely | Never
+
+[pos 26] id=289909914 family=presentation/descriptive_text
+   heading: Environment & Safety
+
+[pos 27] id=289909915 family=single_choice/vertical
+   heading: Is your housing environment suitable for bringing home a newborn (space, safety, ventilati
+   choices(3): Yes | Some concerns | No
+
+[pos 28] id=289909916 family=multiple_choice/vertical
+   heading: What would most improve your readiness to care for your baby?
+   choices(6): Financial support | Parenting information | Safer housing | Community support | Childcare access | Family friendly policies (supp
+
+[pos 29] id=289909917 family=presentation/descriptive_text
+   heading: Climate & Resilience
+
+[pos 30] id=289909918 family=single_choice/vertical
+   heading: Have environmental conditions (heat, haze, flooding) affected your pregnancy?
+   choices(2): Yes | No
+
+[pos 31] id=289909897 family=presentation/descriptive_text
+   heading: Awareness of Child Rights
+
+[pos 32] id=289909816 family=presentation/descriptive_text
+   heading: Child rights are the basic rights every child is entitled to—so they can survive, grow and
+
+[pos 33] id=289909815 family=single_choice/vertical
+   heading: Have you heard of the term “child’s rights” before?
+   choices(2): Yes | No
+
+[pos 34] id=289909920 family=matrix/single
+   heading: To what extent do you agree with the following statements?
+   rows(2): I believe child rights are respected in  | Children in my area are treated fairly r
+   choices(5): Strongly agree | Agree | Neither agree nor disagree | Disagree | Strongly disagree
+
+[pos 35] id=289909817 family=open_ended/essay
+   heading: What needs to change to make your area a better place for children?
+
+[pos 36] id=289909898 family=presentation/descriptive_text
+   heading: Inclusive child participation
+
+[pos 37] id=289909818 family=matrix/rating
+   heading: Please select the option that best reflects your experience or observations.
+   rows(3): How often are children in your area invi | How often do you listen to your child’s  | How often do you respond to and discuss 
+   choices(5): Always | Often | Sometimes | Rarely | Never
+
+[pos 38] id=289909819 family=multiple_choice/vertical
+   heading: What do you think prevents children from expressing their opinions freely? (tick all that 
+   choices(10): Adults do not ask | Adults do not take children’s  | Children are afraid of getting | Cultural norms that discourage | Lack of confidence or self-est | Fear of being judged or bullie | Strict school rules | Lack of safe spaces to speak ( | Language barriers | Children do not know their rig
+
+[pos 39] id=289909820 family=multiple_choice/vertical
+   heading: Does your child take part in any activities outside of school? (tick all that apply)
+   choices(9): Sports | Arts | Volunteering | Religious programmes | Community programmes | Tuition / extra academic class | Uniformed bodies (e.g., Scouts | Online clubs / coding / digita | None of the above
+
+[pos 40] id=289909871 family=presentation/descriptive_text
+   heading: To what extent do you agree with the following statement?
+
+[pos 41] id=289909821 family=single_choice/vertical
+   heading: All children in my area have fair access to these kinds of activities.
+   choices(5): Strongly agree | Agree | Neither agree nor disagree | Disagree | Strongly disagree
+
+[pos 42] id=289909823 family=multiple_choice/vertical
+   heading: What are the main barriers preventing children from joining community or extracurricular a
+   choices(10): Cost of activities (fees, equi | Lack of time due to schoolwork | Activities are too far from ho | Safety concerns | Limited availability of suitab | Activities are not inclusive f | Child lacks interest or confid | Family responsibilities (e.g., | Lack of information about avai | Health issues
+
+[pos 43] id=289909824 family=open_ended/multi
+   heading: What kinds of activities would you like to see more of for children and youth to learn, ex
+   rows(3): Under 9 | 9-17 years | 18-24 years
+
+[pos 44] id=289909899 family=presentation/descriptive_text
+   heading: Child friendly environments
+
+[pos 45] id=289909872 family=presentation/descriptive_text
+   heading: To what extent do you agree with the following statements?
+
+[pos 46] id=289909825 family=single_choice/vertical
+   heading: There are enough public spaces (e.g. playgrounds, parks, sports areas) for children nearby
+   choices(5): Strongly agree | Agree | Neither agree nor disagree | Disagree | Strongly disagree
+
+[pos 47] id=289909826 family=multiple_choice/vertical
+   heading: Public spaces in my area (e.g. playgrounds, parks, sports areas) could be improved by:
+   choices(11): Adding more shade (e.g. trees, | Improving lighting | Increasing safety or security  | Better maintenance and cleanli | Repairing or upgrading equipme | Adding more things for young p | Making them easier and safer t | Providing more seating for fam | Reducing smoking, vaping, alco | Organising more community acti | Nothing – they are already goo
+
+[pos 48] id=289909827 family=single_choice/vertical
+   heading: How often does your family visit green or natural spaces (parks, beaches, gardens, forests
+   choices(7): Every day | A few times a week | About once a week | A few times a month | Once a month | Less than once a month | Never
+
+[pos 49] id=289909921 family=matrix/single
+   heading: To what extent do you agree with the following statements?
+   rows(3): There are enough indoor child-friendly s | Community spaces are welcoming children  | Community spaces are inclusive of refuge
+   choices(5): Strongly agree | Agree | Neither agree nor disagree | Disagree | Strongly disagree
+
+[pos 50] id=289909880 family=multiple_choice/vertical
+   heading: Food choices in and around my child’s school would be improved by: (tick all that apply)
+   choices(8): Increasing the availability of | Reducing the sale of high-suga | Making healthy food more affor | Improving the nutritional qual | Encouraging nearby shops/vendo | Stronger enforcement of health | Better nutrition education for | No changes are needed
+
+[pos 51] id=289909900 family=presentation/descriptive_text
+   heading: Availability of inclusive, safe environments
+
+[pos 52] id=289909828 family=matrix/single
+   heading: To what extent do you agree with the following statements?
+   rows(2): There are safe and child-friendly paths  | There are safe and child-friendly public
+   choices(5): Strongly agree | Agree | Neither agree nor disagree | Disagree | Strongly disagree
+
+[pos 53] id=289909829 family=multiple_choice/vertical
+   heading: How does your child get to school most days? (tick all that apply)
+   choices(10): Walks | Cycles | School bus | Public bus | Private bus/van | Car (driven by parent/guardian | Carpool (with other families) | Motorcycle (driven by parent/g | E-hailing (e.g., Grab) | Child not in school
+
+[pos 54] id=289909830 family=single_choice/menu
+   heading: At what age do you think it is safe to allow your child(ren) to move around your area inde
+   choices(18): 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18+
+
+[pos 55] id=289909831 family=single_choice/vertical
+   heading: My child(ren) are safe at school from bullying, violence, or harassment.
+   choices(5): Strongly agree | Agree | Neither agree nor disagree | Disagree | Strongly disagree
+
+[pos 56] id=289909832 family=matrix/menu
+   heading: How do you keep your child(ren) safe online?
+   rows(4): I actively monitor my child(ren)’s onlin | I check which apps and platforms my chil | I use parental controls or content filte | I talk to my child(ren) about how to sta
+
+[pos 57] id=289909833 family=open_ended/essay
+   heading: What would you like to see change to improve safety for your children?
+
+[pos 58] id=289909901 family=presentation/descriptive_text
+   heading: Climate change impacts & adaptation strategies
+
+[pos 59] id=289909834 family=single_choice/vertical
+   heading: How worried are you about climate change and its effects on your family?
+   choices(5): Extremely worried | Very worried | Moderately worried | Slightly worried | Not at all worried
+
+[pos 60] id=289909835 family=multiple_choice/vertical
+   heading: How is environmental change affecting your children’s daily lives? (tick all that apply)
+   choices(12): More frequent illness (e.g., h | Reduced outdoor play due to he | Reduced outdoor play due to po | School closures or disruptions | Increased time indoors | Difficulty concentrating due t | Increased household costs (e.g | Flooding to own property/stree | Travel disruptions due to floo | Emotional stress or anxiety ab | No noticeable impact | Not sure
+
+[pos 61] id=289909836 family=matrix/single
+   heading: Do children in your home help to protect the environment in these ways?
+   rows(7): Recycling things like paper, plastic or  | Saving water (e.g. turning off the tap,  | Switching off lights or fans when not in | Using less plastic (e.g. reusable bottle | Planting trees or helping in a garden | Picking up litter or joining clean-up ac | Talking about how to protect nature or a
+   choices(5): Always | Often | Sometimes | Rarely | Never
+
+[pos 62] id=289909837 family=single_choice/vertical
+   heading: The authorities are doing enough to protect children from the effects of climate change?
+   choices(5): Strongly agree | Agree | Neither agree nor disagree | Disagree | Strongly disagree
+
+[pos 63] id=289909838 family=open_ended/essay
+   heading: Which environmental changes in your area make you most worried for your child’s future?
+
+[pos 64] id=289909882 family=single_choice/vertical
+   heading: Do you have a child aged 10–17 who can complete the next section of this survey? (If your 
+   choices(2): Yes | No
+
+[pos 65] id=289909902 family=presentation/descriptive_text
+   heading: The next questions will be tailored to your child's age group.
+
+[pos 66] id=289909924 family=single_choice/menu
+   heading: What is the age of your child (aged between 10- 17) who will complete the next section of 
+   choices(8): 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17
+
+[pos 67] id=289909883 family=single_choice/vertical
+   heading: Do you have children under the age of 10 that you could answer questions on behalf of?
+   choices(2): Yes | No
+
+[pos 68] id=289909903 family=presentation/descriptive_text
+   heading: Since you don't have a child aged 10–17 completing this survey, we'd still like to hear ab
+
+[pos 69] id=289909886 family=presentation/descriptive_text
+   heading: Awareness of Child Rights
+
+[pos 70] id=289909887 family=single_choice/vertical
+   heading: For young children (under 10), what do you think is the most important right that needs mo
+   choices(6): Safe play | Early learning opportunities | Protection from harm | Health and nutrition | Being listened to | Not sure
+
+[pos 71] id=289909888 family=presentation/descriptive_text
+   heading: Effectiveness of Mechanisms
+
+[pos 72] id=289909889 family=single_choice/vertical
+   heading: In the past 12 months, have you needed support specifically related to early childhood (e.
+   choices(4): Yes – received enough support | Yes – but support was insuffic | Yes – but could not access sup | No
+
+[pos 73] id=289909890 family=presentation/descriptive_text
+   heading: Participation & Development
+
+[pos 74] id=289909891 family=single_choice/vertical
+   heading: Does your child have regular opportunities for safe, free play (indoors or outdoors)?
+   choices(4): Daily | A few times a week | Rarely | Never
+
+[pos 75] id=289909892 family=presentation/descriptive_text
+   heading: Safe & Inclusive Environments
+
+[pos 76] id=289909893 family=single_choice/vertical
+   heading: Are public spaces in your area designed in ways that are suitable for younger children (e.
+   choices(4): Yes | Somewhat | No | Not sure
+
+[pos 77] id=289909894 family=single_choice/vertical
+   heading: What is the biggest environmental concern for young children where you live?
+   choices(6): Traffic | Lack of safe play space | Heat | Flooding | Cleanliness | Crime/safety
+
+[pos 78] id=289909895 family=presentation/descriptive_text
+   heading: Climate & Resilience
+
+[pos 79] id=289909896 family=single_choice/vertical
+   heading: Does your young child’s daily routine (school/play/health visits) get disrupted by the cli
+   choices(4): Often | Sometimes | Rarely | Never
+
+[pos 80] id=289909839 family=single_choice/vertical
+   heading: What is your child's gender?
+   choices(2): Male | Female
+
+[pos 81] id=289909879 family=single_choice/vertical
+   heading: Is your child a Malaysian citizen or Non Malaysian?
+   choices(2): Malaysian citizen | Non Malaysian
+
+[pos 82] id=289909840 family=matrix/menu
+   heading: Now you will be asked about some difficulties your child may have.
+   rows(8): Does your child have difficulty seeing,  | Does your child have difficulty hearing, | Does your child have difficulty walking  | Does your child have difficulty remember | Does your child have difficulty with sel | Using your usual (customary) language, d | Compared with children of the same age,  | Compared with children of the same age, 
+
+[pos 83] id=292468426 family=matrix/menu
+   heading: The next questions are about your child's emotional wellbeing.
+   rows(2): How often does your child seem very anxi | How often does your child seem very sad 
+
+[pos 84] id=289909842 family=open_ended/essay
+   heading: What school/learning centre does your child attend (or is not attending)? Please insert th
+
+[pos 85] id=289909875 family=single_choice/vertical
+   heading: I give permission for my child to complete this survey
+   choices(2): Yes | No
+
+[pos 86] id=289909844 family=presentation/descriptive_text
+   heading: Please now hand the survey to your selected child. The following part of the survey should
+
+[pos 87] id=289909845 family=multiple_choice/vertical
+   heading: Your parent or guardian has agreed for you to take part in this survey. You can now choose
+   choices(1): I understand what this survey 
+
+[pos 88] id=289909843 family=presentation/descriptive_text
+   heading: Thank you for agreeing to take part. Your school/learning centre could win RM1,000 to do a
+
+[pos 89] id=289909849 family=presentation/descriptive_text
+   heading: Child rights
+
+[pos 90] id=289909877 family=presentation/descriptive_text
+   heading: Child rights are the things every child should have to grow up safe, healthy and happy. Th
+
+[pos 91] id=289909846 family=single_choice/vertical
+   heading: How much do you know about child rights?
+   choices(4): I know a lot about child right | I know a little | I have heard of them but don't | I have never heard of them bef
+
+[pos 92] id=289909878 family=presentation/descriptive_text
+   heading: Countries around the world (through the United Nations) have made an important promise to 
+
+[pos 93] id=289909847 family=matrix/single
+   heading: For each question, tell us how much you agree or disagree.
+   rows(3): In my area, children are treated kindly  | In my area, children are treated the sam | In my area, children are treated the sam
+   choices(5): Strongly agree | Agree | Neither agree nor disagree | Disagree | Strongly disagree
+
+[pos 94] id=289909848 family=multiple_choice/vertical
+   heading: If you need help with something (like school, friends, or health), who do you talk to? (ti
+   choices(7): Parent or guardian | A relative (e.g. grandparent,  | A teacher | A school counsellor | A friend | No one | Someone else
+
+[pos 95] id=289909850 family=presentation/descriptive_text
+   heading: Child participation
+
+[pos 96] id=289909851 family=matrix/rating
+   heading: Please indicate how much you agree or disagree with each statement.
+   rows(2): I get asked for my opinion on things in  | I feel that my opinions about things in 
+   choices(5): Always | Often | Sometimes | Rarely | Never
+
+[pos 97] id=289909852 family=multiple_choice/vertical
+   heading: What do you think are effective ways for young people to share their views with adults and
+   choices(9): Talking in a small group | Talking one-to-one with an adu | Writing my ideas down | Drawing or making a poster | Through games or fun activitie | Using an online survey or app | Through a class discussion at  | Through a student council or s | Sending a message or suggestio
+
+[pos 98] id=289909853 family=single_choice/vertical
+   heading: How often do you take part in activities outside of school or college (like sports, arts, 
+   choices(6): A few times a week | About once a week | A few times a month | Once a month | Less than once a month | Never
+
+[pos 99] id=289909854 family=multiple_choice/vertical
+   heading: What makes it hard for young people to join activities or programmes outside of school? (t
+   choices(11): It costs too much money | There is no way to get there ( | My parents or carers say no | I have too much homework | I need to help at home | There are no clubs near my hom | I don’t know what clubs I can  | I feel shy or nervous | I’m worried about being teased | The activities don’t look fun  | I have a health problem or dis
+
+[pos 100] id=289909855 family=open_ended/essay
+   heading: What kinds of places or activities would you like more of in your area (for fun, learning,
+
+[pos 101] id=289909856 family=presentation/descriptive_text
+   heading: Child-Friendly Environments
+
+[pos 102] id=289909857 family=matrix/single
+   heading: What do you think about spaces for children in your area?
+   rows(3): There are good indoor places for young p | There are good outdoor spaces (parks, sp | These places welcome all young people, i
+   choices(5): Strongly agree | Agree | Neither agree nor disagree | Disagree | Strongly disagree
+
+[pos 103] id=289909858 family=multiple_choice/vertical
+   heading: Parks and outdoor spaces near my home would be better if they had: ... (tick all that appl
+   choices(10): More shade or trees so it’s no | Brighter lights at night | Cleaner spaces with less rubbi | Safer areas with fewer fights  | New or better play equipment | More fun things to do | Safer roads or crossings to ge | More benches for parents and g | Fewer people smoking or vaping | Nothing – they are already goo
+
+[pos 104] id=289909881 family=multiple_choice/vertical
+   heading: Food choices in and around my school would be better if: (tick all that apply)
+   choices(8): There were more healthy foods  | There were fewer sugary snacks | Healthy food cost less | The school canteen had healthi | Shops near the school sold mor | Better nutrition education for | Healthy food tasted better | Nothing needs to change
+
+[pos 105] id=289909859 family=presentation/descriptive_text
+   heading: Inclusive & Safe Environments
+
+[pos 106] id=289909860 family=matrix/single
+   heading: For each question, tell us how much you agree or disagree.
+   rows(4): There are safe places to cross the road  | Public transport in my area is safe for  | I feel safe at school (e.g. no bullying, | I feel safe in my neighbourhood and comm
+   choices(5): Strongly agree | Agree | Neither agree nor disagree | Disagree | Strongly disagree
+
+[pos 107] id=289909861 family=single_choice/vertical
+   heading: I know how to keep myself safe when using the internet or phone
+   choices(5): Strongly agree | Agree | Neither agree nor disagree | Disagree | Strongly disagree
+
+[pos 108] id=289911742 family=single_choice/vertical
+   heading: On average, how many hours per day do you spend on a screen outside of school (e.g. phone,
+   choices(6): Less than 1 hour | 1-2 hours | 2-3 hours | 3-4 hours | 5-6 hours | More than 6 hours
+
+[pos 109] id=289909862 family=open_ended/essay
+   heading: What is one thing you would change to make your area safer for children and young people?
+
+[pos 110] id=289909905 family=multiple_choice/vertical
+   heading: How have you been feeling lately? (tick all that apply)
+   choices(9): Happy and positive most of the | Worried or stressed about scho | Worried or stressed about frie | Worried or stressed about thin | Worried or stressed about mone | Sad or low quite often | Worried about the future or cl | Stressed by things online or o | I'm doing okay overall
+
+[pos 111] id=289909922 family=presentation/descriptive_text
+   heading: If you are worried or stressed about anything and you'd like to talk to someone, support d
+
+[pos 112] id=289909863 family=presentation/descriptive_text
+   heading: Climate Change
+
+[pos 113] id=289909923 family=presentation/descriptive_text
+   heading: How much do you agree with this statement?
+
+[pos 114] id=289909865 family=single_choice/vertical
+   heading: The weather makes it harder to spend time outside, do activities, or get to/from school?
+   choices(5): Strongly agree | Agree | Neither agree nor disagree | Disagree | Strongly disagree
+
+[pos 115] id=289909876 family=matrix/single
+   heading: Do you help to protect the environment in these ways?
+   rows(7): Recycling things like paper, plastic or  | Saving water (e.g. turning off the tap,  | Switching off lights or fans when not in | Using less plastic (e.g. reusable bottle | Planting trees or helping in a garden | Picking up litter or joining clean-up ac | Talking about how to protect nature or a
+   choices(5): Always | Often | Sometimes | Rarely | Never
+
+[pos 116] id=289909864 family=single_choice/vertical
+   heading: How worried are you about climate change (for example, heat, floods, or haze)?
+   choices(5): Extremely worried | Very worried | Moderately worried | Slightly worried | Not at all worried
+
+[pos 117] id=289909866 family=single_choice/vertical
+   heading: I feel that the people in charge — like school leaders, local councils, and the government
+   choices(5): Strongly agree | Agree | Neither agree nor disagree | Disagree | Strongly disagree
+
+[pos 118] id=289909873 family=presentation/descriptive_text
+   heading: Please hand the survey back to your parent or guardian to discuss if you would like to joi
+
+[pos 119] id=289909867 family=open_ended/multi
+   heading: We are establishing Child Reference Groups in each district of Penang. The purpose of the 
+   rows(3): Name | Email | Phone/WhatsApp
+
+[pos 120] id=289909906 family=single_choice/vertical
+   heading: Thank you for completing this survey! All your answers have been saved.We really appreciat
+   choices(2): See support organisation detai | End survey
+
+[pos 121] id=289909868 family=presentation/descriptive_text
+   heading: If You Feel Upset or WorriedSometimes talking about our lives, families, or communities ca
+
+[pos 122] id=289909869 family=presentation/descriptive_text
+   heading: If You Need More HelpYou can also talk to the Think City research team:Yan Cheng Tan yanch
