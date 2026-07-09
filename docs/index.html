@@ -201,6 +201,7 @@ function CFPDashboard() {
   const [lastUpdated, setLastUpdated] = useState(null);
   const [page, setPage]           = useState("overview"); // "overview" | "crg"
   const [filters, setFilters]     = useState([]); // up to 3 active lens filters: [{lens, value}]
+  const [qModule, setQModule]     = useState("parent"); // active module on the By-Question tab
 
   const loadData = useCallback(() => {
     // Cache-bust with timestamp so browser always fetches the freshest data.json
@@ -293,7 +294,7 @@ function CFPDashboard() {
 
       {/* Page toggle */}
       <div style={{display:"flex",gap:4,marginBottom:14,background:"#e2e8f0",borderRadius:8,padding:3,width:"fit-content"}}>
-        {[{id:"overview",label:"Survey Overview"},{id:"crg",label:"Child Reference Group"},{id:"findings_ro",label:"Findings: Research Objectives"},{id:"findings_afc",label:"Findings: AFC Domains"}].map(p=>(
+        {[{id:"overview",label:"Survey Overview"},{id:"crg",label:"Child Reference Group"},{id:"findings_ro",label:"Findings: Research Objectives"},{id:"findings_afc",label:"Findings: AFC Domains"},{id:"findings_q",label:"Findings: By Question"}].map(p=>(
           <button key={p.id} onClick={()=>setPage(p.id)}
             style={{padding:"7px 16px",fontSize:12,fontWeight:600,borderRadius:6,border:"none",cursor:"pointer",
               background:page===p.id?"#fff":"transparent",color:page===p.id?"#0e4a6e":"#64748b",
@@ -904,6 +905,170 @@ function CFPDashboard() {
                     </div>}
               </div>
             ))}
+          </>
+        );
+      })()}
+
+      {/* ======================= FINDINGS: BY QUESTION ======================= */}
+      {page === "findings_q" && (() => {
+        const rows = data?.questionRows;
+        const catalog = data?.surveyQuestions;
+        const moduleOrder = data?.questionModuleOrder || ["parent","pregnant","under10","child"];
+        if (!rows || !rows.length || !catalog) {
+          return <div style={{...s.card,padding:24,textAlign:"center",color:"#94a3b8",fontSize:13}}>No question data yet. Run the pipeline to populate this browser.</div>;
+        }
+
+        const MODULE_LABELS = { parent:"Parent", pregnant:"Pregnant / expecting", under10:"Under-10 (parent-reported)", child:"Child (10-17)" };
+        const LENS_DEFS = [
+          { key:"g", label:"Gender", values:[["Male","Male"],["Female","Female"]] },
+          { key:"a", label:"Age", values:[["10-12","10-12"],["13-16","13-16"],["17","17"]] },
+          { key:"i", label:"Income", values:[["B40","B40"],["M40","M40"],["T20","T20"]] },
+          { key:"u", label:"Urban/Rural", values:[["Urban","Urban"],["Peri-urban","Peri-urban"],["Rural","Rural"]] },
+          { key:"d", label:"Disability", values:[["Disabled",1],["Not disabled",0]] },
+          { key:"m", label:"Migration", values:[["Migrant/refugee",1],["Citizen",0]] },
+        ];
+        const lensUsed = (key) => filters.find(f => f.key === key);
+        const setLensValue = (key, value) => setFilters(prev => {
+          const without = prev.filter(f => f.key !== key);
+          if (!value) return without;
+          if (without.length >= 3 && !prev.find(f=>f.key===key)) return prev;
+          return [...without, { key, value }];
+        });
+
+        const filtered = rows.filter(r => filters.every(f => String(r[f.key]) === String(f.value)));
+
+        // Colour ramp for distribution bars (5-point scales get a red->green ramp; else neutral)
+        const RAMP5 = ["#16a34a","#84cc16","#eab308","#f97316","#dc2626"];
+        const barColor = (nOpts, idx, isAgreeScale) => {
+          if (isAgreeScale && nOpts === 5) return RAMP5[idx];
+          return "#0e4a6e";
+        };
+
+        // Distribution for single/menu: count each option index
+        const singleDist = (engId, nOpts) => {
+          const counts = new Array(nOpts).fill(0); let n = 0;
+          for (const r of filtered) {
+            const v = r.q?.[engId];
+            if (v === undefined || v === null) continue;
+            if (typeof v === "number" && v >= 0 && v < nOpts) { counts[v]++; n++; }
+          }
+          return { counts, n };
+        };
+        // Distribution for multi: count each option, denominator = respondents who answered
+        const multiDist = (engId, nOpts) => {
+          const counts = new Array(nOpts).fill(0); let n = 0;
+          for (const r of filtered) {
+            const v = r.q?.[engId];
+            if (!Array.isArray(v)) continue;
+            n++;
+            for (const idx of v) if (idx >= 0 && idx < nOpts) counts[idx]++;
+          }
+          return { counts, n };
+        };
+        // Distribution for one matrix row: count each column index
+        const matrixRowDist = (engId, rowIdx, nOpts) => {
+          const counts = new Array(nOpts).fill(0); let n = 0;
+          for (const r of filtered) {
+            const v = r.q?.[engId];
+            if (!v || typeof v !== "object" || Array.isArray(v)) continue;
+            const col = v[rowIdx];
+            if (col === undefined || col === null) continue;
+            if (col >= 0 && col < nOpts) { counts[col]++; n++; }
+          }
+          return { counts, n };
+        };
+
+        const isAgreeScale = (options) => options.some(o => /strongly agree|strongly disagree/i.test(o));
+
+        // A distribution renderer (options + counts + n)
+        const renderDist = (options, counts, n, agreeScale, isMulti) => (
+          <div>
+            {options.map((opt, i) => {
+              const pct = n > 0 ? Math.round(counts[i] / n * 100) : 0;
+              return (
+                <div key={i} style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}>
+                  <div style={{width:150,fontSize:10,color:"#475569",textAlign:"right",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}} title={opt}>{opt}</div>
+                  <div style={{flex:1,height:14,background:"#f1f5f9",borderRadius:3,overflow:"hidden",position:"relative"}}>
+                    <div style={{width:pct+"%",height:"100%",background:barColor(options.length,i,agreeScale),borderRadius:3}}/>
+                  </div>
+                  <div style={{width:64,fontSize:10,color:"#334155",fontWeight:600}}>{pct}% <span style={{color:"#94a3b8",fontWeight:400}}>({counts[i]})</span></div>
+                </div>
+              );
+            })}
+            <div style={{fontSize:10,color:"#94a3b8",marginTop:4}}>
+              {isMulti ? `${n} respondents answered · options sum to more than 100% (multi-select)` : `n = ${n}`}
+              {n < 30 && n > 0 && <span style={{color:"#dc2626"}}> · low base</span>}
+            </div>
+          </div>
+        );
+
+        // Questions in this module, in catalog (survey) order
+        const moduleIds = Object.keys(catalog).filter(id => catalog[id].module === qModule);
+
+        return (
+          <>
+            {/* Filter bar (shared) */}
+            <div style={{...s.card,padding:"12px 14px",marginBottom:14}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+                <span style={{fontSize:11,fontWeight:700,color:"#94a3b8",letterSpacing:"0.05em",textTransform:"uppercase"}}>Filter by lens (combine up to 3)</span>
+                <span style={{fontSize:11,color:"#64748b"}}>
+                  Showing <b style={{color:"#0f172a"}}>{filtered.length.toLocaleString()}</b> of {rows.length.toLocaleString()} responses
+                  {filters.length>0 && <button onClick={()=>setFilters([])} style={{marginLeft:8,fontSize:11,color:"#0e4a6e",background:"none",border:"none",cursor:"pointer",textDecoration:"underline",padding:0}}>clear all</button>}
+                </span>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:8}}>
+                {LENS_DEFS.map(ld=>{
+                  const active = lensUsed(ld.key);
+                  const atMax = filters.length>=3 && !active;
+                  return (
+                    <div key={ld.key}>
+                      <div style={{fontSize:10,fontWeight:700,color:"#94a3b8",textTransform:"uppercase",marginBottom:3}}>{ld.label}</div>
+                      <select value={active?active.value:""} disabled={atMax}
+                        onChange={e=>setLensValue(ld.key, e.target.value)}
+                        style={{fontSize:12,border:"1px solid "+(active?"#0e4a6e":"#e2e8f0"),borderRadius:6,padding:"5px 8px",width:"100%",
+                          background:atMax?"#f1f5f9":"#fff",color:active?"#0e4a6e":"#475569",fontWeight:active?600:400,cursor:atMax?"not-allowed":"pointer"}}>
+                        <option value="">All</option>
+                        {ld.values.map(([label,code])=><option key={String(code)} value={String(code)}>{label}</option>)}
+                      </select>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Module sub-tabs */}
+            <div style={{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap"}}>
+              {moduleOrder.map(m=>(
+                <button key={m} onClick={()=>setQModule(m)} style={{
+                  padding:"6px 14px",fontSize:12,borderRadius:6,cursor:"pointer",fontWeight:qModule===m?700:400,
+                  border:"1px solid "+(qModule===m?"#0e4a6e":"#e2e8f0"),background:qModule===m?"#0e4a6e":"#fff",color:qModule===m?"#fff":"#475569",
+                }}>{MODULE_LABELS[m]||m}</button>
+              ))}
+            </div>
+
+            {/* Question cards */}
+            {moduleIds.length===0
+              ? <div style={{...s.card,padding:20,textAlign:"center",color:"#94a3b8",fontSize:12}}>No questions in this module.</div>
+              : moduleIds.map(engId=>{
+                  const q = catalog[engId];
+                  const agree = isAgreeScale(q.options);
+                  return (
+                    <div key={engId} style={{...s.card,padding:"14px 16px",marginBottom:10}}>
+                      <div style={{fontSize:12,fontWeight:700,color:"#0f172a",marginBottom:2}}>{q.heading}</div>
+                      <div style={{fontSize:10,color:"#94a3b8",marginBottom:10}}>
+                        {q.type==="multi"?"Multiple choice (select all that apply)":q.type==="matrix"?"Matrix · one distribution per sub-statement":"Single choice"}
+                      </div>
+                      {q.type==="single" && (()=>{ const {counts,n}=singleDist(engId,q.options.length); return renderDist(q.options,counts,n,agree,false); })()}
+                      {q.type==="multi" && (()=>{ const {counts,n}=multiDist(engId,q.options.length); return renderDist(q.options,counts,n,false,true); })()}
+                      {q.type==="matrix" && q.rows.map((rowLabel,ri)=>(
+                        <div key={ri} style={{marginBottom:12,paddingTop:8,borderTop:ri>0?"1px solid #f1f5f9":"none"}}>
+                          <div style={{fontSize:11,fontWeight:600,color:"#334155",marginBottom:6}}>{rowLabel}</div>
+                          {(()=>{ const {counts,n}=matrixRowDist(engId,ri,q.options.length); return renderDist(q.options,counts,n,agree,false); })()}
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })}
           </>
         );
       })()}
