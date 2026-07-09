@@ -234,6 +234,101 @@ function engQuestionId(shortId) {
   return "289909" + shortId;
 }
 
+// ─── Question-by-question browser: substantive questions by module ──────────────
+// Only the id->module mapping is hardcoded; labels, types and options are built at
+// runtime from the English survey so wording is always current and untruncated.
+// Excludes demographics, consent, section headers, free-text (open_ended), and CRG.
+const CATALOG_MODULE = {
+  // PREGNANT module
+  "289909908":"pregnant","289909910":"pregnant","289909911":"pregnant","289909913":"pregnant",
+  "289909915":"pregnant","289909916":"pregnant","289909918":"pregnant",
+  // PARENT module
+  "289909815":"parent","289909920":"parent","289909818":"parent","289909819":"parent","289909820":"parent",
+  "289909821":"parent","289909823":"parent","289909825":"parent","289909826":"parent","289909827":"parent",
+  "289909921":"parent","289909880":"parent","289909828":"parent","289909829":"parent","289909830":"parent",
+  "289909831":"parent","289909832":"parent","289909834":"parent","289909835":"parent","289909836":"parent",
+  "289909837":"parent",
+  // UNDER-10 module (parent answering about a younger child)
+  "289909887":"under10","289909889":"under10","289909891":"under10","289909893":"under10",
+  "289909894":"under10","289909896":"under10",
+  // CHILD module (10-17 self-report, plus the parent-proxy disability & wellbeing matrices about the child)
+  "289909840":"child","292468426":"child","289909846":"child","289909847":"child","289909848":"child",
+  "289909851":"child","289909852":"child","289909853":"child","289909854":"child","289909857":"child",
+  "289909858":"child","289909881":"child","289909860":"child","289909861":"child","289911742":"child",
+  "289909905":"child","289909865":"child","289909876":"child","289909864":"child","289909866":"child",
+};
+const CATALOG_MODULE_ORDER = ["parent","pregnant","under10","child"];
+
+// Build the catalog (labels/type/options/rows) from the English survey question map.
+function buildQuestionCatalog(engQMap) {
+  const cat = {};
+  for (const [engId, mod] of Object.entries(CATALOG_MODULE)) {
+    const q = engQMap[engId];
+    if (!q) continue;
+    const fam = q.family || "";
+    const choiceVals = Object.values(q.choices || {});
+    const menuVals = Object.values(q.menuChoices || {});
+    const rowVals = Object.values(q.rows || {});
+    let type, options, rows = [];
+    if (/matrix/i.test(fam)) {
+      type = "matrix";
+      options = menuVals.length ? menuVals : choiceVals;
+      rows = rowVals;
+    } else if (/multiple_choice/i.test(fam)) {
+      type = "multi"; options = choiceVals;
+    } else {
+      type = "single"; options = choiceVals;
+    }
+    cat[engId] = { module: mod, heading: (q.heading || "").replace(/<[^>]+>/g, "").trim(), type, options, rows };
+  }
+  return cat;
+}
+
+// Per-survey index maps: choice_id/row_id -> position index (position-anchored to English order)
+function buildIndexMaps(qMap, qid) {
+  const q = qMap[qid] || {};
+  const choiceIndexById = {}; Object.keys(q.choices || {}).forEach((id, i) => { choiceIndexById[id] = i; });
+  const rowIndexById = {};    Object.keys(q.rows || {}).forEach((id, i) => { rowIndexById[id] = i; });
+  const menuIndexById = {};   Object.keys(q.menuChoices || {}).forEach((id, i) => { menuIndexById[id] = i; });
+  return { choiceIndexById, rowIndexById, menuIndexById };
+}
+
+// Code a response's answers for each catalog question into compact indices.
+// catalogForSurvey: { engId: { qid, type, choiceIndexById, rowIndexById, menuIndexById } }
+function codeAnswers(r, catalogForSurvey) {
+  const qa = {};
+  for (const [engId, c] of Object.entries(catalogForSurvey)) {
+    if (!c.qid) continue;
+    // gather this question's answer objects from the response
+    let answers = null;
+    for (const page of (r.pages || [])) {
+      for (const q of (page.questions || [])) {
+        if (q.id === c.qid) { answers = q.answers || []; break; }
+      }
+      if (answers) break;
+    }
+    if (!answers || !answers.length) continue;
+
+    if (c.type === "single") {
+      const idx = c.choiceIndexById[answers[0].choice_id];
+      if (idx !== undefined) qa[engId] = idx;
+    } else if (c.type === "multi") {
+      const idxs = answers.map(a => c.choiceIndexById[a.choice_id]).filter(i => i !== undefined);
+      if (idxs.length) qa[engId] = idxs;
+    } else if (c.type === "matrix") {
+      const rowMap = {};
+      for (const a of answers) {
+        const ri = c.rowIndexById[a.row_id];
+        const ci = (c.menuIndexById && c.menuIndexById[a.choice_id] !== undefined)
+          ? c.menuIndexById[a.choice_id]
+          : c.choiceIndexById[a.choice_id];
+        if (ri !== undefined && ci !== undefined) rowMap[ri] = ci;
+      }
+      if (Object.keys(rowMap).length) qa[engId] = rowMap;
+    }
+  }
+  return qa;
+}
 
 
 function matchDUN(text) {
@@ -586,7 +681,7 @@ function hasDisability(response, disabilityIds, qMap) {
 // ─── Incremental architecture: classify ONE response into an anonymised record ──
 // A record contains only classified categories + flags - no free text, no contact
 // details, no names, no raw DUN text. Safe to cache. Returns null if not started.
-function classifyOneResponse(r, language, qMap, questionIds, outcomeIds) {
+function classifyOneResponse(r, language, qMap, questionIds, outcomeIds, catalogForSurvey) {
   const isStarted = r.response_status === "partial" || r.response_status === "completed";
   if (!isStarted) return null;
   const isCompleted = r.response_status === "completed";
@@ -675,6 +770,9 @@ function classifyOneResponse(r, language, qMap, questionIds, outcomeIds) {
     if (entry.p !== undefined || entry.c !== undefined) disp[p.theme] = entry;
   }
   rec.disp = disp;
+
+  // Coded answers for the question-by-question browser (only if a catalog is supplied)
+  if (catalogForSurvey) rec.qa = codeAnswers(r, catalogForSurvey);
 
   return rec;
 }
@@ -778,6 +876,14 @@ function aggregateRecords(records, qMapsByLang) {
       });
     }
 
+    // Question-by-question microdata (coded answers + lens values)
+    if (rec.qa && Object.keys(rec.qa).length > 0) {
+      result.questionRows.push({
+        g: gender || null, a: ageGroup || null, i: income || null, u: urbanRural || null,
+        d: rec.disabled ? 1 : 0, m: rec.refugee ? 1 : 0, q: rec.qa,
+      });
+    }
+
     // Disparity
     const disp = rec.disp || {};
     for (const p of PARALLEL_PAIRS) {
@@ -850,6 +956,8 @@ function buildEmptyResult() {
     outcomes: {},
     disparity: {},
     outcomeRows: [],
+    // Per-response coded answers for the question-by-question browser (live lens filtering)
+    questionRows: [],
     outcomeMeta: Object.fromEntries(SCORED_OUTCOMES.map(o => [o.id, { short:o.short, ro:o.ro, domain:o.domain, module:o.module }])),
   };
   const LENS_VALUES = {
@@ -885,10 +993,10 @@ function classifyAllResponses(surveyData) {
   // Kept as the fallback when no cache exists or incremental fetch is unavailable.
   const records = [];
   const qMapsByLang = {};
-  for (const { language, responses, qMap, questionIds, outcomeIds } of surveyData) {
+  for (const { language, responses, qMap, questionIds, outcomeIds, catalog } of surveyData) {
     qMapsByLang[language] = qMap;
     for (const r of responses) {
-      const rec = classifyOneResponse(r, language, qMap, questionIds, outcomeIds);
+      const rec = classifyOneResponse(r, language, qMap, questionIds, outcomeIds, catalog);
       if (rec) records.push(rec);
     }
   }
@@ -1128,6 +1236,28 @@ async function main() {
   const engOutcomeFound = SCORED_OUTCOMES.filter(o => engData?.outcomeIds?.[o.id]).length;
   console.log(`Scored outcomes resolved: ${engOutcomeFound}/${SCORED_OUTCOMES.length} in English; other surveys mapped by position.`);
 
+  // ── Question-by-question catalog: build from English, resolve per survey by position ──
+  const engQMap = engData?.qMap || {};
+  const questionCatalog = buildQuestionCatalog(engQMap);
+  // English position for each catalog question id
+  const engPosByIdCat = {}; { let i = 0; for (const qId of Object.keys(engQMap)) { engPosByIdCat[qId] = i; i++; } }
+  for (const sd of surveyData) {
+    const idByPos = {}; { let i = 0; for (const qId of Object.keys(sd.qMap)) { idByPos[i] = qId; i++; } }
+    const catalog = {};
+    for (const engId of Object.keys(CATALOG_MODULE)) {
+      const meta = questionCatalog[engId];
+      if (!meta) continue;
+      const engPos = engPosByIdCat[engId];
+      const qid = (sd.language === "English") ? engId : (engPos != null ? idByPos[engPos] : null);
+      if (!qid) continue;
+      const maps = buildIndexMaps(sd.qMap, qid);
+      catalog[engId] = { qid, type: meta.type, ...maps };
+    }
+    sd.catalog = catalog;
+  }
+  const catCount = Object.keys(questionCatalog).length;
+  console.log(`Question catalog: ${catCount} substantive questions across modules (${CATALOG_MODULE_ORDER.join(", ")}).`);
+
 
   // ── DUN spelling check across all 4 surveys (uses question maps only) ──
   console.log("\n=== DUN SPELLING CHECK ===");
@@ -1173,7 +1303,7 @@ async function main() {
         for (const r of fresh) {
           const st = r.response_status || "unknown";
           statusCounts[st] = (statusCounts[st] || 0) + 1;
-          const rec = classifyOneResponse(r, sd.language, sd.qMap, sd.questionIds, sd.outcomeIds);
+          const rec = classifyOneResponse(r, sd.language, sd.qMap, sd.questionIds, sd.outcomeIds, sd.catalog);
           if (rec) recordsById[rec.id] = rec; // replace existing (handles partial->completed)
         }
         console.log(`  ${sd.language}: ${fresh.length} new/modified responses`);
@@ -1187,7 +1317,7 @@ async function main() {
         for (const r of responses) {
           const st = r.response_status || "unknown";
           statusCounts[st] = (statusCounts[st] || 0) + 1;
-          const rec = classifyOneResponse(r, sd.language, sd.qMap, sd.questionIds, sd.outcomeIds);
+          const rec = classifyOneResponse(r, sd.language, sd.qMap, sd.questionIds, sd.outcomeIds, sd.catalog);
           if (rec) recordsById[rec.id] = rec;
         }
         console.log(`  ${sd.language}: ${responses.length} responses classified`);
@@ -1207,6 +1337,8 @@ async function main() {
     }
   }
   classified.updatedAt = new Date().toISOString();
+  classified.surveyQuestions = questionCatalog; // labels/type/options/rows for the by-question browser
+  classified.questionModuleOrder = CATALOG_MODULE_ORDER;
   console.log(`Response status breakdown (this run's fetch):`, JSON.stringify(statusCounts));
 
   console.log(`Classified: ${classified.totalStarted} started, ${classified.totalCompleted} completed`);
