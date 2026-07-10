@@ -807,24 +807,16 @@ function CFPDashboard() {
 
       {/* ======================= FINDINGS PAGES (RO + AFC) ======================= */}
       {(page === "findings_ro" || page === "findings_afc") && (() => {
-        const rows = data?.outcomeRows;
-        const meta = data?.outcomeMeta;
-        if (!rows || !rows.length || !meta) {
-          return <div style={{...s.card,padding:24,textAlign:"center",color:"#94a3b8",fontSize:13}}>No outcome data yet. Run the pipeline to populate findings.</div>;
+        const rows = data?.questionRows;
+        const catalog = data?.surveyQuestions;
+        const roLabels = data?.roLabels || {};
+        const domainLabels = data?.domainLabels || {};
+        const domainOrder = data?.domainOrder || ["OS","TR","HO","SP","RI","CP","CI","HS"];
+        if (!rows || !rows.length || !catalog) {
+          return <div style={{...s.card,padding:24,textAlign:"center",color:"#94a3b8",fontSize:13}}>No question data yet. Run the pipeline to populate findings.</div>;
         }
 
-        const RO_LABELS = {
-          1:"RO1 - Awareness of child rights",
-          2:"RO2 - Effectiveness of mechanisms",
-          3:"RO3 - Child participation",
-          4:"RO4 - Inclusive & safe environments",
-          5:"RO5 - Climate & resilience",
-        };
-        const AFC_DOMAINS = [
-          "Outdoor Spaces & Buildings","Transportation","Housing","Health Services & Community Support",
-          "Social Participation","Communication & Information","Civic Participation & Employment","Respect & Social Inclusion",
-        ];
-        // Lens definitions: key in row, label, and possible values (with codes)
+        const MODULE_TAG = { parent:"Parent", pregnant:"Pregnant", under10:"Under-10", child:"Child" };
         const LENS_DEFS = [
           { key:"g", label:"Gender", values:[["Male","Male"],["Female","Female"]] },
           { key:"a", label:"Age", values:[["10-12","10-12"],["13-16","13-16"],["17","17"]] },
@@ -833,69 +825,68 @@ function CFPDashboard() {
           { key:"d", label:"Disability", values:[["Disabled",1],["Not disabled",0]] },
           { key:"m", label:"Migration", values:[["Migrant/refugee",1],["Citizen",0]] },
         ];
+        const lensUsed = (key) => filters.find(f => f.key === key);
+        const setLensValue = (key, value) => setFilters(prev => {
+          const without = prev.filter(f => f.key !== key);
+          if (!value) return without;
+          if (without.length >= 3 && !prev.find(f=>f.key===key)) return prev;
+          return [...without, { key, value }];
+        });
+        const filtered = rows.filter(r => filters.every(f => String(r[f.key]) === String(f.value)));
 
-        // Apply active filters (max 3) to the microdata rows
-        const filtered = rows.filter(r => filters.every(f => {
-          const v = r[f.key];
-          return String(v) === String(f.value);
-        }));
+        const RAMP5 = ["#16a34a","#84cc16","#eab308","#f97316","#dc2626"];
+        const barColor = (nOpts, idx, agree) => (agree && nOpts === 5) ? RAMP5[idx] : "#0e4a6e";
+        const singleDist = (engId, nOpts) => { const c=new Array(nOpts).fill(0); let n=0; for (const r of filtered){const v=r.q?.[engId]; if(typeof v==="number"&&v>=0&&v<nOpts){c[v]++;n++;}} return {c,n}; };
+        const multiDist = (engId, nOpts) => { const c=new Array(nOpts).fill(0); let n=0; for (const r of filtered){const v=r.q?.[engId]; if(!Array.isArray(v))continue; n++; for(const i of v)if(i>=0&&i<nOpts)c[i]++;} return {c,n}; };
+        const matrixRowDist = (engId, rowIdx, nOpts) => { const c=new Array(nOpts).fill(0); let n=0; for (const r of filtered){const v=r.q?.[engId]; if(!v||typeof v!=="object"||Array.isArray(v))continue; const col=v[rowIdx]; if(col==null)continue; if(col>=0&&col<nOpts){c[col]++;n++;}} return {c,n}; };
+        const isAgree = (options) => options.some(o => /strongly agree|strongly disagree/i.test(o));
 
-        // Compute concerning rate for one outcome over a given row set
-        const rateFor = (rowSet, oid) => {
-          let c = 0, n = 0;
-          for (const r of rowSet) {
-            const f = r.o[oid];
-            if (f === undefined) continue;
-            n++; if (f === 1) c++;
-          }
-          return { c, n, pct: n>0 ? Math.round(c/n*100) : null };
-        };
-        const rateColor = (p) => p==null?"#94a3b8":p>=50?"#b91c1c":p>=25?"#ca8a04":"#15803d";
+        const renderDist = (options, counts, n, agree, isMulti) => (
+          <div>
+            {options.map((opt,i)=>{ const pct=n>0?Math.round(counts[i]/n*100):0; return (
+              <div key={i} style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}>
+                <div style={{width:150,fontSize:10,color:"#475569",textAlign:"right",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}} title={opt}>{opt}</div>
+                <div style={{flex:1,height:14,background:"#f1f5f9",borderRadius:3,overflow:"hidden"}}>
+                  <div style={{width:pct+"%",height:"100%",background:barColor(options.length,i,agree),borderRadius:3}}/>
+                </div>
+                <div style={{width:64,fontSize:10,color:"#334155",fontWeight:600}}>{pct}% <span style={{color:"#94a3b8",fontWeight:400}}>({counts[i]})</span></div>
+              </div>
+            );})}
+            <div style={{fontSize:10,color:"#94a3b8",marginTop:4}}>
+              {isMulti ? `${n} respondents answered · options sum to more than 100% (multi-select)` : `n = ${n}`}
+              {n < 30 && n > 0 && <span style={{color:"#dc2626"}}> · low base</span>}
+            </div>
+          </div>
+        );
 
-        // Outcome card: shows parent/child split for the outcome's module
-        const outcomeCard = (oid) => {
-          const m = meta[oid];
-          const r = rateFor(filtered, oid);
-          const moduleTag = m.module === "parent" ? "Parent-reported" : "Child-reported";
-          const moduleColor = m.module === "parent" ? "#0e4a6e" : "#7c3aed";
+        const questionCard = (engId) => {
+          const q = catalog[engId]; if (!q) return null;
+          const agree = isAgree(q.options);
           return (
-            <div key={oid} style={{...s.card,overflow:"hidden"}}>
-              <div style={{padding:"10px 14px",display:"flex",justifyContent:"space-between",alignItems:"center",gap:8}}>
-                <div style={{minWidth:0}}>
-                  <div style={{fontSize:12,fontWeight:700,color:"#0f172a"}}>{m.short}</div>
-                  <div style={{fontSize:10,marginTop:2}}>
-                    <span style={{color:moduleColor,fontWeight:600}}>{moduleTag}</span>
-                    <span style={{color:"#94a3b8"}}> · {m.domain}</span>
-                  </div>
-                </div>
-                <div style={{textAlign:"right",flexShrink:0}}>
-                  <div style={{fontSize:22,fontWeight:800,color:rateColor(r.pct)}}>{r.pct==null?"-":r.pct+"%"}</div>
-                  <div style={{fontSize:9,color:r.n<30?"#dc2626":"#94a3b8"}}>n={r.n}{r.n<30?" (low base)":""}</div>
-                </div>
+            <div key={engId} style={{...s.card,padding:"14px 16px",marginBottom:10}}>
+              <div style={{fontSize:12,fontWeight:700,color:"#0f172a",marginBottom:2}}>{q.heading}</div>
+              <div style={{fontSize:10,color:"#94a3b8",marginBottom:10}}>
+                <span style={{color:"#0e4a6e",fontWeight:600}}>{MODULE_TAG[q.module]||q.module}</span>
+                {" · "}{q.type==="multi"?"Multiple choice (select all that apply)":q.type==="matrix"?"Matrix · one distribution per sub-statement":"Single choice"}
+                {q.domains && q.domains.length>1 && <span> · appears in {q.domains.length} domains</span>}
               </div>
-              <div style={{height:4,background:"#f1f5f9"}}>
-                <div style={{width:(r.pct||0)+"%",height:"100%",background:rateColor(r.pct)}}/>
-              </div>
+              {q.type==="single" && (()=>{ const {c,n}=singleDist(engId,q.options.length); return renderDist(q.options,c,n,agree,false); })()}
+              {q.type==="multi" && (()=>{ const {c,n}=multiDist(engId,q.options.length); return renderDist(q.options,c,n,false,true); })()}
+              {q.type==="matrix" && q.rows.map((rowLabel,ri)=>(
+                <div key={ri} style={{marginBottom:12,paddingTop:8,borderTop:ri>0?"1px solid #f1f5f9":"none"}}>
+                  <div style={{fontSize:11,fontWeight:600,color:"#334155",marginBottom:6}}>{rowLabel}</div>
+                  {(()=>{ const {c,n}=matrixRowDist(engId,ri,q.options.length); return renderDist(q.options,c,n,agree,false); })()}
+                </div>
+              ))}
             </div>
           );
         };
 
-        // Group outcome ids
-        const ids = Object.keys(meta);
-        const groups = (page === "findings_ro")
-          ? Object.keys(RO_LABELS).map(ro => ({ label:RO_LABELS[ro], ids: ids.filter(id => String(meta[id].ro) === String(ro)) }))
-          : AFC_DOMAINS.map(dom => ({ label:dom, ids: ids.filter(id => meta[id].domain === dom) })).filter(g => g.ids.length);
-
-        // Filter bar helpers
-        const lensUsed = (key) => filters.find(f => f.key === key);
-        const setLensValue = (key, value) => {
-          setFilters(prev => {
-            const without = prev.filter(f => f.key !== key);
-            if (!value) return without;               // cleared
-            if (without.length >= 3 && !prev.find(f=>f.key===key)) return prev; // max 3
-            return [...without, { key, value }];
-          });
-        };
+        // Build groups
+        const isRO = page === "findings_ro";
+        const groups = isRO
+          ? Object.keys(roLabels).map(ro => ({ key:ro, label:roLabels[ro], ids: Object.keys(catalog).filter(id => (catalog[id].ro||[]).map(String).includes(String(ro))) }))
+          : domainOrder.map(dc => ({ key:dc, label:domainLabels[dc]||dc, ids: Object.keys(catalog).filter(id => (catalog[id].domains||[]).includes(dc)) }));
 
         return (
           <>
@@ -926,25 +917,20 @@ function CFPDashboard() {
                   );
                 })}
               </div>
-              {filters.length>=3 && <div style={{fontSize:10,color:"#94a3b8",marginTop:6}}>Maximum 3 lenses combined. Clear one to change another.</div>}
+              <div style={{fontSize:10,color:"#94a3b8",marginTop:6}}>
+                {isRO ? "Grouped by Research Objective." : "Grouped by AFC domain. Questions touching several domains appear under each."}
+              </div>
             </div>
 
-            {/* Low base warning */}
-            {filtered.length < 30 && filters.length>0 && (
-              <div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:8,padding:"8px 14px",marginBottom:14,fontSize:11,color:"#b91c1c"}}>
-                This filter combination matches only {filtered.length} responses - rates shown are unreliable at this base size. Treat as indicative only.
-              </div>
-            )}
-
-            {/* Grouped outcome cards */}
-            {groups.map((g,gi)=>(
-              <div key={gi} style={{marginBottom:14}}>
-                <div style={{fontSize:12,fontWeight:700,color:"#0f172a",margin:"4px 2px 8px"}}>{g.label}</div>
+            {/* Grouped question distributions */}
+            {groups.map(g=>(
+              <div key={g.key} style={{marginBottom:18}}>
+                <div style={{fontSize:13,fontWeight:700,color:"#fff",background:"#0e4a6e",padding:"7px 14px",borderRadius:6,marginBottom:10}}>
+                  {g.label} <span style={{fontWeight:400,opacity:0.8,fontSize:11}}>· {g.ids.length} question{g.ids.length===1?"":"s"}</span>
+                </div>
                 {g.ids.length===0
-                  ? <div style={{fontSize:11,color:"#94a3b8",padding:"4px 2px"}}>No mapped outcomes yet (matrix questions pending).</div>
-                  : <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:10,alignItems:"start"}}>
-                      {g.ids.map(id=>outcomeCard(id))}
-                    </div>}
+                  ? <div style={{fontSize:11,color:"#94a3b8",padding:"2px 4px"}}>No questions mapped.</div>
+                  : g.ids.map(id=>questionCard(id))}
               </div>
             ))}
           </>
