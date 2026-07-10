@@ -385,6 +385,48 @@ function CFPDashboard() {
         </div>
       </div>
 
+      {/* Refugee / Stateless / Undocumented - monitored count (no quota) */}
+      {data?.migration && (() => {
+        const mig = data.migration;
+        const distRows = ["Timur Laut","Barat Daya","SP Utara","SP Tengah","SP Selatan"];
+        const miniBar = (obj, keys, labelFn) => {
+          const max = Math.max(1, ...keys.map(k=>obj[k]||0));
+          return keys.map(k=>(
+            <div key={k} style={{display:"flex",alignItems:"center",gap:6,marginBottom:2}}>
+              <div style={{width:74,fontSize:10,color:"#475569",textAlign:"right",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{labelFn?labelFn(k):k}</div>
+              <div style={{flex:1,height:10,background:"#f1f5f9",borderRadius:2,overflow:"hidden"}}>
+                <div style={{width:((obj[k]||0)/max*100)+"%",height:"100%",background:"#7c3aed",borderRadius:2}}/>
+              </div>
+              <div style={{width:26,fontSize:10,color:"#334155",fontWeight:600,textAlign:"right"}}>{obj[k]||0}</div>
+            </div>
+          ));
+        };
+        return (
+          <div style={{...s.card,padding:16,marginBottom:14,borderLeft:"3px solid #7c3aed"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}>
+              <div>
+                <div style={{fontSize:12,fontWeight:700,color:"#0f172a"}}>Refugee / Stateless / Undocumented children</div>
+                <div style={{fontSize:11,color:"#64748b",marginTop:2}}>Monitored count of a hard-to-reach group - tracking reach, not a quota</div>
+              </div>
+              <div style={{textAlign:"right"}}>
+                <div style={{fontSize:32,fontWeight:800,color:"#7c3aed"}}>{mig.total.toLocaleString()}</div>
+                <div style={{fontSize:10,color:"#94a3b8"}}>completed responses</div>
+              </div>
+            </div>
+            {mig.total > 0 ? (
+              <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:16}}>
+                <div><div style={s.label}>By district</div>{miniBar(mig.byDistrict, distRows)}</div>
+                <div><div style={s.label}>By gender</div>{miniBar(mig.byGender, ["Male","Female"])}</div>
+                <div><div style={s.label}>By age</div>{miniBar(mig.byAge, ["10-12","13-16","17"], k=>"Age "+k)}</div>
+                <div><div style={s.label}>By income</div>{miniBar(mig.byIncome, ["B40","M40","T20","Not stated"])}</div>
+              </div>
+            ) : (
+              <div style={{fontSize:12,color:"#94a3b8",padding:"4px 0"}}>No refugee/stateless/undocumented responses recorded yet.</div>
+            )}
+          </div>
+        );
+      })()}
+
       {/* Dimension selectors */}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
         <span style={{fontSize:11,fontWeight:700,color:"#94a3b8",letterSpacing:"0.05em",textTransform:"uppercase"}}>Demographic quotas</span>
