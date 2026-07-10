@@ -259,6 +259,44 @@ const CATALOG_MODULE = {
 };
 const CATALOG_MODULE_ORDER = ["parent","pregnant","under10","child"];
 
+// Taxonomy: each question's Research Objective(s) and AFC Domain(s), from the agreed
+// categorization. ro is an array (usually one); domains is an array (often several).
+// Domain codes: OS=Outdoor Spaces & Buildings, TR=Transportation, HO=Housing,
+// SP=Social Participation, RI=Respect & Social Inclusion, CP=Civic Participation & Employment,
+// CI=Communication & Information, HS=Community Support & Health Services.
+const QUESTION_TAXONOMY = {
+  "289909815":{ro:[1],domains:["CI"]}, "289909920":{ro:[1],domains:["RI"]}, "289909887":{ro:[1],domains:["RI"]},
+  "289909846":{ro:[1],domains:["CI"]}, "289909847":{ro:[1],domains:["RI"]},
+  "289909822":{ro:[2],domains:["HS"]}, "289909880":{ro:[2],domains:["HS"]}, "289909908":{ro:[2],domains:["CI","HS"]},
+  "289909910":{ro:[2],domains:["TR","HS"]}, "289909911":{ro:[2],domains:["HS"]}, "289909889":{ro:[2],domains:["HS"]},
+  "289909848":{ro:[2],domains:["RI","HS"]}, "289909881":{ro:[2],domains:["HS"]},
+  "289909818":{ro:[3],domains:["CP"]}, "289909819":{ro:[3],domains:["CP"]}, "289909913":{ro:[3],domains:["CP","HS"]},
+  "289909851":{ro:[3],domains:["CP"]}, "289909852":{ro:[3],domains:["CP","CI"]}, "289909866":{ro:[3],domains:["CP"]},
+  "289909837":{ro:[5,3],domains:["CP"]},
+  "289909820":{ro:[4],domains:["SP"]}, "289909821":{ro:[4],domains:["SP","RI"]}, "289909823":{ro:[4],domains:["SP"]},
+  "289909825":{ro:[4],domains:["OS"]}, "289909826":{ro:[4],domains:["OS"]}, "289909827":{ro:[4],domains:["OS"]},
+  "289909921":{ro:[4],domains:["OS","RI"]}, "289909828":{ro:[4],domains:["OS","TR"]}, "289909829":{ro:[4],domains:["TR"]},
+  "289909830":{ro:[4],domains:["OS","TR"]}, "289909831":{ro:[4],domains:["RI"]}, "289909832":{ro:[4],domains:["CI"]},
+  "289909915":{ro:[4],domains:["HO"]}, "289909916":{ro:[4],domains:["HO","HS"]}, "289909891":{ro:[4],domains:["SP","OS"]},
+  "289909893":{ro:[4],domains:["OS"]}, "289909894":{ro:[4],domains:["OS","TR"]}, "289909853":{ro:[4],domains:["SP"]},
+  "289909854":{ro:[4],domains:["SP"]}, "289909857":{ro:[4],domains:["OS","RI"]}, "289909858":{ro:[4],domains:["OS"]},
+  "289909860":{ro:[4],domains:["TR","RI"]}, "289909861":{ro:[4],domains:["CI"]}, "289909840":{ro:[4],domains:["RI"]},
+  "292468426":{ro:[4],domains:["HS"]}, "289909905":{ro:[4],domains:["HS"]}, "289911742":{ro:[4],domains:["HS"]},
+  "289909834":{ro:[5],domains:["HS"]}, "289909835":{ro:[5],domains:["OS","HO","HS"]}, "289909836":{ro:[5],domains:["CP"]},
+  "289909918":{ro:[5],domains:["HS"]}, "289909896":{ro:[5],domains:["OS","HS"]}, "289909865":{ro:[5],domains:["OS","TR"]},
+  "289909876":{ro:[5],domains:["CP"]}, "289909864":{ro:[5],domains:["HS"]},
+};
+const RO_LABELS = {
+  1:"RO1 - Awareness of child rights", 2:"RO2 - Effectiveness of mechanisms",
+  3:"RO3 - Child participation", 4:"RO4 - Inclusive & safe environments", 5:"RO5 - Climate & resilience",
+};
+const DOMAIN_LABELS = {
+  OS:"Outdoor Spaces & Buildings", TR:"Transportation", HO:"Housing", SP:"Social Participation",
+  RI:"Respect & Social Inclusion", CP:"Civic Participation & Employment", CI:"Communication & Information",
+  HS:"Community Support & Health Services",
+};
+const DOMAIN_ORDER = ["OS","TR","HO","SP","RI","CP","CI","HS"];
+
 // Build the catalog (labels/type/options/rows) from the English survey question map.
 function buildQuestionCatalog(engQMap) {
   const cat = {};
@@ -279,7 +317,8 @@ function buildQuestionCatalog(engQMap) {
     } else {
       type = "single"; options = choiceVals;
     }
-    cat[engId] = { module: mod, heading: (q.heading || "").replace(/<[^>]+>/g, "").trim(), type, options, rows };
+    cat[engId] = { module: mod, heading: (q.heading || "").replace(/<[^>]+>/g, "").trim(), type, options, rows,
+                   ro: (QUESTION_TAXONOMY[engId]?.ro) || [], domains: (QUESTION_TAXONOMY[engId]?.domains) || [] };
   }
   return cat;
 }
@@ -1357,8 +1396,11 @@ async function main() {
     }
   }
   classified.updatedAt = new Date().toISOString();
-  classified.surveyQuestions = questionCatalog; // labels/type/options/rows for the by-question browser
+  classified.surveyQuestions = questionCatalog; // labels/type/options/rows/ro/domains for the browsers
   classified.questionModuleOrder = CATALOG_MODULE_ORDER;
+  classified.roLabels = RO_LABELS;
+  classified.domainLabels = DOMAIN_LABELS;
+  classified.domainOrder = DOMAIN_ORDER;
   console.log(`Response status breakdown (this run's fetch):`, JSON.stringify(statusCounts));
 
   console.log(`Classified: ${classified.totalStarted} started, ${classified.totalCompleted} completed`);
