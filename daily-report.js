@@ -724,7 +724,10 @@ function classifyOneResponse(r, language, qMap, questionIds, outcomeIds, catalog
   rec.singleParent = !!(maritalText && /single.?parent|one.?parent|single|divorced|widowed|ibu tunggal|bapa tunggal|bercerai|balu|janda|单亲|离婚|丧偶|தனி|விவாகரத்து|விதவை/i.test(maritalText));
 
   rec.disabled = hasDisability(r, questionIds.disability, qMap);
-  rec.refugee = !!(ethText && /refugee|undocumented|pelarian|难民|அகதி/i.test(ethText));
+  // Migration status from Q8 "status in Malaysia" (multi-select). Merged vulnerable group =
+  // Refugee + Stateless + Undocumented. Excludes documented migrants, expats, PR, MM2H, spouses.
+  const statusText = getAnswerText(r, questionIds.status, qMap);
+  rec.refugee = !!(statusText && /refugee|stateless|undocumented|pelarian|tanpa negara|tanpa kewarganegaraan|tiada dokumen|tidak berdokumen|tanpa dokumen|难民|无国籍|无证|அகதி|நாடற்ற|ஆவணமற்ற|ஆவணமில/i.test(statusText));
 
   // CRG sign-up: presence/absence of contact text only, never the text itself.
   let crgSignup = false;
@@ -838,6 +841,15 @@ function aggregateRecords(records, qMapsByLang) {
     if (rec.disabled) result.vulnerableGroups["Children with disability"]++;
     if (rec.singleParent) result.vulnerableGroups["Single-parent households"]++;
     if (rec.refugee) result.vulnerableGroups["Refugees / undocumented"]++;
+
+    // Refugee/Stateless/Undocumented monitored count + single-lens breakdowns
+    if (rec.refugee) {
+      result.migration.total++;
+      if (district) result.migration.byDistrict[district]++;
+      if (gender) result.migration.byGender[gender]++;
+      if (ageGroup) result.migration.byAge[ageGroup]++;
+      result.migration.byIncome[income || "Not stated"]++;
+    }
 
     if (rec.crg) {
       result.crg.total++;
@@ -955,6 +967,14 @@ function buildEmptyResult() {
     },
     outcomes: {},
     disparity: {},
+    // Refugee/Stateless/Undocumented - monitored count with single-lens breakdowns (no quota)
+    migration: {
+      total: 0,
+      byDistrict: { "Timur Laut":0,"Barat Daya":0,"SP Utara":0,"SP Tengah":0,"SP Selatan":0 },
+      byGender: { Male:0, Female:0 },
+      byAge: { "10-12":0, "13-16":0, "17":0 },
+      byIncome: { B40:0, M40:0, T20:0, "Not stated":0 },
+    },
     outcomeRows: [],
     // Per-response coded answers for the question-by-question browser (live lens filtering)
     questionRows: [],
