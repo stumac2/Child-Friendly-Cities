@@ -202,6 +202,7 @@ function CFPDashboard() {
   const [page, setPage]           = useState("overview"); // "overview" | "crg"
   const [filters, setFilters]     = useState([]); // up to 3 active lens filters: [{lens, value}]
   const [qModule, setQModule]     = useState("parent"); // active module on the By-Question tab
+  const [dunDistrict, setDunDistrict] = useState("All"); // district filter on Local Gaps tab
 
   const loadData = useCallback(() => {
     // Cache-bust with timestamp so browser always fetches the freshest data.json
@@ -294,7 +295,7 @@ function CFPDashboard() {
 
       {/* Page toggle */}
       <div style={{display:"flex",gap:4,marginBottom:14,background:"#e2e8f0",borderRadius:8,padding:3,width:"fit-content"}}>
-        {[{id:"overview",label:"Survey Overview"},{id:"crg",label:"Child Reference Group"},{id:"findings_ro",label:"Findings: Research Objectives"},{id:"findings_afc",label:"Findings: AFC Domains"},{id:"findings_q",label:"Findings: By Question"}].map(p=>(
+        {[{id:"overview",label:"Survey Overview"},{id:"crg",label:"Child Reference Group"},{id:"findings_ro",label:"Findings: Research Objectives"},{id:"findings_afc",label:"Findings: AFC Domains"},{id:"findings_q",label:"Findings: By Question"},{id:"local_gaps",label:"Local Gaps"}].map(p=>(
           <button key={p.id} onClick={()=>setPage(p.id)}
             style={{padding:"7px 16px",fontSize:12,fontWeight:600,borderRadius:6,border:"none",cursor:"pointer",
               background:page===p.id?"#fff":"transparent",color:page===p.id?"#0e4a6e":"#64748b",
@@ -1097,6 +1098,98 @@ function CFPDashboard() {
                     </div>
                   );
                 })}
+          </>
+        );
+      })()}
+
+      {/* ======================= LOCAL GAPS (DUN ANALYSIS) ======================= */}
+      {page === "local_gaps" && (() => {
+        const byDUN = data?.byDUN;
+        const dunMeta = data?.dunMeta;
+        if (!byDUN || !dunMeta) {
+          return <div style={{...s.card,padding:24,textAlign:"center",color:"#94a3b8",fontSize:13}}>No DUN data yet. Run the pipeline to populate local gaps.</div>;
+        }
+
+        // District colours
+        const DISTRICT_COLOR = {
+          "Timur Laut":"#0e4a6e","Barat Daya":"#0891b2",
+          "SP Utara":"#7c3aed","SP Tengah":"#c026d3","SP Selatan":"#db2777",
+        };
+        const allDistricts = dunMeta.map(d=>d.district);
+
+        // Build the flat list of DUNs per side (island / mainland), each with count + district
+        const buildSide = (isIsland) => {
+          const rows = [];
+          for (const dm of dunMeta) {
+            if (dm.island !== isIsland) continue;
+            if (dunDistrict !== "All" && dm.district !== dunDistrict) continue;
+            for (const dun of dm.duns) {
+              rows.push({ dun, district: dm.district, count: byDUN[dun] || 0 });
+            }
+          }
+          // sort by district (in dunMeta order) then by count desc within
+          return rows;
+        };
+        const islandRows = buildSide(true);
+        const mainlandRows = buildSide(false);
+        const maxCount = Math.max(1, ...Object.values(byDUN));
+
+        const chart = (title, rows, subtitle) => {
+          if (!rows.length) return null;
+          return (
+            <div style={{...s.card,padding:16,marginBottom:14}}>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:13,fontWeight:700,color:"#0f172a"}}>{title}</div>
+                <div style={{fontSize:11,color:"#64748b"}}>{subtitle}</div>
+              </div>
+              {rows.map((r,i)=>{
+                const prev = rows[i-1];
+                const showDistrictHeader = !prev || prev.district !== r.district;
+                return (
+                  <div key={r.dun}>
+                    {showDistrictHeader && (
+                      <div style={{display:"flex",alignItems:"center",gap:6,margin:(i===0?"0":"10px")+" 0 5px"}}>
+                        <span style={{width:9,height:9,borderRadius:2,background:DISTRICT_COLOR[r.district]||"#64748b",display:"inline-block"}}/>
+                        <span style={{fontSize:11,fontWeight:700,color:"#334155"}}>{r.district}</span>
+                      </div>
+                    )}
+                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}>
+                      <div style={{width:130,fontSize:11,color:"#475569",textAlign:"right",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}} title={r.dun}>{r.dun}</div>
+                      <div style={{flex:1,height:16,background:"#f1f5f9",borderRadius:3,overflow:"hidden"}}>
+                        <div style={{width:(r.count/maxCount*100)+"%",height:"100%",background:DISTRICT_COLOR[r.district]||"#64748b",borderRadius:3,minWidth:r.count>0?2:0}}/>
+                      </div>
+                      <div style={{width:44,fontSize:11,fontWeight:700,color:r.count===0?"#dc2626":"#334155",textAlign:"right"}}>{r.count}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        };
+
+        return (
+          <>
+            <div style={{...s.card,padding:"12px 16px",marginBottom:14,fontSize:12,color:"#475569",lineHeight:1.5}}>
+              <b>Local gaps by DUN.</b> Completed responses per state constituency (DUN), grouped by district. Use this to spot under-represented areas and re-prompt specific schools. Bars share a common scale across both charts. Zero-count DUNs are flagged in red.
+            </div>
+
+            {/* District filter */}
+            <div style={{...s.card,padding:"12px 14px",marginBottom:14,display:"flex",alignItems:"center",gap:10}}>
+              <span style={{fontSize:11,fontWeight:700,color:"#94a3b8",letterSpacing:"0.05em",textTransform:"uppercase"}}>Filter by district</span>
+              <select value={dunDistrict} onChange={e=>setDunDistrict(e.target.value)}
+                style={{fontSize:12,border:"1px solid "+(dunDistrict!=="All"?"#0e4a6e":"#e2e8f0"),borderRadius:6,padding:"5px 10px",
+                  color:dunDistrict!=="All"?"#0e4a6e":"#475569",fontWeight:dunDistrict!=="All"?600:400,cursor:"pointer"}}>
+                <option value="All">All districts</option>
+                {allDistricts.map(d=><option key={d} value={d}>{d}</option>)}
+              </select>
+              {dunDistrict!=="All" && <button onClick={()=>setDunDistrict("All")} style={{fontSize:11,color:"#0e4a6e",background:"none",border:"none",cursor:"pointer",textDecoration:"underline",padding:0}}>clear</button>}
+            </div>
+
+            {chart("Penang Island DUNs", islandRows, "Timur Laut · Barat Daya")}
+            {chart("Seberang Perai (Mainland) DUNs", mainlandRows, "SP Utara · SP Tengah · SP Selatan")}
+            {islandRows.length===0 && mainlandRows.length===0 && (
+              <div style={{...s.card,padding:20,textAlign:"center",color:"#94a3b8",fontSize:12}}>No DUNs for this filter.</div>
+            )}
           </>
         );
       })()}
