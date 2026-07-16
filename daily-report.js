@@ -74,6 +74,9 @@ const ACTIONS = {
 // ─── DUN mappings ──────────────────────────────────────────────────────────────
 const DUN_DISTRICT = {};
 const DUN_URBAN = {};
+const DUN_CANONICAL = {}; // lowercase key -> display name
+const DUN_ISLAND = {};    // lowercase key -> true (island) / false (mainland)
+const ISLAND_DISTRICTS = new Set(["Timur Laut","Barat Daya"]);
 const dunData = {
   "Timur Laut": {
     duns: ["Tanjong Bunga","Air Putih","Air Itam","Kebun Bunga","Pulau Tikus","Padang Kota","Pengkalan Kota","Komtar","Datok Keramat","Sungai Pinang","Batu Lanchang","Seri Delima","Bukit Gelugor","Paya Terubong","Batu Uban"],
@@ -104,10 +107,13 @@ const dunData = {
 };
 for (const [district, info] of Object.entries(dunData)) {
   for (const dun of info.duns) {
-    DUN_DISTRICT[dun.toLowerCase()] = district;
-    if (info.urban?.includes(dun)) DUN_URBAN[dun.toLowerCase()] = "Urban";
-    else if (info.periurban?.includes(dun)) DUN_URBAN[dun.toLowerCase()] = "Peri-urban";
-    else if (info.rural?.includes(dun)) DUN_URBAN[dun.toLowerCase()] = "Rural";
+    const key = dun.toLowerCase();
+    DUN_DISTRICT[key] = district;
+    DUN_CANONICAL[key] = dun;
+    DUN_ISLAND[key] = ISLAND_DISTRICTS.has(district);
+    if (info.urban?.includes(dun)) DUN_URBAN[key] = "Urban";
+    else if (info.periurban?.includes(dun)) DUN_URBAN[key] = "Peri-urban";
+    else if (info.rural?.includes(dun)) DUN_URBAN[key] = "Rural";
   }
 }
 
@@ -749,6 +755,7 @@ function classifyOneResponse(r, language, qMap, questionIds, outcomeIds, catalog
   const dunKey = matchDUN(dunText);
   rec.hadDun = !!dunText;
   rec.district = dunKey ? DUN_DISTRICT[dunKey] : null;
+  rec.dun = dunKey ? DUN_CANONICAL[dunKey] : null; // canonical DUN name for local-gaps analysis
   rec.urbanRural = dunKey ? DUN_URBAN[dunKey] : null;
   rec.unmatchedDun = (dunText && !rec.district) ? dunText : null; // transient; used for logging only, not aggregated
 
@@ -863,6 +870,7 @@ function aggregateRecords(records, qMapsByLang) {
     } else {
       result.noDistrict++;
     }
+    if (rec.dun) result.byDUN[rec.dun] = (result.byDUN[rec.dun] || 0) + 1;
 
     if (gender) {
       result.byGender[gender]++;
@@ -1006,6 +1014,8 @@ function buildEmptyResult() {
     },
     outcomes: {},
     disparity: {},
+    // Per-DUN completed-response counts for the Local Gaps tab
+    byDUN: {},
     // Refugee/Stateless/Undocumented - monitored count with single-lens breakdowns (no quota)
     migration: {
       total: 0,
@@ -1401,6 +1411,12 @@ async function main() {
   classified.roLabels = RO_LABELS;
   classified.domainLabels = DOMAIN_LABELS;
   classified.domainOrder = DOMAIN_ORDER;
+  // DUN metadata for the Local Gaps tab: ordered list per district, with island/mainland flag
+  classified.dunMeta = Object.entries(dunData).map(([district, info]) => ({
+    district,
+    island: ISLAND_DISTRICTS.has(district),
+    duns: info.duns,
+  }));
   console.log(`Response status breakdown (this run's fetch):`, JSON.stringify(statusCounts));
 
   console.log(`Classified: ${classified.totalStarted} started, ${classified.totalCompleted} completed`);
