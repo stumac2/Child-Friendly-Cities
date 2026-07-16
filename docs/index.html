@@ -891,8 +891,8 @@ function CFPDashboard() {
 
         return (
           <>
-            {/* Filter bar */}
-            <div style={{...s.card,padding:"12px 14px",marginBottom:14}}>
+            {/* Filter bar (sticky) */}
+            <div style={{...s.card,padding:"12px 14px",marginBottom:14,position:"sticky",top:8,zIndex:20,boxShadow:"0 2px 8px rgba(15,23,42,0.08)"}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
                 <span style={{fontSize:11,fontWeight:700,color:"#94a3b8",letterSpacing:"0.05em",textTransform:"uppercase"}}>Filter by lens (combine up to 3)</span>
                 <span style={{fontSize:11,color:"#64748b"}}>
@@ -1036,8 +1036,8 @@ function CFPDashboard() {
 
         return (
           <>
-            {/* Filter bar (shared) */}
-            <div style={{...s.card,padding:"12px 14px",marginBottom:14}}>
+            {/* Filter bar (shared, sticky) */}
+            <div style={{...s.card,padding:"12px 14px",marginBottom:14,position:"sticky",top:8,zIndex:20,boxShadow:"0 2px 8px rgba(15,23,42,0.08)"}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
                 <span style={{fontSize:11,fontWeight:700,color:"#94a3b8",letterSpacing:"0.05em",textTransform:"uppercase"}}>Filter by lens (combine up to 3)</span>
                 <span style={{fontSize:11,color:"#64748b"}}>
