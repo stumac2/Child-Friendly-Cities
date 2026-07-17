@@ -64,7 +64,38 @@ function scoreQuestion(engId, options) {
   return { fav, con };
 }
 
-// ─── Config ────────────────────────────────────────────────────────────────────
+// ─── Wellbeing lens: derive "low wellbeing" per response from stored answers ────
+// Uses 905 (how feeling lately, multi) and 292468426 (anxious/sad matrix).
+// Low wellbeing = any sad/worried/stressed option in 905, OR often/sometimes
+// anxious or sad in the matrix. Derived client-side (no pipeline rebuild).
+function deriveWellbeing(row, catalog) {
+  if (!catalog) return null;
+  let answered = false, low = false;
+  const q905 = catalog["289909905"];
+  if (q905 && Array.isArray(row.q?.["289909905"])) {
+    answered = true;
+    const opts = q905.options || [];
+    for (const idx of row.q["289909905"]) {
+      const o = (opts[idx]||"").toLowerCase();
+      if (/worried|stressed|sad or low/.test(o)) low = true;
+    }
+  }
+  const qwb = catalog["292468426"];
+  const vwb = row.q?.["292468426"];
+  if (qwb && vwb && typeof vwb === "object" && !Array.isArray(vwb)) {
+    answered = true;
+    const opts = qwb.options || [];
+    for (const ri of Object.keys(vwb)) {
+      const o = (opts[vwb[ri]]||"").toLowerCase();
+      if (/very often|often|sometimes/.test(o)) low = true;
+    }
+  }
+  if (!answered) return null;
+  return low ? 1 : 0;
+}
+function withWellbeing(rows, catalog) {
+  return rows.map(r => (r.w !== undefined ? r : { ...r, w: deriveWellbeing(r, catalog) }));
+}
 const START_DATE    = new Date("2026-06-15");
 const END_DATE      = new Date("2026-07-31");
 const TOTAL_TARGET  = 2500;
@@ -248,6 +279,8 @@ function CFPDashboard() {
   const [qModule, setQModule]     = useState("parent"); // active module on the By-Question tab
   const [dunDistrict, setDunDistrict] = useState("All"); // district filter on Local Gaps tab
   const [rollupAxis, setRollupAxis] = useState("domain"); // 'domain' or 'objective' on Rollup tab
+  const [scanDir, setScanDir]       = useState("con");    // 'con' or 'fav' - which extreme to rank
+  const [scanMinN, setScanMinN]     = useState(30);       // min base size to surface
 
   const loadData = useCallback(() => {
     // Cache-bust with timestamp so browser always fetches the freshest data.json
@@ -340,7 +373,7 @@ function CFPDashboard() {
 
       {/* Page toggle */}
       <div style={{display:"flex",gap:4,marginBottom:14,background:"#e2e8f0",borderRadius:8,padding:3,width:"fit-content"}}>
-        {[{id:"overview",label:"Survey Overview"},{id:"crg",label:"Child Reference Group"},{id:"findings_ro",label:"Findings: Research Objectives"},{id:"findings_afc",label:"Findings: AFC Domains"},{id:"findings_q",label:"Findings: By Question"},{id:"rollup",label:"Rollup"},{id:"local_gaps",label:"Local Gaps"}].map(p=>(
+        {[{id:"overview",label:"Survey Overview"},{id:"crg",label:"Child Reference Group"},{id:"findings_ro",label:"Findings: Research Objectives"},{id:"findings_afc",label:"Findings: AFC Domains"},{id:"findings_q",label:"Findings: By Question"},{id:"rollup",label:"Rollup"},{id:"scanner",label:"Disparity Scanner"},{id:"local_gaps",label:"Local Gaps"}].map(p=>(
           <button key={p.id} onClick={()=>setPage(p.id)}
             style={{padding:"7px 16px",fontSize:12,fontWeight:600,borderRadius:6,border:"none",cursor:"pointer",
               background:page===p.id?"#fff":"transparent",color:page===p.id?"#0e4a6e":"#64748b",
@@ -870,6 +903,7 @@ function CFPDashboard() {
           { key:"u", label:"Urban/Rural", values:[["Urban","Urban"],["Peri-urban","Peri-urban"],["Rural","Rural"]] },
           { key:"d", label:"Disability", values:[["Disabled",1],["Not disabled",0]] },
           { key:"m", label:"Migration", values:[["Migrant/refugee",1],["Citizen",0]] },
+          { key:"w", label:"Wellbeing", values:[["Low wellbeing",1],["Not low",0]] },
         ];
         const lensUsed = (key) => filters.find(f => f.key === key);
         const setLensValue = (key, value) => setFilters(prev => {
@@ -878,7 +912,8 @@ function CFPDashboard() {
           if (without.length >= 3 && !prev.find(f=>f.key===key)) return prev;
           return [...without, { key, value }];
         });
-        const filtered = rows.filter(r => filters.every(f => String(r[f.key]) === String(f.value)));
+        const wbRows = withWellbeing(rows, catalog);
+        const filtered = wbRows.filter(r => filters.every(f => String(r[f.key]) === String(f.value)));
 
         const RAMP5 = ["#16a34a","#84cc16","#eab308","#f97316","#dc2626"];
         const barColor = (nOpts, idx, agree) => (agree && nOpts === 5) ? RAMP5[idx] : "#0e4a6e";
@@ -945,7 +980,7 @@ function CFPDashboard() {
                   {filters.length>0 && <button onClick={()=>setFilters([])} style={{marginLeft:8,fontSize:11,color:"#0e4a6e",background:"none",border:"none",cursor:"pointer",textDecoration:"underline",padding:0}}>clear all</button>}
                 </span>
               </div>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:8}}>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:8}}>
                 {LENS_DEFS.map(ld=>{
                   const active = lensUsed(ld.key);
                   const atMax = filters.length>=3 && !active;
@@ -1000,6 +1035,7 @@ function CFPDashboard() {
           { key:"u", label:"Urban/Rural", values:[["Urban","Urban"],["Peri-urban","Peri-urban"],["Rural","Rural"]] },
           { key:"d", label:"Disability", values:[["Disabled",1],["Not disabled",0]] },
           { key:"m", label:"Migration", values:[["Migrant/refugee",1],["Citizen",0]] },
+          { key:"w", label:"Wellbeing", values:[["Low wellbeing",1],["Not low",0]] },
         ];
         const lensUsed = (key) => filters.find(f => f.key === key);
         const setLensValue = (key, value) => setFilters(prev => {
@@ -1009,7 +1045,8 @@ function CFPDashboard() {
           return [...without, { key, value }];
         });
 
-        const filtered = rows.filter(r => filters.every(f => String(r[f.key]) === String(f.value)));
+        const wbRows = withWellbeing(rows, catalog);
+        const filtered = wbRows.filter(r => filters.every(f => String(r[f.key]) === String(f.value)));
 
         // Colour ramp for distribution bars (5-point scales get a red->green ramp; else neutral)
         const RAMP5 = ["#16a34a","#84cc16","#eab308","#f97316","#dc2626"];
@@ -1090,7 +1127,7 @@ function CFPDashboard() {
                   {filters.length>0 && <button onClick={()=>setFilters([])} style={{marginLeft:8,fontSize:11,color:"#0e4a6e",background:"none",border:"none",cursor:"pointer",textDecoration:"underline",padding:0}}>clear all</button>}
                 </span>
               </div>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:8}}>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:8}}>
                 {LENS_DEFS.map(ld=>{
                   const active = lensUsed(ld.key);
                   const atMax = filters.length>=3 && !active;
@@ -1257,6 +1294,7 @@ function CFPDashboard() {
           { key:"u", label:"Urban/Rural", values:[["Urban","Urban"],["Peri-urban","Peri-urban"],["Rural","Rural"]] },
           { key:"d", label:"Disability", values:[["Disabled",1],["Not disabled",0]] },
           { key:"m", label:"Migration", values:[["Migrant/refugee",1],["Citizen",0]] },
+          { key:"w", label:"Wellbeing", values:[["Low wellbeing",1],["Not low",0]] },
         ];
         const lensUsed = (key) => filters.find(f => f.key === key);
         const setLensValue = (key, value) => setFilters(prev => {
@@ -1265,7 +1303,8 @@ function CFPDashboard() {
           if (without.length >= 3 && !prev.find(f=>f.key===key)) return prev;
           return [...without, { key, value }];
         });
-        const filtered = rows.filter(r => filters.every(f => String(r[f.key]) === String(f.value)));
+        const wbRows = withWellbeing(rows, catalog);
+        const filtered = wbRows.filter(r => filters.every(f => String(r[f.key]) === String(f.value)));
 
         // Build scored items: one per single/multi question, one per matrix row.
         // Each item: {engId, rowIdx?, label, module, domains, ro, favRate, conRate, n}
@@ -1354,7 +1393,7 @@ function CFPDashboard() {
                   {filters.length>0 && <button onClick={()=>setFilters([])} style={{marginLeft:8,fontSize:11,color:"#0e4a6e",background:"none",border:"none",cursor:"pointer",textDecoration:"underline",padding:0}}>clear</button>}
                 </span>
               </div>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:8}}>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:8}}>
                 {LENS_DEFS.map(ld=>{
                   const active = lensUsed(ld.key); const atMax = filters.length>=3 && !active;
                   return (
@@ -1399,6 +1438,159 @@ function CFPDashboard() {
                 </div>
               );
             })}
+          </>
+        );
+      })()}
+
+      {/* ======================= DISPARITY SCANNER ======================= */}
+      {page === "scanner" && (() => {
+        const rows0 = data?.questionRows;
+        const catalog = data?.surveyQuestions;
+        const domainLabels = data?.domainLabels || {};
+        if (!rows0 || !rows0.length || !catalog) {
+          return <div style={{...s.card,padding:24,textAlign:"center",color:"#94a3b8",fontSize:13}}>No question data yet. Run the pipeline to populate the scanner.</div>;
+        }
+        const rows = withWellbeing(rows0, catalog);
+
+        // Lens definitions for pairing (value lists + human labels)
+        const LENSES = [
+          { key:"g", label:"Gender", vals:[["Male","Male"],["Female","Female"]] },
+          { key:"a", label:"Age", vals:[["10-12","10-12"],["13-16","13-16"],["17","17"]] },
+          { key:"i", label:"Income", vals:[["B40","B40"],["M40","M40"],["T20","T20"]] },
+          { key:"u", label:"Urban/Rural", vals:[["Urban","Urban"],["Peri-urban","Peri-urban"],["Rural","Rural"]] },
+          { key:"d", label:"Disability", vals:[["Disabled","1"],["Not disabled","0"]] },
+          { key:"m", label:"Migration", vals:[["Migrant/refugee","1"],["Citizen","0"]] },
+          { key:"w", label:"Low wellbeing", vals:[["Low wellbeing","1"],["Not low","0"]] },
+        ];
+        const lensByKey = Object.fromEntries(LENSES.map(l=>[l.key,l]));
+
+        // Build scored items with their fav/con option sets
+        const scoredItems = [];
+        for (const engId of Object.keys(catalog)) {
+          const q = catalog[engId];
+          const sc = scoreQuestion(engId, q.options);
+          if (!sc) continue;
+          const favSet = new Set(sc.fav), conSet = new Set(sc.con);
+          if (q.type === "matrix") {
+            (q.rows||[]).forEach((rl,ri)=>scoredItems.push({ engId, rowIdx:ri, type:"matrix", label:q.heading+" - "+rl, domains:q.domains||[], favSet, conSet }));
+          } else {
+            scoredItems.push({ engId, type:q.type, label:q.heading, domains:q.domains||[], favSet, conSet });
+          }
+        }
+
+        // Rate of fav/con for an item over a given subset of rows
+        const rateOf = (item, subset, dir) => {
+          const set = dir==="fav"?item.favSet:item.conSet;
+          let hit=0, n=0;
+          for (const r of subset) {
+            const v = r.q?.[item.engId];
+            if (item.type==="matrix") {
+              if (!v || typeof v!=="object" || Array.isArray(v)) continue;
+              const col=v[item.rowIdx]; if (col==null) continue;
+              n++; if (set.has(col)) hit++;
+            } else if (item.type==="multi") {
+              if (!Array.isArray(v)) continue;
+              n++; if (v.some(x=>set.has(x))) hit++;
+            } else {
+              if (typeof v!=="number") continue;
+              n++; if (set.has(v)) hit++;
+            }
+          }
+          return { rate: n>0?hit/n*100:0, n };
+        };
+
+        // For each item, overall rate, then every 2-lens cell's rate + gap
+        const findings = [];
+        for (const item of scoredItems) {
+          const overall = rateOf(item, rows, scanDir);
+          if (overall.n < scanMinN) continue;
+          for (let x=0; x<LENSES.length; x++) {
+            for (let y=x+1; y<LENSES.length; y++) {
+              const L1=LENSES[x], L2=LENSES[y];
+              for (const [lab1,code1] of L1.vals) {
+                for (const [lab2,code2] of L2.vals) {
+                  const cell = rows.filter(r => String(r[L1.key])===code1 && String(r[L2.key])===code2);
+                  if (cell.length < scanMinN) continue;
+                  const cr = rateOf(item, cell, scanDir);
+                  if (cr.n < scanMinN) continue;
+                  const gap = cr.rate - overall.rate;
+                  // For 'con' we want cells worse than overall (positive gap); for 'fav' better than overall
+                  if (gap <= 0) continue;
+                  findings.push({
+                    label:item.label, domains:item.domains,
+                    lensLabel:`${L1.label}: ${lab1} + ${L2.label}: ${lab2}`,
+                    cellRate:Math.round(cr.rate), overallRate:Math.round(overall.rate),
+                    gap:Math.round(gap), n:cr.n,
+                  });
+                }
+              }
+            }
+          }
+        }
+        findings.sort((a,b)=>b.gap-a.gap);
+        const top = findings.slice(0, 60);
+
+        return (
+          <>
+            <div style={{...s.card,padding:"12px 16px",marginBottom:14,fontSize:12,color:"#475569",lineHeight:1.5}}>
+              <b>Disparity scanner.</b> Automatically scans every scored question against every pair of lenses and surfaces the cells that diverge most from the overall rate. Use it to find where disadvantage compounds (concerning) or where a group does notably well (favourable), without hunting combination by combination. Only cells with n ≥ {scanMinN} are shown.
+            </div>
+
+            <div style={{...s.card,padding:"12px 14px",marginBottom:14,display:"flex",gap:16,alignItems:"center",flexWrap:"wrap"}}>
+              <div style={{display:"flex",gap:6}}>
+                {[["con","Biggest concerns"],["fav","Biggest positives"]].map(([d,lab])=>(
+                  <button key={d} onClick={()=>setScanDir(d)} style={{
+                    padding:"6px 14px",fontSize:12,borderRadius:6,cursor:"pointer",fontWeight:scanDir===d?700:400,
+                    border:"1px solid "+(scanDir===d?(d==="con"?"#dc2626":"#16a34a"):"#e2e8f0"),
+                    background:scanDir===d?(d==="con"?"#dc2626":"#16a34a"):"#fff",color:scanDir===d?"#fff":"#475569",
+                  }}>{lab}</button>
+                ))}
+              </div>
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
+                <span style={{fontSize:11,fontWeight:700,color:"#94a3b8",textTransform:"uppercase"}}>Min base</span>
+                <select value={scanMinN} onChange={e=>setScanMinN(Number(e.target.value))}
+                  style={{fontSize:12,border:"1px solid #e2e8f0",borderRadius:6,padding:"5px 8px",color:"#475569",cursor:"pointer"}}>
+                  <option value={30}>n ≥ 30</option>
+                  <option value={50}>n ≥ 50</option>
+                  <option value={100}>n ≥ 100</option>
+                  <option value={15}>n ≥ 15 (signals)</option>
+                </select>
+              </div>
+              <span style={{fontSize:11,color:"#64748b"}}>{findings.length.toLocaleString()} disparities found · showing top {top.length}</span>
+            </div>
+
+            {top.length===0
+              ? <div style={{...s.card,padding:20,textAlign:"center",color:"#94a3b8",fontSize:12}}>No disparities above threshold. Try lowering the minimum base.</div>
+              : top.map((f,i)=>{
+                  const col = scanDir==="con"?"#dc2626":"#16a34a";
+                  return (
+                    <div key={i} style={{...s.card,padding:"10px 14px",marginBottom:8,display:"flex",alignItems:"center",gap:12}}>
+                      <div style={{width:52,textAlign:"center",flexShrink:0}}>
+                        <div style={{fontSize:20,fontWeight:800,color:col}}>+{f.gap}</div>
+                        <div style={{fontSize:9,color:"#94a3b8"}}>pts</div>
+                      </div>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{fontSize:12,fontWeight:600,color:"#0f172a",marginBottom:2}}>{f.label}</div>
+                        <div style={{fontSize:11,color:"#475569"}}>
+                          <span style={{fontWeight:600,color:col}}>{f.lensLabel}</span>
+                          <span style={{color:"#94a3b8"}}> · </span>
+                          {f.cellRate}% {scanDir==="con"?"concerning":"favourable"} vs {f.overallRate}% overall
+                          <span style={{color:"#94a3b8"}}> · n={f.n}</span>
+                        </div>
+                        <div style={{marginTop:4,display:"flex",gap:2,alignItems:"center"}}>
+                          <div style={{flex:1,height:6,background:"#f1f5f9",borderRadius:2,position:"relative",overflow:"hidden"}}>
+                            <div style={{position:"absolute",left:0,top:0,height:"100%",width:f.overallRate+"%",background:"#cbd5e1"}}/>
+                            <div style={{position:"absolute",left:0,top:0,height:"100%",width:f.cellRate+"%",background:col,opacity:0.55}}/>
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{fontSize:9,color:"#94a3b8",flexShrink:0,textAlign:"right",width:60}}>
+                        {(f.domains||[]).map(d=>domainLabels[d]?d:d).join(" ")}
+                      </div>
+                    </div>
+                  );
+                })}
+            {top.length>0 && <div style={{fontSize:10,color:"#94a3b8",textAlign:"center",padding:"8px 0"}}>Ranked by gap from overall rate. Grey bar = overall rate, coloured bar = this group's rate. Small cells (n near threshold) are signals to investigate, not proven statistics.</div>}
           </>
         );
       })()}
