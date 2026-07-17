@@ -23,6 +23,47 @@
 const { useState, useEffect, useCallback } = React;
 const { LineChart, Line, BarChart, Bar, ComposedChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine, ResponsiveContainer } = Recharts;
 
+// ─── Scoring layer: favourable/concerning option indices per question ──────────
+const SCORE_MODE = {
+  "289909920":"agree","289909821":"agree","289909825":"agree","289909921":"agree","289909828":"agree",
+  "289909831":"agree","289909837":"agree","289909847":"agree","289909857":"agree","289909860":"agree",
+  "289909861":"agree","289909866":"agree","289909865":"agreeRev",
+  "289909818":"freq","289909913":"freq","289909836":"freq","289909851":"freq","289909876":"freq","289909832":"freq",
+  "289909896":"freqRev","289909815":"yesno","289909908":"yesno","289909911":"yesno","289909915":"yesno",
+  "289909893":"yesno","289909918":"yesnoRev","289909834":"worry","289909864":"worry","289911742":"screen",
+  "289909827":"visitfreq","289909853":"visitfreq","289909891":"playfreq","289909846":"knowRights",
+  "289909889":"support","289909910":"antenatal","289909820":"multiNone","289909848":"multiNoOne",
+  "289909887":"notSure","292468426":"freqRev","289909905":"wbMulti",
+};
+function scoreQuestion(engId, options) {
+  const mode = SCORE_MODE[engId];
+  if (!mode || !options) return null;
+  const fav = [], con = [];
+  options.forEach((opt,i)=>{
+    const o = (opt||"").toLowerCase();
+    switch(mode){
+      case "agree": if(/strongly agree|^agree/.test(o))fav.push(i); else if(/strongly disagree|^disagree/.test(o))con.push(i); break;
+      case "agreeRev": if(/strongly agree|^agree/.test(o))con.push(i); else if(/strongly disagree|^disagree/.test(o))fav.push(i); break;
+      case "freq": if(/always|often/.test(o))fav.push(i); else if(/rarely|never/.test(o))con.push(i); break;
+      case "freqRev": if(/never/.test(o))fav.push(i); else if(/very often|often|sometimes/.test(o))con.push(i); break;
+      case "yesno": if(/^yes/.test(o))fav.push(i); else if(/^no\b|^no$/.test(o))con.push(i); break;
+      case "yesnoRev": if(/^yes/.test(o))con.push(i); else if(/^no\b|^no$/.test(o))fav.push(i); break;
+      case "worry": if(/extremely worried|very worried/.test(o))con.push(i); else if(/not at all|slightly worried/.test(o))fav.push(i); break;
+      case "screen": if(/3-4|5-6|more than 6/.test(o))con.push(i); else if(/less than 1|1-2 hour/.test(o))fav.push(i); break;
+      case "visitfreq": if(/every day|few times a week|once a week/.test(o))fav.push(i); else if(/less than once a month|never/.test(o))con.push(i); break;
+      case "playfreq": if(/daily|few times a week/.test(o))fav.push(i); else if(/rarely|never/.test(o))con.push(i); break;
+      case "knowRights": if(/know a lot|know a little/.test(o))fav.push(i); else if(/never heard/.test(o))con.push(i); break;
+      case "support": if(/received enough/.test(o))fav.push(i); else if(/insuffic|could not acc|couldn't access/.test(o))con.push(i); break;
+      case "antenatal": if(/^no\b|^no$/.test(o))fav.push(i); else if(/^yes/.test(o))con.push(i); break;
+      case "multiNone": if(/none of the above/.test(o))con.push(i); else fav.push(i); break;
+      case "multiNoOne": if(/no one/.test(o))con.push(i); else fav.push(i); break;
+      case "notSure": if(/not sure/.test(o))con.push(i); break;
+      case "wbMulti": if(/happy and positive|doing okay/.test(o))fav.push(i); else if(/worried|stressed|sad or low/.test(o))con.push(i); break;
+    }
+  });
+  return { fav, con };
+}
+
 // ─── Config ────────────────────────────────────────────────────────────────────
 const START_DATE    = new Date("2026-06-15");
 const END_DATE      = new Date("2026-07-31");
@@ -206,6 +247,7 @@ function CFPDashboard() {
   const [filters, setFilters]     = useState([]); // up to 3 active lens filters: [{lens, value}]
   const [qModule, setQModule]     = useState("parent"); // active module on the By-Question tab
   const [dunDistrict, setDunDistrict] = useState("All"); // district filter on Local Gaps tab
+  const [rollupAxis, setRollupAxis] = useState("domain"); // 'domain' or 'objective' on Rollup tab
 
   const loadData = useCallback(() => {
     // Cache-bust with timestamp so browser always fetches the freshest data.json
@@ -298,7 +340,7 @@ function CFPDashboard() {
 
       {/* Page toggle */}
       <div style={{display:"flex",gap:4,marginBottom:14,background:"#e2e8f0",borderRadius:8,padding:3,width:"fit-content"}}>
-        {[{id:"overview",label:"Survey Overview"},{id:"crg",label:"Child Reference Group"},{id:"findings_ro",label:"Findings: Research Objectives"},{id:"findings_afc",label:"Findings: AFC Domains"},{id:"findings_q",label:"Findings: By Question"},{id:"local_gaps",label:"Local Gaps"}].map(p=>(
+        {[{id:"overview",label:"Survey Overview"},{id:"crg",label:"Child Reference Group"},{id:"findings_ro",label:"Findings: Research Objectives"},{id:"findings_afc",label:"Findings: AFC Domains"},{id:"findings_q",label:"Findings: By Question"},{id:"rollup",label:"Rollup"},{id:"local_gaps",label:"Local Gaps"}].map(p=>(
           <button key={p.id} onClick={()=>setPage(p.id)}
             style={{padding:"7px 16px",fontSize:12,fontWeight:600,borderRadius:6,border:"none",cursor:"pointer",
               background:page===p.id?"#fff":"transparent",color:page===p.id?"#0e4a6e":"#64748b",
@@ -1193,6 +1235,170 @@ function CFPDashboard() {
             {islandRows.length===0 && mainlandRows.length===0 && (
               <div style={{...s.card,padding:20,textAlign:"center",color:"#94a3b8",fontSize:12}}>No DUNs for this filter.</div>
             )}
+          </>
+        );
+      })()}
+
+      {/* ======================= ROLLUP (DOMAIN / OBJECTIVE) ======================= */}
+      {page === "rollup" && (() => {
+        const rows = data?.questionRows;
+        const catalog = data?.surveyQuestions;
+        const roLabels = data?.roLabels || {};
+        const domainLabels = data?.domainLabels || {};
+        const domainOrder = data?.domainOrder || ["OS","TR","HO","SP","RI","CP","CI","HS"];
+        if (!rows || !rows.length || !catalog) {
+          return <div style={{...s.card,padding:24,textAlign:"center",color:"#94a3b8",fontSize:13}}>No question data yet. Run the pipeline to populate the rollup.</div>;
+        }
+
+        const LENS_DEFS = [
+          { key:"g", label:"Gender", values:[["Male","Male"],["Female","Female"]] },
+          { key:"a", label:"Age", values:[["10-12","10-12"],["13-16","13-16"],["17","17"]] },
+          { key:"i", label:"Income", values:[["B40","B40"],["M40","M40"],["T20","T20"]] },
+          { key:"u", label:"Urban/Rural", values:[["Urban","Urban"],["Peri-urban","Peri-urban"],["Rural","Rural"]] },
+          { key:"d", label:"Disability", values:[["Disabled",1],["Not disabled",0]] },
+          { key:"m", label:"Migration", values:[["Migrant/refugee",1],["Citizen",0]] },
+        ];
+        const lensUsed = (key) => filters.find(f => f.key === key);
+        const setLensValue = (key, value) => setFilters(prev => {
+          const without = prev.filter(f => f.key !== key);
+          if (!value) return without;
+          if (without.length >= 3 && !prev.find(f=>f.key===key)) return prev;
+          return [...without, { key, value }];
+        });
+        const filtered = rows.filter(r => filters.every(f => String(r[f.key]) === String(f.value)));
+
+        // Build scored items: one per single/multi question, one per matrix row.
+        // Each item: {engId, rowIdx?, label, module, domains, ro, favRate, conRate, n}
+        const MOD = { parent:"Parent", pregnant:"Pregnant", under10:"Under-10", child:"Child" };
+        const items = [];
+        for (const engId of Object.keys(catalog)) {
+          const q = catalog[engId];
+          const sc = scoreQuestion(engId, q.options);
+          if (!sc) continue; // DIAG or excluded
+          const favSet = new Set(sc.fav), conSet = new Set(sc.con);
+          if (q.type === "matrix") {
+            (q.rows||[]).forEach((rowLabel, ri) => {
+              let fav=0, con=0, n=0;
+              for (const r of filtered) {
+                const v = r.q?.[engId];
+                if (!v || typeof v!=="object" || Array.isArray(v)) continue;
+                const col = v[ri];
+                if (col==null) continue;
+                n++; if (favSet.has(col)) fav++; else if (conSet.has(col)) con++;
+              }
+              if (n>0) items.push({ engId, rowIdx:ri, label:q.heading+" - "+rowLabel, module:q.module, domains:q.domains||[], ro:q.ro||[], favRate:Math.round(fav/n*100), conRate:Math.round(con/n*100), n });
+            });
+          } else if (q.type === "multi") {
+            let fav=0, con=0, n=0;
+            for (const r of filtered) {
+              const v = r.q?.[engId];
+              if (!Array.isArray(v)) continue;
+              n++;
+              if (v.some(idx=>favSet.has(idx))) fav++;
+              if (v.some(idx=>conSet.has(idx))) con++;
+            }
+            if (n>0) items.push({ engId, label:q.heading, module:q.module, domains:q.domains||[], ro:q.ro||[], favRate:Math.round(fav/n*100), conRate:Math.round(con/n*100), n });
+          } else { // single
+            let fav=0, con=0, n=0;
+            for (const r of filtered) {
+              const v = r.q?.[engId];
+              if (typeof v!=="number") continue;
+              n++; if (favSet.has(v)) fav++; else if (conSet.has(v)) con++;
+            }
+            if (n>0) items.push({ engId, label:q.heading, module:q.module, domains:q.domains||[], ro:q.ro||[], favRate:Math.round(fav/n*100), conRate:Math.round(con/n*100), n });
+          }
+        }
+
+        const isDomain = rollupAxis === "domain";
+        const groups = isDomain
+          ? domainOrder.map(dc => ({ key:dc, label:domainLabels[dc]||dc, items: items.filter(it => it.domains.includes(dc)) }))
+          : Object.keys(roLabels).map(ro => ({ key:ro, label:roLabels[ro], items: items.filter(it => it.ro.map(String).includes(String(ro))) }));
+
+        const itemRow = (it, highlight) => (
+          <div key={it.engId+(it.rowIdx??"")} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 0",borderTop:"1px solid #f8fafc"}}>
+            <div style={{flex:1,minWidth:0,fontSize:11,color:"#334155",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}} title={it.label}>
+              {highlight==="fav" && <span style={{color:"#16a34a",fontWeight:700}}>★ </span>}
+              {highlight==="con" && <span style={{color:"#dc2626",fontWeight:700}}>▲ </span>}
+              {it.label} <span style={{color:"#94a3b8"}}>· {MOD[it.module]||it.module}</span>
+            </div>
+            <div style={{width:120,display:"flex",gap:4,alignItems:"center"}}>
+              <div style={{flex:1,height:12,background:"#f1f5f9",borderRadius:2,display:"flex",overflow:"hidden"}}>
+                <div style={{width:it.favRate+"%",height:"100%",background:"#16a34a"}}/>
+                <div style={{width:it.conRate+"%",height:"100%",background:"#dc2626",marginLeft:"auto"}}/>
+              </div>
+            </div>
+            <div style={{width:88,fontSize:10,textAlign:"right"}}>
+              <span style={{color:"#16a34a",fontWeight:700}}>{it.favRate}%</span>
+              <span style={{color:"#94a3b8"}}> / </span>
+              <span style={{color:"#dc2626",fontWeight:700}}>{it.conRate}%</span>
+            </div>
+            <div style={{width:40,fontSize:9,color:it.n<30?"#dc2626":"#94a3b8",textAlign:"right"}}>n={it.n}</div>
+          </div>
+        );
+
+        return (
+          <>
+            {/* Filter bar */}
+            <div className="cfp-sticky" style={{...s.card,padding:"12px 14px",marginBottom:14,top:8,zIndex:20,boxShadow:"0 2px 8px rgba(15,23,42,0.08)"}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8,flexWrap:"wrap",gap:8}}>
+                <div style={{display:"flex",gap:6}}>
+                  {["domain","objective"].map(a=>(
+                    <button key={a} onClick={()=>setRollupAxis(a)} style={{
+                      padding:"5px 12px",fontSize:12,borderRadius:6,cursor:"pointer",fontWeight:rollupAxis===a?700:400,
+                      border:"1px solid "+(rollupAxis===a?"#0e4a6e":"#e2e8f0"),background:rollupAxis===a?"#0e4a6e":"#fff",color:rollupAxis===a?"#fff":"#475569",
+                    }}>{a==="domain"?"By AFC Domain":"By Research Objective"}</button>
+                  ))}
+                </div>
+                <span style={{fontSize:11,color:"#64748b"}}>
+                  <b style={{color:"#0f172a"}}>{filtered.length.toLocaleString()}</b> of {rows.length.toLocaleString()} responses
+                  {filters.length>0 && <button onClick={()=>setFilters([])} style={{marginLeft:8,fontSize:11,color:"#0e4a6e",background:"none",border:"none",cursor:"pointer",textDecoration:"underline",padding:0}}>clear</button>}
+                </span>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:8}}>
+                {LENS_DEFS.map(ld=>{
+                  const active = lensUsed(ld.key); const atMax = filters.length>=3 && !active;
+                  return (
+                    <div key={ld.key}>
+                      <div style={{fontSize:10,fontWeight:700,color:"#94a3b8",textTransform:"uppercase",marginBottom:3}}>{ld.label}</div>
+                      <select value={active?active.value:""} disabled={atMax} onChange={e=>setLensValue(ld.key, e.target.value)}
+                        style={{fontSize:12,border:"1px solid "+(active?"#0e4a6e":"#e2e8f0"),borderRadius:6,padding:"5px 8px",width:"100%",
+                          background:atMax?"#f1f5f9":"#fff",color:active?"#0e4a6e":"#475569",fontWeight:active?600:400,cursor:atMax?"not-allowed":"pointer"}}>
+                        <option value="">All</option>
+                        {ld.values.map(([label,code])=><option key={String(code)} value={String(code)}>{label}</option>)}
+                      </select>
+                    </div>
+                  );
+                })}
+              </div>
+              <div style={{fontSize:10,color:"#94a3b8",marginTop:6}}>Green = favourable rate · Red = concerning rate. ★ marks each group's strongest positive, ▲ its biggest concern. Diagnostic questions (improvement lists, barriers) are excluded.</div>
+            </div>
+
+            {groups.map(g=>{
+              if (!g.items.length) return (
+                <div key={g.key} style={{marginBottom:14}}>
+                  <div style={{fontSize:13,fontWeight:700,color:"#fff",background:"#0e4a6e",padding:"7px 14px",borderRadius:6}}>{g.label} <span style={{fontWeight:400,opacity:0.8,fontSize:11}}>· no scored questions</span></div>
+                </div>
+              );
+              // extremes
+              const topFav = g.items.reduce((a,b)=>b.favRate>a.favRate?b:a, g.items[0]);
+              const topCon = g.items.reduce((a,b)=>b.conRate>a.conRate?b:a, g.items[0]);
+              const sorted = [...g.items].sort((a,b)=>b.conRate-a.conRate);
+              return (
+                <div key={g.key} style={{...s.card,padding:0,marginBottom:14,overflow:"hidden"}}>
+                  <div style={{fontSize:13,fontWeight:700,color:"#fff",background:"#0e4a6e",padding:"8px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <span>{g.label}</span>
+                    <span style={{fontWeight:400,opacity:0.85,fontSize:11}}>{g.items.length} scored item{g.items.length===1?"":"s"}</span>
+                  </div>
+                  <div style={{padding:"6px 14px 10px"}}>
+                    <div style={{display:"flex",gap:12,margin:"4px 0 8px",fontSize:11,flexWrap:"wrap"}}>
+                      <div style={{color:"#15803d"}}>★ Strongest: <b>{topFav.favRate}%</b> favourable — {topFav.label.length>44?topFav.label.slice(0,44)+"…":topFav.label}</div>
+                      <div style={{color:"#b91c1c"}}>▲ Biggest concern: <b>{topCon.conRate}%</b> — {topCon.label.length>44?topCon.label.slice(0,44)+"…":topCon.label}</div>
+                    </div>
+                    {sorted.map(it=>itemRow(it, it===topFav?"fav":it===topCon?"con":null))}
+                  </div>
+                </div>
+              );
+            })}
           </>
         );
       })()}
