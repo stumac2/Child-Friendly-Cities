@@ -281,6 +281,8 @@ function CFPDashboard() {
   const [rollupAxis, setRollupAxis] = useState("domain"); // 'domain' or 'objective' on Rollup tab
   const [scanDir, setScanDir]       = useState("con");    // 'con' or 'fav' - which extreme to rank
   const [scanMinN, setScanMinN]     = useState(30);       // min base size to surface
+  const [ftData, setFtData]         = useState(null);     // free-text analysis (separate file)
+  const [voiceLens, setVoiceLens]   = useState({ key:"", value:"" }); // single lens on Voices tab
 
   const loadData = useCallback(() => {
     // Cache-bust with timestamp so browser always fetches the freshest data.json
@@ -289,6 +291,11 @@ function CFPDashboard() {
       .then(d => { setData(d); setLastUpdated(d.updatedAt ? new Date(d.updatedAt) : null); setError(null); })
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
+    // Free-text analysis is a separate, optional file (may not exist until first run)
+    fetch("freetext-analysis.json?t=" + Date.now(), { cache: "no-store" })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d) setFtData(d); })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -373,7 +380,7 @@ function CFPDashboard() {
 
       {/* Page toggle */}
       <div style={{display:"flex",gap:4,marginBottom:14,background:"#e2e8f0",borderRadius:8,padding:3,width:"fit-content"}}>
-        {[{id:"overview",label:"Survey Overview"},{id:"crg",label:"Child Reference Group"},{id:"findings_ro",label:"Findings: Research Objectives"},{id:"findings_afc",label:"Findings: AFC Domains"},{id:"findings_q",label:"Findings: By Question"},{id:"rollup",label:"Rollup"},{id:"scanner",label:"Disparity Scanner"},{id:"local_gaps",label:"Local Gaps"}].map(p=>(
+        {[{id:"overview",label:"Survey Overview"},{id:"crg",label:"Child Reference Group"},{id:"findings_ro",label:"Findings: Research Objectives"},{id:"findings_afc",label:"Findings: AFC Domains"},{id:"findings_q",label:"Findings: By Question"},{id:"rollup",label:"Rollup"},{id:"scanner",label:"Disparity Scanner"},{id:"voices",label:"Voices"},{id:"local_gaps",label:"Local Gaps"}].map(p=>(
           <button key={p.id} onClick={()=>setPage(p.id)}
             style={{padding:"7px 16px",fontSize:12,fontWeight:600,borderRadius:6,border:"none",cursor:"pointer",
               background:page===p.id?"#fff":"transparent",color:page===p.id?"#0e4a6e":"#64748b",
@@ -1591,6 +1598,94 @@ function CFPDashboard() {
                   );
                 })}
             {top.length>0 && <div style={{fontSize:10,color:"#94a3b8",textAlign:"center",padding:"8px 0"}}>Ranked by gap from overall rate. Grey bar = overall rate, coloured bar = this group's rate. Small cells (n near threshold) are signals to investigate, not proven statistics.</div>}
+          </>
+        );
+      })()}
+
+      {/* ======================= VOICES (FREE-TEXT THEMES) ======================= */}
+      {page === "voices" && (() => {
+        if (!ftData) {
+          return <div style={{...s.card,padding:24,textAlign:"center",color:"#94a3b8",fontSize:13}}>
+            Free-text analysis not available yet. Run the <b>freetext-analysis</b> workflow to generate it - the first run discovers themes across all comments (this is the slower run), and later runs update incrementally.
+          </div>;
+        }
+        const LENS_OPTS = [
+          { key:"", label:"All responses", vals:[] },
+          { key:"g", label:"Gender", vals:[["Male","Male"],["Female","Female"]] },
+          { key:"i", label:"Income", vals:[["B40","B40"],["M40","M40"],["T20","T20"]] },
+          { key:"a", label:"Age", vals:[["10-12","10-12"],["13-16","13-16"],["17","17"]] },
+          { key:"d", label:"Disability", vals:[["Disabled","1"],["Not disabled","0"]] },
+          { key:"m", label:"Migration", vals:[["Migrant/refugee","1"],["Citizen","0"]] },
+          { key:"w", label:"Low wellbeing", vals:[["Low wellbeing","1"],["Not low","0"]] },
+        ];
+        const questions = ftData.questions || {};
+        const MOD = { parent:"Parent", pregnant:"Pregnant", under10:"Under-10", child:"Child" };
+        const lk = voiceLens.key, lv = voiceLens.value;
+        // count for a theme under the active lens filter
+        const themeCount = (th) => {
+          if (!lk || !lv) return th.count;
+          return (th.byLens?.[lk]?.[lv]) || 0;
+        };
+
+        return (
+          <>
+            <div style={{...s.card,padding:"12px 16px",marginBottom:14,fontSize:12,color:"#475569",lineHeight:1.5}}>
+              <b>Voices.</b> Themes from the open-ended survey questions, across all four languages (translated to English). Themes are auto-coded from what respondents wrote; quotes are representative examples with contact details removed. Updated {ftData.updatedAt ? new Date(ftData.updatedAt).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}) : ""}.
+            </div>
+
+            {/* Single-lens filter */}
+            <div className="cfp-sticky" style={{...s.card,padding:"10px 14px",marginBottom:14,top:8,zIndex:20,boxShadow:"0 2px 8px rgba(15,23,42,0.08)",display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
+              <span style={{fontSize:11,fontWeight:700,color:"#94a3b8",letterSpacing:"0.05em",textTransform:"uppercase"}}>Whose voices</span>
+              <select value={lk} onChange={e=>setVoiceLens({key:e.target.value,value:""})}
+                style={{fontSize:12,border:"1px solid #e2e8f0",borderRadius:6,padding:"5px 8px",cursor:"pointer",color:"#475569"}}>
+                {LENS_OPTS.map(o=><option key={o.key} value={o.key}>{o.label}</option>)}
+              </select>
+              {lk && (
+                <select value={lv} onChange={e=>setVoiceLens({key:lk,value:e.target.value})}
+                  style={{fontSize:12,border:"1px solid "+(lv?"#0e4a6e":"#e2e8f0"),borderRadius:6,padding:"5px 8px",cursor:"pointer",color:lv?"#0e4a6e":"#475569",fontWeight:lv?600:400}}>
+                  <option value="">Select...</option>
+                  {(LENS_OPTS.find(o=>o.key===lk)?.vals||[]).map(([label,code])=><option key={code} value={code}>{label}</option>)}
+                </select>
+              )}
+              {lk && lv && <span style={{fontSize:11,color:"#64748b"}}>showing theme frequencies for this group</span>}
+            </div>
+
+            {Object.keys(questions).map(engId=>{
+              const q = questions[engId];
+              const themes = [...(q.themes||[])].map(t=>({ ...t, shown:themeCount(t) })).sort((a,b)=>b.shown-a.shown);
+              const maxc = Math.max(1, ...themes.map(t=>t.shown));
+              const shownTotal = themes.reduce((s,t)=>s+t.shown,0);
+              return (
+                <div key={engId} style={{...s.card,padding:0,marginBottom:14,overflow:"hidden"}}>
+                  <div style={{fontSize:13,fontWeight:700,color:"#fff",background:"#0e4a6e",padding:"8px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <span>{q.short}</span>
+                    <span style={{fontWeight:400,opacity:0.85,fontSize:11}}>{MOD[q.module]||q.module} · {q.total} comments</span>
+                  </div>
+                  <div style={{padding:"8px 14px 12px"}}>
+                    {themes.length===0 && <div style={{fontSize:12,color:"#94a3b8"}}>No themes.</div>}
+                    {themes.map((t,i)=>{
+                      const pct = shownTotal>0?Math.round(t.shown/shownTotal*100):0;
+                      return (
+                        <div key={i} style={{padding:"7px 0",borderTop:i>0?"1px solid #f1f5f9":"none"}}>
+                          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:2}}>
+                            <div style={{flex:1,fontSize:12,fontWeight:600,color:"#0f172a"}}>{t.label}</div>
+                            <div style={{width:120,height:12,background:"#f1f5f9",borderRadius:2,overflow:"hidden"}}>
+                              <div style={{width:(t.shown/maxc*100)+"%",height:"100%",background:"#0e4a6e",borderRadius:2}}/>
+                            </div>
+                            <div style={{width:70,fontSize:11,fontWeight:700,color:"#334155",textAlign:"right"}}>{t.shown} <span style={{color:"#94a3b8",fontWeight:400}}>({pct}%)</span></div>
+                          </div>
+                          {t.desc && <div style={{fontSize:10,color:"#94a3b8",marginBottom:3}}>{t.desc}</div>}
+                          {(!lk || !lv) && (t.quotes||[]).slice(0,2).map((quote,qi)=>(
+                            <div key={qi} style={{fontSize:11,color:"#475569",fontStyle:"italic",borderLeft:"2px solid #cbd5e1",paddingLeft:8,margin:"3px 0"}}>"{quote}"</div>
+                          ))}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+            <div style={{fontSize:10,color:"#94a3b8",textAlign:"center",padding:"8px 0"}}>Themes and quotes are machine-generated from translated free-text. Quotes have contact details removed; review before publishing.</div>
           </>
         );
       })()}
