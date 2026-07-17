@@ -1,0 +1,39 @@
+name: freetext-extract
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run free-text extract (no API)
+        env:
+          SM_MCP_TOKEN: ${{ secrets.SM_MCP_TOKEN }}
+        run: node freetext-extract.js
+
+      - name: Commit results
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add docs/freetext-extract.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            for i in 1 2 3 4 5; do
+              git commit -m "Update free-text extract" && \
+              git pull --rebase origin main && \
+              git push origin main && break
+              echo "Push attempt $i failed, retrying..."
+              sleep 5
+            done
+          fi
