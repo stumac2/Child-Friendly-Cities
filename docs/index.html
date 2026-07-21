@@ -1316,8 +1316,13 @@ function CFPDashboard() {
         // Build scored items: one per single/multi question, one per matrix row.
         // Each item: {engId, rowIdx?, label, module, domains, ro, favRate, conRate, n}
         const MOD = { parent:"Parent", pregnant:"Pregnant", under10:"Under-10", child:"Child" };
+        // When filtering by the wellbeing lens, drop the two questions it's derived
+        // from (their result would be circular - always 100% concerning).
+        const WB_SOURCE = new Set(["289909905","292468426"]);
+        const wbActive = filters.some(f => f.key === "w");
         const items = [];
         for (const engId of Object.keys(catalog)) {
+          if (wbActive && WB_SOURCE.has(engId)) continue;
           const q = catalog[engId];
           const sc = scoreQuestion(engId, q.options);
           if (!sc) continue; // DIAG or excluded
@@ -1508,12 +1513,18 @@ function CFPDashboard() {
 
         // For each item, overall rate, then every 2-lens cell's rate + gap
         const findings = [];
+        // Questions the wellbeing lens is derived from - exclude them when the
+        // wellbeing lens is one of the paired lenses (circular: filtering by low
+        // wellbeing and scoring the question that defines it always yields 100%).
+        const WB_SOURCE = new Set(["289909905","292468426"]);
         for (const item of scoredItems) {
           const overall = rateOf(item, rows, scanDir);
           if (overall.n < scanMinN) continue;
           for (let x=0; x<LENSES.length; x++) {
             for (let y=x+1; y<LENSES.length; y++) {
               const L1=LENSES[x], L2=LENSES[y];
+              // skip self-referential wellbeing pairings
+              if ((L1.key==="w" || L2.key==="w") && WB_SOURCE.has(item.engId)) continue;
               for (const [lab1,code1] of L1.vals) {
                 for (const [lab2,code2] of L2.vals) {
                   const cell = rows.filter(r => String(r[L1.key])===code1 && String(r[L2.key])===code2);
