@@ -79,8 +79,8 @@ const DUN_ISLAND = {};    // lowercase key -> true (island) / false (mainland)
 const ISLAND_DISTRICTS = new Set(["Timur Laut","Barat Daya"]);
 const dunData = {
   "Timur Laut": {
-    duns: ["Tanjong Bunga","Air Putih","Air Itam","Kebun Bunga","Pulau Tikus","Padang Kota","Pengkalan Kota","Komtar","Datok Keramat","Sungai Pinang","Batu Lanchang","Seri Delima","Bukit Gelugor","Paya Terubong","Batu Uban"],
-    urban: ["Tanjong Bunga","Air Putih","Air Itam","Kebun Bunga","Pulau Tikus","Padang Kota","Pengkalan Kota","Komtar","Datok Keramat","Sungai Pinang","Batu Lanchang","Seri Delima","Bukit Gelugor","Batu Uban"],
+    duns: ["Tanjong Bunga","Air Putih","Air Itam","Kebun Bunga","Pulau Tikus","Padang Kota","Pengkalan Kota","Komtar","Datok Keramat","Sungai Pinang","Batu Lanchang","Seri Delima","Paya Terubong","Batu Uban"],
+    urban: ["Tanjong Bunga","Air Putih","Air Itam","Kebun Bunga","Pulau Tikus","Padang Kota","Pengkalan Kota","Komtar","Datok Keramat","Sungai Pinang","Batu Lanchang","Seri Delima","Batu Uban"],
     periurban: ["Paya Terubong"],
   },
   "Barat Daya": {
