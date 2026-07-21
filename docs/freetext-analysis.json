@@ -1,0 +1,1565 @@
+{
+ "updatedAt": "2026-07-17T00:00:00Z",
+ "note": "Free-text thematic analysis (snapshot). Questions 817/833/838 of 6. Themes machine-coded from translated comments; quotes PII-scrubbed, vetted before publishing.",
+ "questions": {
+  "289909817": {
+   "short": "What needs to change to make your area better for children",
+   "module": "parent",
+   "total": 1485,
+   "themes": [
+    {
+     "label": "Safety (general/crime)",
+     "desc": "",
+     "count": 479,
+     "quotes": [
+      "Safety, protection of their identity, social media exposure need to be controlled."
+     ],
+     "byLens": {
+      "d": {
+       "0": 451,
+       "1": 28
+      },
+      "m": {
+       "0": 479
+      },
+      "g": {
+       "Male": 165,
+       "Female": 187
+      },
+      "a": {
+       "10-12": 205,
+       "13-16": 125,
+       "17": 22
+      },
+      "w": {
+       "0": 207,
+       "1": 144
+      },
+      "i": {
+       "B40": 261,
+       "M40": 171
+      }
+     }
+    },
+    {
+     "label": "Playgrounds & play spaces",
+     "desc": "",
+     "count": 446,
+     "quotes": [
+      "Build more child-friendly parks, recreation areas, in every neighbourhood.",
+      "Make it spacious for children playground"
+     ],
+     "byLens": {
+      "i": {
+       "B40": 210,
+       "M40": 191
+      },
+      "d": {
+       "0": 428,
+       "1": 18
+      },
+      "m": {
+       "0": 446
+      },
+      "g": {
+       "Male": 159,
+       "Female": 149
+      },
+      "a": {
+       "10-12": 188,
+       "17": 22,
+       "13-16": 99
+      },
+      "w": {
+       "1": 128,
+       "0": 181
+      }
+     }
+    },
+    {
+     "label": "Activities & recreation",
+     "desc": "",
+     "count": 402,
+     "quotes": [
+      "public community areas for recreation"
+     ],
+     "byLens": {
+      "g": {
+       "Male": 149,
+       "Female": 147
+      },
+      "a": {
+       "10-12": 186,
+       "17": 22,
+       "13-16": 88
+      },
+      "d": {
+       "0": 370,
+       "1": 32
+      },
+      "m": {
+       "0": 402
+      },
+      "w": {
+       "1": 130,
+       "0": 166
+      },
+      "i": {
+       "M40": 172,
+       "B40": 184
+      }
+     }
+    },
+    {
+     "label": "Education & learning",
+     "desc": "",
+     "count": 320,
+     "quotes": [
+      "Every child has access to education"
+     ],
+     "byLens": {
+      "g": {
+       "Male": 119,
+       "Female": 114
+      },
+      "a": {
+       "10-12": 144,
+       "17": 20,
+       "13-16": 69
+      },
+      "d": {
+       "0": 292,
+       "1": 28
+      },
+      "m": {
+       "0": 318,
+       "1": 2
+      },
+      "w": {
+       "0": 111,
+       "1": 122
+      },
+      "i": {
+       "M40": 141,
+       "B40": 137
+      }
+     }
+    },
+    {
+     "label": "Parenting, family & community",
+     "desc": "",
+     "count": 319,
+     "quotes": [],
+     "byLens": {
+      "g": {
+       "Male": 125,
+       "Female": 117
+      },
+      "a": {
+       "10-12": 136,
+       "13-16": 90,
+       "17": 16
+      },
+      "d": {
+       "0": 300,
+       "1": 19
+      },
+      "m": {
+       "0": 319
+      },
+      "w": {
+       "0": 132,
+       "1": 110
+      },
+      "i": {
+       "B40": 159,
+       "M40": 124
+      }
+     }
+    },
+    {
+     "label": "Facilities & amenities",
+     "desc": "",
+     "count": 203,
+     "quotes": [],
+     "byLens": {
+      "g": {
+       "Female": 79,
+       "Male": 80
+      },
+      "a": {
+       "10-12": 105,
+       "17": 11,
+       "13-16": 45
+      },
+      "i": {
+       "M40": 85,
+       "B40": 86
+      },
+      "d": {
+       "0": 188,
+       "1": 15
+      },
+      "m": {
+       "0": 203
+      },
+      "w": {
+       "1": 64,
+       "0": 96
+      }
+     }
+    },
+    {
+     "label": "Road & traffic safety",
+     "desc": "",
+     "count": 147,
+     "quotes": [],
+     "byLens": {
+      "g": {
+       "Male": 54,
+       "Female": 59
+      },
+      "a": {
+       "10-12": 69,
+       "13-16": 36,
+       "17": 8
+      },
+      "d": {
+       "0": 140,
+       "1": 7
+      },
+      "m": {
+       "0": 147
+      },
+      "w": {
+       "0": 62,
+       "1": 51
+      },
+      "i": {
+       "B40": 66,
+       "M40": 60
+      }
+     }
+    },
+    {
+     "label": "Cleanliness & maintenance",
+     "desc": "",
+     "count": 99,
+     "quotes": [],
+     "byLens": {
+      "d": {
+       "0": 94,
+       "1": 5
+      },
+      "m": {
+       "0": 99
+      },
+      "g": {
+       "Female": 35,
+       "Male": 31
+      },
+      "a": {
+       "17": 3,
+       "10-12": 36,
+       "13-16": 27
+      },
+      "i": {
+       "M40": 39,
+       "B40": 50
+      },
+      "w": {
+       "0": 43,
+       "1": 23
+      }
+     }
+    },
+    {
+     "label": "Child rights, protection & awareness",
+     "desc": "",
+     "count": 95,
+     "quotes": [],
+     "byLens": {
+      "i": {
+       "B40": 48,
+       "M40": 36
+      },
+      "d": {
+       "0": 89,
+       "1": 6
+      },
+      "m": {
+       "0": 94,
+       "1": 1
+      },
+      "g": {
+       "Male": 31,
+       "Female": 41
+      },
+      "a": {
+       "13-16": 29,
+       "10-12": 35,
+       "17": 8
+      },
+      "w": {
+       "0": 39,
+       "1": 33
+      }
+     }
+    },
+    {
+     "label": "Child participation & voice",
+     "desc": "",
+     "count": 94,
+     "quotes": [
+      "Listening to children's voices"
+     ],
+     "byLens": {
+      "g": {
+       "Male": 40,
+       "Female": 34
+      },
+      "a": {
+       "10-12": 46,
+       "13-16": 23,
+       "17": 5
+      },
+      "i": {
+       "M40": 32,
+       "B40": 51
+      },
+      "d": {
+       "0": 84,
+       "1": 10
+      },
+      "m": {
+       "0": 94
+      },
+      "w": {
+       "0": 44,
+       "1": 30
+      }
+     }
+    },
+    {
+     "label": "Equality, fairness & inclusion",
+     "desc": "",
+     "count": 82,
+     "quotes": [],
+     "byLens": {
+      "i": {
+       "M40": 36,
+       "B40": 33
+      },
+      "d": {
+       "0": 75,
+       "1": 7
+      },
+      "m": {
+       "0": 80,
+       "1": 2
+      },
+      "g": {
+       "Male": 28,
+       "Female": 29
+      },
+      "a": {
+       "10-12": 34,
+       "13-16": 20,
+       "17": 3
+      },
+      "w": {
+       "0": 30,
+       "1": 27
+      }
+     }
+    },
+    {
+     "label": "Health & wellbeing",
+     "desc": "",
+     "count": 68,
+     "quotes": [],
+     "byLens": {
+      "i": {
+       "M40": 37,
+       "B40": 22
+      },
+      "d": {
+       "0": 65,
+       "1": 3
+      },
+      "m": {
+       "0": 68
+      },
+      "g": {
+       "Male": 24,
+       "Female": 26
+      },
+      "a": {
+       "13-16": 11,
+       "17": 7,
+       "10-12": 32
+      },
+      "w": {
+       "0": 28,
+       "1": 22
+      }
+     }
+    },
+    {
+     "label": "Foreigners / refugees / migrants concern",
+     "desc": "",
+     "count": 56,
+     "quotes": [
+      "Removing illegal immigrants to make the environment safe for kids to play around"
+     ],
+     "byLens": {
+      "g": {
+       "Male": 18,
+       "Female": 24
+      },
+      "a": {
+       "13-16": 12,
+       "10-12": 27,
+       "17": 3
+      },
+      "i": {
+       "M40": 16,
+       "B40": 37
+      },
+      "d": {
+       "0": 53,
+       "1": 3
+      },
+      "m": {
+       "0": 56
+      },
+      "w": {
+       "1": 25,
+       "0": 17
+      }
+     }
+    },
+    {
+     "label": "Green / natural spaces",
+     "desc": "",
+     "count": 47,
+     "quotes": [],
+     "byLens": {
+      "i": {
+       "M40": 23,
+       "B40": 15
+      },
+      "d": {
+       "0": 45,
+       "1": 2
+      },
+      "m": {
+       "0": 47
+      },
+      "g": {
+       "Female": 17,
+       "Male": 14
+      },
+      "a": {
+       "13-16": 8,
+       "10-12": 24
+      },
+      "w": {
+       "0": 19,
+       "1": 12
+      }
+     }
+    },
+    {
+     "label": "Bullying & discipline",
+     "desc": "",
+     "count": 42,
+     "quotes": [],
+     "byLens": {
+      "i": {
+       "M40": 21,
+       "B40": 16
+      },
+      "d": {
+       "0": 40,
+       "1": 2
+      },
+      "m": {
+       "0": 42
+      },
+      "g": {
+       "Male": 13,
+       "Female": 17
+      },
+      "a": {
+       "10-12": 20,
+       "13-16": 5,
+       "17": 5
+      },
+      "w": {
+       "0": 17,
+       "1": 13
+      }
+     }
+    },
+    {
+     "label": "Screen time / social media",
+     "desc": "",
+     "count": 22,
+     "quotes": [],
+     "byLens": {
+      "i": {
+       "B40": 6,
+       "M40": 15
+      },
+      "d": {
+       "0": 22
+      },
+      "m": {
+       "0": 22
+      },
+      "g": {
+       "Female": 11,
+       "Male": 7
+      },
+      "a": {
+       "17": 4,
+       "10-12": 9,
+       "13-16": 5
+      },
+      "w": {
+       "0": 10,
+       "1": 8
+      }
+     }
+    }
+   ]
+  },
+  "289909833": {
+   "short": "What would improve safety for your children",
+   "module": "parent",
+   "total": 1250,
+   "themes": [
+    {
+     "label": "Policing / enforcement / surveillance",
+     "desc": "",
+     "count": 396,
+     "quotes": [
+      "no violence video, more police patrol, no gangster"
+     ],
+     "byLens": {
+      "g": {
+       "Male": 148,
+       "Female": 156
+      },
+      "a": {
+       "10-12": 167,
+       "13-16": 116,
+       "17": 21
+      },
+      "d": {
+       "0": 368,
+       "1": 28
+      },
+      "m": {
+       "0": 395,
+       "1": 1
+      },
+      "w": {
+       "0": 171,
+       "1": 133
+      },
+      "i": {
+       "M40": 150,
+       "B40": 207
+      }
+     }
+    },
+    {
+     "label": "Online / social media / device safety",
+     "desc": "",
+     "count": 350,
+     "quotes": [
+      "Being able to block YouTube shorts and certain channels",
+      "Stop all the social media... just like us when young, only SMS or call"
+     ],
+     "byLens": {
+      "g": {
+       "Male": 129,
+       "Female": 135
+      },
+      "a": {
+       "10-12": 152,
+       "17": 18,
+       "13-16": 94
+      },
+      "d": {
+       "0": 331,
+       "1": 19
+      },
+      "m": {
+       "0": 348,
+       "1": 2
+      },
+      "w": {
+       "0": 157,
+       "1": 107
+      },
+      "i": {
+       "M40": 143,
+       "B40": 159
+      }
+     }
+    },
+    {
+     "label": "Community / parental supervision",
+     "desc": "",
+     "count": 343,
+     "quotes": [],
+     "byLens": {
+      "i": {
+       "M40": 129,
+       "B40": 179
+      },
+      "d": {
+       "0": 319,
+       "1": 24
+      },
+      "m": {
+       "0": 342,
+       "1": 1
+      },
+      "g": {
+       "Male": 126,
+       "Female": 143
+      },
+      "a": {
+       "10-12": 142,
+       "13-16": 111,
+       "17": 16
+      },
+      "w": {
+       "0": 157,
+       "1": 112
+      }
+     }
+    },
+    {
+     "label": "General safe environment / vigilance",
+     "desc": "",
+     "count": 326,
+     "quotes": [],
+     "byLens": {
+      "g": {
+       "Female": 136,
+       "Male": 117
+      },
+      "a": {
+       "10-12": 147,
+       "13-16": 88,
+       "17": 18
+      },
+      "i": {
+       "B40": 187,
+       "M40": 113
+      },
+      "d": {
+       "0": 308,
+       "1": 18
+      },
+      "m": {
+       "0": 326
+      },
+      "w": {
+       "0": 144,
+       "1": 109
+      }
+     }
+    },
+    {
+     "label": "Education / awareness on safety",
+     "desc": "",
+     "count": 273,
+     "quotes": [],
+     "byLens": {
+      "g": {
+       "Male": 112,
+       "Female": 95
+      },
+      "a": {
+       "10-12": 127,
+       "13-16": 64,
+       "17": 16
+      },
+      "d": {
+       "0": 258,
+       "1": 15
+      },
+      "m": {
+       "0": 273
+      },
+      "w": {
+       "0": 109,
+       "1": 98
+      },
+      "i": {
+       "M40": 112,
+       "B40": 124
+      }
+     }
+    },
+    {
+     "label": "School safety specifically",
+     "desc": "",
+     "count": 253,
+     "quotes": [],
+     "byLens": {
+      "g": {
+       "Male": 90,
+       "Female": 98
+      },
+      "a": {
+       "10-12": 98,
+       "13-16": 78,
+       "17": 13
+      },
+      "d": {
+       "0": 232,
+       "1": 21
+      },
+      "m": {
+       "0": 252,
+       "1": 1
+      },
+      "w": {
+       "0": 96,
+       "1": 92
+      },
+      "i": {
+       "M40": 97,
+       "B40": 126
+      }
+     }
+    },
+    {
+     "label": "Road & traffic safety",
+     "desc": "",
+     "count": 220,
+     "quotes": [],
+     "byLens": {
+      "g": {
+       "Male": 82,
+       "Female": 82
+      },
+      "a": {
+       "10-12": 92,
+       "13-16": 60,
+       "17": 12
+      },
+      "i": {
+       "M40": 85,
+       "B40": 107
+      },
+      "d": {
+       "0": 205,
+       "1": 15
+      },
+      "m": {
+       "0": 220
+      },
+      "w": {
+       "0": 91,
+       "1": 73
+      }
+     }
+    },
+    {
+     "label": "Bullying / violence / harassment",
+     "desc": "",
+     "count": 121,
+     "quotes": [],
+     "byLens": {
+      "g": {
+       "Male": 44,
+       "Female": 47
+      },
+      "a": {
+       "10-12": 52,
+       "13-16": 35,
+       "17": 4
+      },
+      "d": {
+       "0": 111,
+       "1": 10
+      },
+      "m": {
+       "0": 121
+      },
+      "w": {
+       "0": 52,
+       "1": 39
+      },
+      "i": {
+       "M40": 51,
+       "B40": 59
+      }
+     }
+    },
+    {
+     "label": "Lighting / infrastructure",
+     "desc": "",
+     "count": 105,
+     "quotes": [],
+     "byLens": {
+      "g": {
+       "Female": 45,
+       "Male": 40
+      },
+      "a": {
+       "10-12": 51,
+       "17": 8,
+       "13-16": 26
+      },
+      "i": {
+       "M40": 37,
+       "B40": 56
+      },
+      "d": {
+       "0": 98,
+       "1": 7
+      },
+      "m": {
+       "0": 105
+      },
+      "w": {
+       "1": 40,
+       "0": 45
+      }
+     }
+    },
+    {
+     "label": "Safe public spaces & playgrounds",
+     "desc": "",
+     "count": 89,
+     "quotes": [],
+     "byLens": {
+      "d": {
+       "0": 82,
+       "1": 7
+      },
+      "m": {
+       "0": 89
+      },
+      "i": {
+       "B40": 48,
+       "M40": 34
+      },
+      "g": {
+       "Male": 36,
+       "Female": 33
+      },
+      "a": {
+       "13-16": 25,
+       "10-12": 40,
+       "17": 4
+      },
+      "w": {
+       "0": 38,
+       "1": 31
+      }
+     }
+    },
+    {
+     "label": "Freedom / independent mobility",
+     "desc": "",
+     "count": 55,
+     "quotes": [],
+     "byLens": {
+      "i": {
+       "B40": 33,
+       "M40": 21
+      },
+      "d": {
+       "0": 52,
+       "1": 3
+      },
+      "m": {
+       "0": 54,
+       "1": 1
+      },
+      "g": {
+       "Male": 18,
+       "Female": 25
+      },
+      "a": {
+       "10-12": 23,
+       "13-16": 17,
+       "17": 3
+      },
+      "w": {
+       "0": 29,
+       "1": 13
+      }
+     }
+    },
+    {
+     "label": "Stranger danger / child protection",
+     "desc": "",
+     "count": 37,
+     "quotes": [],
+     "byLens": {
+      "g": {
+       "Male": 15,
+       "Female": 12
+      },
+      "a": {
+       "13-16": 13,
+       "10-12": 13,
+       "17": 1
+      },
+      "i": {
+       "M40": 15,
+       "B40": 14
+      },
+      "d": {
+       "0": 34,
+       "1": 3
+      },
+      "m": {
+       "0": 37
+      },
+      "w": {
+       "0": 14,
+       "1": 13
+      }
+     }
+    },
+    {
+     "label": "Self-defence / self-protection skills",
+     "desc": "",
+     "count": 28,
+     "quotes": [
+      "Every student must understand self-confidence and self-defence."
+     ],
+     "byLens": {
+      "g": {
+       "Male": 7,
+       "Female": 13
+      },
+      "a": {
+       "13-16": 7,
+       "10-12": 13
+      },
+      "i": {
+       "M40": 10,
+       "B40": 10
+      },
+      "d": {
+       "0": 25,
+       "1": 3
+      },
+      "m": {
+       "0": 28
+      },
+      "w": {
+       "1": 11,
+       "0": 9
+      }
+     }
+    },
+    {
+     "label": "Health / hygiene / food safety",
+     "desc": "",
+     "count": 28,
+     "quotes": [],
+     "byLens": {
+      "g": {
+       "Male": 12,
+       "Female": 12
+      },
+      "a": {
+       "10-12": 15,
+       "13-16": 6,
+       "17": 3
+      },
+      "i": {
+       "M40": 15,
+       "B40": 10
+      },
+      "d": {
+       "0": 28
+      },
+      "m": {
+       "0": 28
+      },
+      "w": {
+       "0": 11,
+       "1": 13
+      }
+     }
+    },
+    {
+     "label": "Foreigners / migrants concern",
+     "desc": "",
+     "count": 27,
+     "quotes": [],
+     "byLens": {
+      "i": {
+       "B40": 17,
+       "M40": 8
+      },
+      "d": {
+       "0": 25,
+       "1": 2
+      },
+      "m": {
+       "0": 27
+      },
+      "g": {
+       "Female": 11,
+       "Male": 10
+      },
+      "a": {
+       "13-16": 7,
+       "10-12": 12,
+       "17": 2
+      },
+      "w": {
+       "0": 13,
+       "1": 8
+      }
+     }
+    },
+    {
+     "label": "Drugs / vaping / substances",
+     "desc": "",
+     "count": 26,
+     "quotes": [],
+     "byLens": {
+      "g": {
+       "Male": 11,
+       "Female": 10
+      },
+      "a": {
+       "10-12": 11,
+       "13-16": 7,
+       "17": 3
+      },
+      "i": {
+       "M40": 9,
+       "B40": 14
+      },
+      "d": {
+       "0": 26
+      },
+      "m": {
+       "0": 26
+      },
+      "w": {
+       "0": 15,
+       "1": 6
+      }
+     }
+    }
+   ]
+  },
+  "289909838": {
+   "short": "Environmental changes most worried about",
+   "module": "parent",
+   "total": 1179,
+   "themes": [
+    {
+     "label": "Heat / rising temperatures",
+     "desc": "",
+     "count": 329,
+     "quotes": [
+      "Rising temperatures and more frequent heatwaves make outdoor play harder"
+     ],
+     "byLens": {
+      "g": {
+       "Female": 125,
+       "Male": 123
+      },
+      "a": {
+       "13-16": 100,
+       "10-12": 141,
+       "17": 7
+      },
+      "i": {
+       "M40": 141,
+       "B40": 144
+      },
+      "d": {
+       "0": 312,
+       "1": 17
+      },
+      "m": {
+       "0": 328,
+       "1": 1
+      },
+      "w": {
+       "1": 108,
+       "0": 140
+      }
+     }
+    },
+    {
+     "label": "Social environment / peers / gadgets / safety",
+     "desc": "",
+     "count": 231,
+     "quotes": [],
+     "byLens": {
+      "i": {
+       "B40": 138,
+       "M40": 78
+      },
+      "d": {
+       "0": 214,
+       "1": 17
+      },
+      "m": {
+       "0": 231
+      },
+      "g": {
+       "Male": 81,
+       "Female": 95
+      },
+      "a": {
+       "13-16": 61,
+       "17": 16,
+       "10-12": 101
+      },
+      "w": {
+       "0": 100,
+       "1": 76
+      }
+     }
+    },
+    {
+     "label": "Air pollution / haze / open burning",
+     "desc": "",
+     "count": 201,
+     "quotes": [],
+     "byLens": {
+      "i": {
+       "B40": 86,
+       "M40": 85
+      },
+      "d": {
+       "0": 192,
+       "1": 9
+      },
+      "m": {
+       "0": 201
+      },
+      "g": {
+       "Male": 81,
+       "Female": 80
+      },
+      "a": {
+       "10-12": 98,
+       "13-16": 56,
+       "17": 7
+      },
+      "w": {
+       "0": 87,
+       "1": 74
+      }
+     }
+    },
+    {
+     "label": "Climate change (general)",
+     "desc": "",
+     "count": 192,
+     "quotes": [],
+     "byLens": {
+      "i": {
+       "B40": 92,
+       "M40": 79
+      },
+      "d": {
+       "0": 183,
+       "1": 9
+      },
+      "m": {
+       "0": 191,
+       "1": 1
+      },
+      "g": {
+       "Female": 96,
+       "Male": 57
+      },
+      "a": {
+       "13-16": 57,
+       "10-12": 88,
+       "17": 8
+      },
+      "w": {
+       "1": 71,
+       "0": 82
+      }
+     }
+    },
+    {
+     "label": "Traffic / vehicle emissions / noise / road",
+     "desc": "",
+     "count": 167,
+     "quotes": [],
+     "byLens": {
+      "i": {
+       "M40": 68,
+       "B40": 77
+      },
+      "d": {
+       "0": 157,
+       "1": 10
+      },
+      "m": {
+       "0": 167
+      },
+      "g": {
+       "Female": 63,
+       "Male": 64
+      },
+      "a": {
+       "13-16": 43,
+       "10-12": 76,
+       "17": 8
+      },
+      "w": {
+       "1": 57,
+       "0": 70
+      }
+     }
+    },
+    {
+     "label": "Deforestation / loss of green space / tree cutting",
+     "desc": "",
+     "count": 162,
+     "quotes": [
+      "Keep on chopping trees for LRT",
+      "The disappearing hills to make accommodations and development"
+     ],
+     "byLens": {
+      "i": {
+       "B40": 66,
+       "M40": 65
+      },
+      "d": {
+       "0": 149,
+       "1": 13
+      },
+      "m": {
+       "0": 162
+      },
+      "g": {
+       "Female": 63,
+       "Male": 53
+      },
+      "a": {
+       "13-16": 35,
+       "10-12": 72,
+       "17": 9
+      },
+      "w": {
+       "0": 63,
+       "1": 53
+      }
+     }
+    },
+    {
+     "label": "Overdevelopment / construction / high-rise",
+     "desc": "",
+     "count": 144,
+     "quotes": [
+      "a lot of high-rise apartments being built, less greenery, no proper recycling bin"
+     ],
+     "byLens": {
+      "d": {
+       "0": 131,
+       "1": 13
+      },
+      "m": {
+       "0": 144
+      },
+      "g": {
+       "Female": 51,
+       "Male": 60
+      },
+      "a": {
+       "13-16": 30,
+       "10-12": 72,
+       "17": 9
+      },
+      "i": {
+       "B40": 45,
+       "M40": 81
+      },
+      "w": {
+       "0": 60,
+       "1": 51
+      }
+     }
+    },
+    {
+     "label": "Foreigners / migrants concern",
+     "desc": "",
+     "count": 117,
+     "quotes": [
+      "getting more and more refugees around in my area",
+      "Foreigners involve in our area, especially without any documentation"
+     ],
+     "byLens": {
+      "g": {
+       "Female": 51,
+       "Male": 38
+      },
+      "a": {
+       "13-16": 35,
+       "10-12": 49,
+       "17": 5
+      },
+      "i": {
+       "M40": 44,
+       "B40": 58
+      },
+      "d": {
+       "0": 104,
+       "1": 13
+      },
+      "m": {
+       "0": 117
+      },
+      "w": {
+       "1": 39,
+       "0": 50
+      }
+     }
+    },
+    {
+     "label": "Health impacts",
+     "desc": "",
+     "count": 117,
+     "quotes": [],
+     "byLens": {
+      "i": {
+       "M40": 51,
+       "B40": 56
+      },
+      "d": {
+       "0": 109,
+       "1": 8
+      },
+      "m": {
+       "0": 115,
+       "1": 2
+      },
+      "g": {
+       "Male": 45,
+       "Female": 48
+      },
+      "a": {
+       "10-12": 60,
+       "13-16": 23,
+       "17": 10
+      },
+      "w": {
+       "0": 51,
+       "1": 42
+      }
+     }
+    },
+    {
+     "label": "Waste / litter / dirtiness / recycling",
+     "desc": "",
+     "count": 107,
+     "quotes": [],
+     "byLens": {
+      "d": {
+       "0": 101,
+       "1": 6
+      },
+      "m": {
+       "0": 107
+      },
+      "g": {
+       "Male": 32,
+       "Female": 46
+      },
+      "a": {
+       "13-16": 25,
+       "10-12": 51,
+       "17": 3
+      },
+      "i": {
+       "B40": 51,
+       "M40": 37
+      },
+      "w": {
+       "0": 37,
+       "1": 42
+      }
+     }
+    },
+    {
+     "label": "Flooding / flash floods",
+     "desc": "",
+     "count": 94,
+     "quotes": [],
+     "byLens": {
+      "g": {
+       "Male": 35,
+       "Female": 39
+      },
+      "a": {
+       "10-12": 45,
+       "13-16": 24,
+       "17": 5
+      },
+      "d": {
+       "0": 90,
+       "1": 4
+      },
+      "m": {
+       "0": 94
+      },
+      "w": {
+       "0": 40,
+       "1": 34
+      },
+      "i": {
+       "M40": 41,
+       "B40": 43
+      }
+     }
+    },
+    {
+     "label": "Lack of facilities / parks / activities",
+     "desc": "",
+     "count": 54,
+     "quotes": [],
+     "byLens": {
+      "g": {
+       "Male": 25,
+       "Female": 18
+      },
+      "a": {
+       "10-12": 30,
+       "13-16": 9,
+       "17": 4
+      },
+      "i": {
+       "M40": 28,
+       "B40": 17
+      },
+      "d": {
+       "0": 48,
+       "1": 6
+      },
+      "m": {
+       "0": 54
+      },
+      "w": {
+       "0": 17,
+       "1": 26
+      }
+     }
+    },
+    {
+     "label": "Water quality / shortage / dirty water",
+     "desc": "",
+     "count": 20,
+     "quotes": [],
+     "byLens": {
+      "d": {
+       "0": 17,
+       "1": 3
+      },
+      "m": {
+       "0": 20
+      },
+      "g": {
+       "Male": 7,
+       "Female": 6
+      },
+      "a": {
+       "13-16": 5,
+       "10-12": 8
+      },
+      "i": {
+       "M40": 9,
+       "B40": 7
+      },
+      "w": {
+       "0": 5,
+       "1": 8
+      }
+     }
+    },
+    {
+     "label": "Loss of animals / biodiversity",
+     "desc": "",
+     "count": 11,
+     "quotes": [],
+     "byLens": {
+      "g": {
+       "Male": 7,
+       "Female": 1
+      },
+      "a": {
+       "10-12": 4,
+       "13-16": 3,
+       "17": 1
+      },
+      "d": {
+       "0": 10,
+       "1": 1
+      },
+      "m": {
+       "0": 11
+      },
+      "w": {
+       "0": 2,
+       "1": 6
+      },
+      "i": {
+       "B40": 4,
+       "M40": 4
+      }
+     }
+    },
+    {
+     "label": "Education pressure / schooling",
+     "desc": "",
+     "count": 7,
+     "quotes": [],
+     "byLens": {
+      "g": {
+       "Female": 3,
+       "Male": 3
+      },
+      "a": {
+       "17": 1,
+       "13-16": 2,
+       "10-12": 3
+      },
+      "i": {
+       "M40": 2,
+       "B40": 2
+      },
+      "d": {
+       "0": 6,
+       "1": 1
+      },
+      "m": {
+       "0": 7
+      },
+      "w": {
+       "0": 6
+      }
+     }
+    }
+   ]
+  }
+ }
+}
