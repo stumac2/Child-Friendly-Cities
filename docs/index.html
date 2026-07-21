@@ -64,6 +64,10 @@ function scoreQuestion(engId, options) {
   return { fav, con };
 }
 
+// ─── DUN under-18 population estimates (DOSM 2024 DUN totals x 2025 district child-share) ──
+const DUN_UNDER18 = {"Air Itam":5352, "Air Putih":2863, "Bagan Dalam":7401, "Bagan Jermal":8787, "Batu Lanchang":6756, "Batu Maung":15769, "Batu Uban":16243, "Bayan Lepas":21324, "Berapit":6517, "Bertam":6460, "Bukit Tambun":15425, "Bukit Tengah":17624, "Datok Keramat":4510, "Jawi":9313, "Kebun Bunga":5483, "Komtar":1516, "Machang Bubok":22036, "Padang Kota":1142, "Padang Lalang":9182, "Pantai Jerejak":10384, "Paya Terubong":26199, "Penaga":7228, "Penanti":7368, "Pengkalan Kota":4080, "Perai":6114, "Permatang Berangan":10124, "Permatang Pasir":7950, "Pinang Tunggal":16287, "Pulau Betong":6834, "Pulau Tikus":6400, "Seberang Jaya":21745, "Seri Delima":7373, "Sungai Acheh":6930, "Sungai Bakap":14149, "Sungai Dua":9604, "Sungai Pinang":10742, "Sungai Puyu":12648, "Tanjong Bunga":9244, "Telok Ayer Tawar":7648, "Telok Bahang":4926};
+// Bukit Gelugor has no DOSM figure (not in the 2018 DUN boundaries dataset).
+
 // ─── Wellbeing lens: derive "low wellbeing" per response from stored answers ────
 // Uses 905 (how feeling lately, multi) and 292468426 (anxious/sad matrix).
 // Low wellbeing = any sad/worried/stressed option in 905, OR often/sometimes
@@ -278,6 +282,7 @@ function CFPDashboard() {
   const [filters, setFilters]     = useState([]); // up to 3 active lens filters: [{lens, value}]
   const [qModule, setQModule]     = useState("parent"); // active module on the By-Question tab
   const [dunDistrict, setDunDistrict] = useState("All"); // district filter on Local Gaps tab
+  const [dunMeasure, setDunMeasure]   = useState("count"); // 'count' or 'pct' (of DUN under-18)
   const [rollupAxis, setRollupAxis] = useState("domain"); // 'domain' or 'objective' on Rollup tab
   const [scanDir, setScanDir]       = useState("con");    // 'con' or 'fav' - which extreme to rank
   const [scanMinN, setScanMinN]     = useState(30);       // min base size to surface
@@ -1206,22 +1211,30 @@ function CFPDashboard() {
         };
         const allDistricts = dunMeta.map(d=>d.district);
 
-        // Build the flat list of DUNs per side (island / mainland), each with count + district
+        // Build the flat list of DUNs per side (island / mainland), each with count + district + pop + rate
         const buildSide = (isIsland) => {
           const rows = [];
           for (const dm of dunMeta) {
             if (dm.island !== isIsland) continue;
             if (dunDistrict !== "All" && dm.district !== dunDistrict) continue;
             for (const dun of dm.duns) {
-              rows.push({ dun, district: dm.district, count: byDUN[dun] || 0 });
+              const count = byDUN[dun] || 0;
+              const pop = DUN_UNDER18[dun] || null; // null = no population estimate (e.g. Bukit Gelugor)
+              const rate = pop ? (count / pop * 1000) : null; // responses per 1,000 under-18
+              rows.push({ dun, district: dm.district, count, pop, rate });
             }
           }
-          // sort by district (in dunMeta order) then by count desc within
           return rows;
         };
         const islandRows = buildSide(true);
         const mainlandRows = buildSide(false);
+        const isPct = dunMeasure === "pct";
+        // Scale: for count use max count; for pct use max rate across all DUNs with a pop
+        const allRates = [...islandRows, ...mainlandRows].filter(r=>r.rate!=null).map(r=>r.rate);
         const maxCount = Math.max(1, ...Object.values(byDUN));
+        const maxRate = Math.max(0.1, ...allRates);
+        const metricVal = (r) => isPct ? (r.rate==null?null:r.rate) : r.count;
+        const metricMax = isPct ? maxRate : maxCount;
 
         const chart = (title, rows, subtitle) => {
           if (!rows.length) return null;
@@ -1234,6 +1247,13 @@ function CFPDashboard() {
               {rows.map((r,i)=>{
                 const prev = rows[i-1];
                 const showDistrictHeader = !prev || prev.district !== r.district;
+                const val = metricVal(r);
+                const noPop = isPct && r.pop==null;
+                const barW = (val==null||metricMax===0) ? 0 : (val/metricMax*100);
+                const label = isPct
+                  ? (noPop ? "n/a" : r.rate.toFixed(1))
+                  : r.count;
+                const isZero = r.count===0;
                 return (
                   <div key={r.dun}>
                     {showDistrictHeader && (
@@ -1243,11 +1263,11 @@ function CFPDashboard() {
                       </div>
                     )}
                     <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}>
-                      <div style={{width:130,fontSize:11,color:"#475569",textAlign:"right",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}} title={r.dun}>{r.dun}</div>
+                      <div style={{width:130,fontSize:11,color:"#475569",textAlign:"right",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}} title={r.dun + (r.pop?` · ~${r.pop.toLocaleString()} under-18`:" · no population estimate")}>{r.dun}</div>
                       <div style={{flex:1,height:16,background:"#f1f5f9",borderRadius:3,overflow:"hidden"}}>
-                        <div style={{width:(r.count/maxCount*100)+"%",height:"100%",background:DISTRICT_COLOR[r.district]||"#64748b",borderRadius:3,minWidth:r.count>0?2:0}}/>
+                        <div style={{width:barW+"%",height:"100%",background:noPop?"#cbd5e1":(DISTRICT_COLOR[r.district]||"#64748b"),borderRadius:3,minWidth:(val>0?2:0)}}/>
                       </div>
-                      <div style={{width:44,fontSize:11,fontWeight:700,color:r.count===0?"#dc2626":"#334155",textAlign:"right"}}>{r.count}</div>
+                      <div style={{width:isPct?58:44,fontSize:11,fontWeight:700,color:isZero?"#dc2626":noPop?"#94a3b8":"#334155",textAlign:"right"}}>{label}</div>
                     </div>
                   </div>
                 );
@@ -1259,19 +1279,33 @@ function CFPDashboard() {
         return (
           <>
             <div style={{...s.card,padding:"12px 16px",marginBottom:14,fontSize:12,color:"#475569",lineHeight:1.5}}>
-              <b>Local gaps by DUN.</b> Completed responses per state constituency (DUN), grouped by district. Use this to spot under-represented areas and re-prompt specific schools. Bars share a common scale across both charts. Zero-count DUNs are flagged in red.
+              <b>Local gaps by DUN.</b> Responses per state constituency (DUN), grouped by district. Toggle between raw response count and coverage rate (responses per 1,000 under-18 population). Coverage rate reveals where a populous DUN is under-covered despite a decent raw count. Zero-response DUNs are flagged in red.
+              {isPct && <span style={{display:"block",marginTop:4,fontSize:11,color:"#94a3b8"}}>Under-18 population estimated from DOSM 2024 DUN totals × 2025 district child-share (assumes uniform child-share within district). Bukit Gelugor has no DOSM figure and shows n/a.</span>}
             </div>
 
-            {/* District filter */}
-            <div style={{...s.card,padding:"12px 14px",marginBottom:14,display:"flex",alignItems:"center",gap:10}}>
-              <span style={{fontSize:11,fontWeight:700,color:"#94a3b8",letterSpacing:"0.05em",textTransform:"uppercase"}}>Filter by district</span>
-              <select value={dunDistrict} onChange={e=>setDunDistrict(e.target.value)}
-                style={{fontSize:12,border:"1px solid "+(dunDistrict!=="All"?"#0e4a6e":"#e2e8f0"),borderRadius:6,padding:"5px 10px",
-                  color:dunDistrict!=="All"?"#0e4a6e":"#475569",fontWeight:dunDistrict!=="All"?600:400,cursor:"pointer"}}>
+            {/* District filter + measure toggle */}
+            <div style={{...s.card,padding:"12px 14px",marginBottom:14,display:"flex",alignItems:"center",gap:16,flexWrap:"wrap"}}>
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                <span style={{fontSize:11,fontWeight:700,color:"#94a3b8",letterSpacing:"0.05em",textTransform:"uppercase"}}>Measure</span>
+                <div style={{display:"flex",gap:6}}>
+                  {[["count","Response count"],["pct","Per 1,000 under-18"]].map(([m,lab])=>(
+                    <button key={m} onClick={()=>setDunMeasure(m)} style={{
+                      padding:"5px 12px",fontSize:12,borderRadius:6,cursor:"pointer",fontWeight:dunMeasure===m?700:400,
+                      border:"1px solid "+(dunMeasure===m?"#0e4a6e":"#e2e8f0"),background:dunMeasure===m?"#0e4a6e":"#fff",color:dunMeasure===m?"#fff":"#475569",
+                    }}>{lab}</button>
+                  ))}
+                </div>
+              </div>
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                <span style={{fontSize:11,fontWeight:700,color:"#94a3b8",letterSpacing:"0.05em",textTransform:"uppercase"}}>District</span>
+                <select value={dunDistrict} onChange={e=>setDunDistrict(e.target.value)}
+                  style={{fontSize:12,border:"1px solid "+(dunDistrict!=="All"?"#0e4a6e":"#e2e8f0"),borderRadius:6,padding:"5px 10px",
+                    color:dunDistrict!=="All"?"#0e4a6e":"#475569",fontWeight:dunDistrict!=="All"?600:400,cursor:"pointer"}}>
                 <option value="All">All districts</option>
                 {allDistricts.map(d=><option key={d} value={d}>{d}</option>)}
               </select>
               {dunDistrict!=="All" && <button onClick={()=>setDunDistrict("All")} style={{fontSize:11,color:"#0e4a6e",background:"none",border:"none",cursor:"pointer",textDecoration:"underline",padding:0}}>clear</button>}
+              </div>
             </div>
 
             {chart("Penang Island DUNs", islandRows, "Timur Laut · Barat Daya")}
