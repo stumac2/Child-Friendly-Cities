@@ -132,7 +132,7 @@ function textOf(ans, qMap, qid) {
   return parts.join(" ").toLowerCase();
 }
 function resolveLensIds(qMap, order) {
-  const ids = { childGender:null, childAge:null, income:null, disability:null, status:null, wb905:null, wbMatrix:null };
+  const ids = { childGender:null, childAge:null, income:null, disability:null, status:null, wb905:null, wbMatrix:null, housing:null };
   for (const qid of order) {
     const q = qMap[qid];
     const h = (q.heading||"").toLowerCase();
@@ -144,8 +144,20 @@ function resolveLensIds(qMap, order) {
     if (!ids.wb905 && /how have you been feeling|feeling lately/i.test(h)) ids.wb905 = qid;
     if (!ids.wbMatrix && /emotional wellbeing|anxious|worried.*sad/i.test(h)) ids.wbMatrix = qid;
     if (!ids.childAge && /age of your child.*(10|17)|which.*child.*age/i.test(h)) ids.childAge = qid;
+    if (!ids.housing && /type of housing|housing.{0,10}live|jenis.{0,10}(rumah|kediaman|tempat tinggal)|住.{0,6}(房屋|房子|类型)|房屋类型/i.test(h) && Object.keys(q.choices||{}).length >= 5) ids.housing = qid;
   }
   return ids;
+}
+// Housing labels by option position (identical order across all four surveys).
+const HOUSING_LABELS = ["High-rise flat/PPR","Apartment","Condominium","Terrace/link","Semi-detached","Bungalow","Kampung","Shop house","Employer quarters"];
+function housingLabel(r, qMap, qid) {
+  if (!qid) return null;
+  const q = qMap[qid]; if (!q) return null;
+  const idxById = {}; Object.keys(q.choices||{}).forEach((id,i)=>{ idxById[id]=i; });
+  const ans = answersFor(r, qid);
+  if (!ans || !ans.length || ans[0].choice_id===undefined) return null;
+  const idx = idxById[ans[0].choice_id];
+  return (idx===undefined || idx<0 || idx>=HOUSING_LABELS.length) ? null : HOUSING_LABELS[idx];
 }
 function disabilityFlag(r, qMap, qid) {
   if (!qid) return false;
@@ -184,7 +196,8 @@ function classifyLenses(r, qMap, lensMap) {
   const m = (() => { const t = textOf(answersFor(r, lensMap.status), qMap, lensMap.status);
     return /refugee|stateless|undocumented|pelarian|tanpa negara|tiada dokumen|难民|无国籍|அகதி/.test(t) ? 1 : 0; })();
   const w = wellbeingFlag(r, qMap, lensMap);
-  return { g, a, i, d, m, w };
+  const hz = housingLabel(r, qMap, lensMap.housing);
+  return { g, a, i, d, m, w, h: hz };
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
@@ -232,7 +245,7 @@ async function main() {
   const output = {
     generatedAt: new Date().toISOString(),
     note: "PII-scrubbed free-text for session-based translation and theming. Comments flagged dropQuote:true still look contact-bearing and should not be quoted verbatim.",
-    lensLegend: { g:"gender", a:"child age band", i:"income (B40/M40/T20)", d:"disability (1=yes)", m:"migration/refugee (1=yes)", w:"low wellbeing (1=yes, null=not asked)" },
+    lensLegend: { g:"gender", a:"child age band", i:"income (B40/M40/T20)", d:"disability (1=yes)", m:"migration/refugee (1=yes)", w:"low wellbeing (1=yes, null=not asked)", h:"housing type (9 categories, null=not answered)" },
     questions,
   };
   fs.writeFileSync(OUTPUT_FILE, JSON.stringify(output, null, 2));
