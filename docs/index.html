@@ -68,14 +68,6 @@ function scoreQuestion(engId, options) {
 const DUN_UNDER18 = {"Air Itam":5352, "Air Putih":2863, "Bagan Dalam":7401, "Bagan Jermal":8787, "Batu Lanchang":6756, "Batu Maung":15769, "Batu Uban":16243, "Bayan Lepas":21324, "Berapit":6517, "Bertam":6460, "Bukit Tambun":15425, "Bukit Tengah":17624, "Datok Keramat":4510, "Jawi":9313, "Kebun Bunga":5483, "Komtar":1516, "Machang Bubok":22036, "Padang Kota":1142, "Padang Lalang":9182, "Pantai Jerejak":10384, "Paya Terubong":26199, "Penaga":7228, "Penanti":7368, "Pengkalan Kota":4080, "Perai":6114, "Permatang Berangan":10124, "Permatang Pasir":7950, "Pinang Tunggal":16287, "Pulau Betong":6834, "Pulau Tikus":6400, "Seberang Jaya":21745, "Seri Delima":7373, "Sungai Acheh":6930, "Sungai Bakap":14149, "Sungai Dua":9604, "Sungai Pinang":10742, "Sungai Puyu":12648, "Tanjong Bunga":9244, "Teluk Air Tawar":7648, "Teluk Bahang":4926};
 // Bukit Gelugor has no DOSM figure (not in the 2018 DUN boundaries dataset).
 
-// ─── Statistical robustness: required n for ±10% margin at 95% CI ────────────
-function requiredN10(pop) {
-  if (!pop || pop <= 0) return null;
-  const z = 1.96, p = 0.5, E = 0.10;
-  const n0 = (z*z * p*(1-p)) / (E*E);
-  return Math.ceil(n0 / (1 + (n0 - 1) / pop));
-}
-
 // ─── Wellbeing lens: derive "low wellbeing" per response from stored answers ────
 // Uses 905 (how feeling lately, multi) and 292468426 (anxious/sad matrix).
 // Low wellbeing = any sad/worried/stressed option in 905, OR often/sometimes
@@ -291,7 +283,6 @@ function CFPDashboard() {
   const [qModule, setQModule]     = useState("parent"); // active module on the By-Question tab
   const [dunDistrict, setDunDistrict] = useState("All"); // district filter on Local Gaps tab
   const [dunMeasure, setDunMeasure]   = useState("count"); // 'count' or 'pct' (of DUN under-18)
-  const [showThreshold, setShowThreshold] = useState(false); // ±10% statistical robustness overlay
   const [rollupAxis, setRollupAxis] = useState("domain"); // 'domain' or 'objective' on Rollup tab
   const [scanDir, setScanDir]       = useState("con");    // 'con' or 'fav' - which extreme to rank
   const [scanMinN, setScanMinN]     = useState(30);       // min base size to surface
@@ -924,6 +915,7 @@ function CFPDashboard() {
           { key:"u", label:"Urban/Rural", values:[["Urban","Urban"],["Peri-urban","Peri-urban"],["Rural","Rural"]] },
           { key:"d", label:"Disability", values:[["Disabled",1],["Not disabled",0]] },
           { key:"m", label:"Migration", values:[["Migrant/refugee",1],["Citizen",0]] },
+          { key:"h", label:"Housing type", values:[["High-rise flat/PPR","High-rise flat/PPR"],["Apartment","Apartment"],["Condominium","Condominium"],["Terrace/link","Terrace/link"],["Semi-detached","Semi-detached"],["Bungalow","Bungalow"],["Kampung","Kampung"],["Shop house","Shop house"],["Employer quarters","Employer quarters"]] },
           { key:"w", label:"Wellbeing", values:[["Low wellbeing",1],["Not low",0]] },
         ];
         const lensUsed = (key) => filters.find(f => f.key === key);
@@ -1056,6 +1048,7 @@ function CFPDashboard() {
           { key:"u", label:"Urban/Rural", values:[["Urban","Urban"],["Peri-urban","Peri-urban"],["Rural","Rural"]] },
           { key:"d", label:"Disability", values:[["Disabled",1],["Not disabled",0]] },
           { key:"m", label:"Migration", values:[["Migrant/refugee",1],["Citizen",0]] },
+          { key:"h", label:"Housing type", values:[["High-rise flat/PPR","High-rise flat/PPR"],["Apartment","Apartment"],["Condominium","Condominium"],["Terrace/link","Terrace/link"],["Semi-detached","Semi-detached"],["Bungalow","Bungalow"],["Kampung","Kampung"],["Shop house","Shop house"],["Employer quarters","Employer quarters"]] },
           { key:"w", label:"Wellbeing", values:[["Low wellbeing",1],["Not low",0]] },
         ];
         const lensUsed = (key) => filters.find(f => f.key === key);
@@ -1273,11 +1266,10 @@ function CFPDashboard() {
                     )}
                     <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}>
                       <div style={{width:130,fontSize:11,color:"#475569",textAlign:"right",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}} title={r.dun + (r.pop?` · ~${r.pop.toLocaleString()} under-18`:" · no population estimate")}>{r.dun}</div>
-                      <div style={{flex:1,height:16,background:"#f1f5f9",borderRadius:3,position:"relative",overflow:"hidden"}}>
+                      <div style={{flex:1,height:16,background:"#f1f5f9",borderRadius:3,overflow:"hidden"}}>
                         <div style={{width:barW+"%",height:"100%",background:noPop?"#cbd5e1":(DISTRICT_COLOR[r.district]||"#64748b"),borderRadius:3,minWidth:(val>0?2:0)}}/>
-                        {showThreshold && r.pop && (()=>{const nReq=requiredN10(r.pop);const tRate=nReq/r.pop*1000;const tPct=isPct?(tRate/metricMax*100):(nReq/metricMax*100);return tPct<=100?<div style={{position:"absolute",top:-1,left:tPct+"%",width:2,height:18,background:"#0e4a6e",borderRadius:1,opacity:0.7}} title={"±10% threshold: "+(isPct?tRate.toFixed(1)+"/1000":nReq+" responses")}/>:null;})()}
                       </div>
-                      <div style={{width:isPct?58:44,fontSize:11,fontWeight:700,color:isZero?"#dc2626":noPop?"#94a3b8":(showThreshold&&r.pop&&r.count>=requiredN10(r.pop))?"#16a34a":"#334155",textAlign:"right"}}>{label}{showThreshold&&r.pop&&r.count>=requiredN10(r.pop)?" ✓":""}</div>
+                      <div style={{width:isPct?58:44,fontSize:11,fontWeight:700,color:isZero?"#dc2626":noPop?"#94a3b8":"#334155",textAlign:"right"}}>{label}</div>
                     </div>
                   </div>
                 );
@@ -1291,7 +1283,6 @@ function CFPDashboard() {
             <div style={{...s.card,padding:"12px 16px",marginBottom:14,fontSize:12,color:"#475569",lineHeight:1.5}}>
               <b>Local gaps by DUN.</b> Responses per state constituency (DUN), grouped by district. Toggle between raw response count and coverage rate (responses per 1,000 under-18 population). Coverage rate reveals where a populous DUN is under-covered despite a decent raw count. Zero-response DUNs are flagged in red.
               {isPct && <span style={{display:"block",marginTop:4,fontSize:11,color:"#94a3b8"}}>Under-18 population estimated from DOSM 2024 DUN totals × 2025 district child-share (assumes uniform child-share within district). Bukit Gelugor has no DOSM figure and shows n/a.</span>}
-              {showThreshold && <span style={{display:"block",marginTop:4,fontSize:11,color:"#0e4a6e"}}>Threshold marker shows the sample size needed for ±10% margin of error (95% CI, worst-case p=0.5, with finite population correction). Green values with ✓ have reached statistical robustness for DUN-level reporting.</span>}
             </div>
 
             {/* District filter + measure toggle */}
@@ -1317,10 +1308,6 @@ function CFPDashboard() {
               </select>
               {dunDistrict!=="All" && <button onClick={()=>setDunDistrict("All")} style={{fontSize:11,color:"#0e4a6e",background:"none",border:"none",cursor:"pointer",textDecoration:"underline",padding:0}}>clear</button>}
               </div>
-              <label style={{display:"flex",alignItems:"center",gap:5,cursor:"pointer",marginLeft:8}}>
-                <input type="checkbox" checked={showThreshold} onChange={()=>setShowThreshold(!showThreshold)} style={{accentColor:"#0e4a6e",cursor:"pointer"}}/>
-                <span style={{fontSize:11,color:showThreshold?"#0e4a6e":"#94a3b8",fontWeight:showThreshold?600:400}}>±10% threshold</span>
-              </label>
             </div>
 
             {chart("Penang Island DUNs", islandRows, "Timur Laut · Barat Daya")}
@@ -1350,6 +1337,7 @@ function CFPDashboard() {
           { key:"u", label:"Urban/Rural", values:[["Urban","Urban"],["Peri-urban","Peri-urban"],["Rural","Rural"]] },
           { key:"d", label:"Disability", values:[["Disabled",1],["Not disabled",0]] },
           { key:"m", label:"Migration", values:[["Migrant/refugee",1],["Citizen",0]] },
+          { key:"h", label:"Housing type", values:[["High-rise flat/PPR","High-rise flat/PPR"],["Apartment","Apartment"],["Condominium","Condominium"],["Terrace/link","Terrace/link"],["Semi-detached","Semi-detached"],["Bungalow","Bungalow"],["Kampung","Kampung"],["Shop house","Shop house"],["Employer quarters","Employer quarters"]] },
           { key:"w", label:"Wellbeing", values:[["Low wellbeing",1],["Not low",0]] },
         ];
         const lensUsed = (key) => filters.find(f => f.key === key);
@@ -1521,6 +1509,7 @@ function CFPDashboard() {
           { key:"u", label:"Urban/Rural", vals:[["Urban","Urban"],["Peri-urban","Peri-urban"],["Rural","Rural"]] },
           { key:"d", label:"Disability", vals:[["Disabled","1"],["Not disabled","0"]] },
           { key:"m", label:"Migration", vals:[["Migrant/refugee","1"],["Citizen","0"]] },
+          { key:"h", label:"Housing type", vals:[["High-rise flat/PPR","High-rise flat/PPR"],["Apartment","Apartment"],["Condominium","Condominium"],["Terrace/link","Terrace/link"],["Semi-detached","Semi-detached"],["Bungalow","Bungalow"],["Kampung","Kampung"],["Shop house","Shop house"],["Employer quarters","Employer quarters"]] },
           { key:"w", label:"Low wellbeing", vals:[["Low wellbeing","1"],["Not low","0"]] },
         ];
         const lensByKey = Object.fromEntries(LENSES.map(l=>[l.key,l]));
@@ -1676,6 +1665,7 @@ function CFPDashboard() {
           { key:"a", label:"Age", vals:[["10-12","10-12"],["13-16","13-16"],["17","17"]] },
           { key:"d", label:"Disability", vals:[["Disabled","1"],["Not disabled","0"]] },
           { key:"m", label:"Migration", vals:[["Migrant/refugee","1"],["Citizen","0"]] },
+          { key:"h", label:"Housing type", vals:[["High-rise flat/PPR","High-rise flat/PPR"],["Apartment","Apartment"],["Condominium","Condominium"],["Terrace/link","Terrace/link"],["Semi-detached","Semi-detached"],["Bungalow","Bungalow"],["Kampung","Kampung"],["Shop house","Shop house"],["Employer quarters","Employer quarters"]] },
           { key:"w", label:"Low wellbeing", vals:[["Low wellbeing","1"],["Not low","0"]] },
         ];
         const questions = ftData.questions || {};
