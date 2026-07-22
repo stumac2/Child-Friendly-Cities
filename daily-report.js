@@ -150,6 +150,21 @@ const GENDER_MAP = [
   { pattern: /^female$|^perempuan$|^女$|^பெண்$/i, value: "Female" },
 ];
 
+// Housing type (Q11 parent module). Options are identical in order across all four
+// language surveys, so the chosen option INDEX maps to a canonical English label.
+// Position-anchored - never rely on translated text matching.
+const HOUSING_LABELS = [
+  "High-rise flat/PPR",     // 0: High-rise flat (low-cost / PPR / public housing)
+  "Apartment",              // 1: Apartment
+  "Condominium",            // 2: Condominium
+  "Terrace/link",           // 3: Landed terrace / link house
+  "Semi-detached",          // 4: Semi-detached house
+  "Bungalow",               // 5: Detached / bungalow
+  "Kampung",                // 6: Village house (kampung)
+  "Shop house",             // 7: Shop house (residential use)
+  "Employer quarters",      // 8: Employer-provided housing / quarters
+];
+
 const DISABILITY_PATTERN = /some difficulty|a lot of difficulty|cannot do at all|sukar|kesukaran|困难|难以|சிரமம்/i;
 
 // ─── Intersectional outcome framework ──────────────────────────────────────────
@@ -338,6 +353,25 @@ function buildIndexMaps(qMap, qid) {
   return { choiceIndexById, rowIndexById, menuIndexById };
 }
 
+// Housing type: read the chosen option's position index and map to a canonical
+// English label. Position-anchored across languages (options identical in order).
+function matchHousing(r, qid, qMap) {
+  if (!qid) return null;
+  const maps = buildIndexMaps(qMap, qid);
+  for (const page of (r.pages || [])) {
+    for (const q of (page.questions || [])) {
+      if (q.id === qid) {
+        const ans = (q.answers || [])[0];
+        if (!ans || ans.choice_id === undefined) return null;
+        const idx = maps.choiceIndexById[ans.choice_id];
+        if (idx === undefined || idx < 0 || idx >= HOUSING_LABELS.length) return null;
+        return HOUSING_LABELS[idx];
+      }
+    }
+  }
+  return null;
+}
+
 // Code a response's answers for each catalog question into compact indices.
 // catalogForSurvey: { engId: { qid, type, choiceIndexById, rowIndexById, menuIndexById } }
 function codeAnswers(r, catalogForSurvey) {
@@ -429,7 +463,7 @@ function identifyQuestions(qMap) {
     dunIsland: null, dunSeberang: null,
     ethnicity: null, income: null, childAge: null,
     childGender: null, parentGender: null, marital: null,
-    status: null, disability: [], crg: null,
+    status: null, disability: [], crg: null, housing: null,
   };
 
   const dunCandidates = [];
@@ -492,7 +526,17 @@ function identifyQuestions(qMap) {
       continue;
     }
 
-    // Child Reference Group question: distinctive heading (multilingual), free-text contact field.
+    // Housing type: heading references type of housing/dwelling; options include
+    // dwelling types (flat/PPR, apartment, condominium, terrace, bungalow, kampung...).
+    // Q11 parent module, 9 options, identical order across all four surveys.
+    if (!ids.housing
+        && /type of housing|housing.{0,10}live|jenis.{0,10}(rumah|kediaman|tempat tinggal)|tinggal.{0,10}jenis|住.{0,6}(房屋|房子|类型)|房屋类型|என்ன வகை.{0,12}(வீ|குடி)|வீட்டு வகை/i.test(heading)
+        && choiceVals.length >= 5) {
+      ids.housing = qId;
+      continue;
+    }
+
+
     // Matches CRG naming across languages: EN "Child Reference Group", MS "Kumpulan Rujukan Kanak-Kanak",
     // ZH "儿童顾问小组"/"儿童参考小组", TA "குழந்தைகள்...குழு". Only accept open-ended (contact) questions.
     if (!ids.crg
@@ -775,6 +819,9 @@ function classifyOneResponse(r, language, qMap, questionIds, outcomeIds, catalog
   const statusText = getAnswerText(r, questionIds.status, qMap);
   rec.refugee = !!(statusText && /refugee|stateless|undocumented|pelarian|tanpa negara|tanpa kewarganegaraan|tiada dokumen|tidak berdokumen|tanpa dokumen|难民|无国籍|无证|அகதி|நாடற்ற|ஆவணமற்ற|ஆவணமில/i.test(statusText));
 
+  // Housing type (Q11 parent module) - canonical English label via position-anchoring.
+  rec.housing = matchHousing(r, questionIds.housing, qMap);
+
   // CRG sign-up: presence/absence of contact text only, never the text itself.
   let crgSignup = false;
   if (questionIds.crg) {
@@ -858,7 +905,7 @@ function aggregateRecords(records, qMapsByLang) {
     if (result.byLanguage[rec.lang]) result.byLanguage[rec.lang].completed++;
     if (rec.date) result.byDate[rec.date].completed++;
 
-    const { district, urbanRural, ethnicity, income, ageGroup, gender } = rec;
+    const { district, urbanRural, ethnicity, income, ageGroup, gender, housing } = rec;
     if (rec.hadDun) completedWithDunAnswer++;
     if (rec.unmatchedDun) unmatchedDUN[rec.unmatchedDun] = (unmatchedDUN[rec.unmatchedDun] || 0) + 1;
 
@@ -885,6 +932,7 @@ function aggregateRecords(records, qMapsByLang) {
     }
     if (ageGroup) result.ethnicityByAge[ethnicity][ageGroup]++;
     if (urbanRural) result.byUrbanRural[urbanRural]++;
+    result.byHousing[housing || "Not stated"]++;
     if (rec.disabled) result.vulnerableGroups["Children with disability"]++;
     if (rec.singleParent) result.vulnerableGroups["Single-parent households"]++;
     if (rec.refugee) result.vulnerableGroups["Refugees / undocumented"]++;
@@ -931,7 +979,7 @@ function aggregateRecords(records, qMapsByLang) {
     if (Object.keys(oflags).length > 0) {
       result.outcomeRows.push({
         g: gender || null, a: ageGroup || null, i: income || null, u: urbanRural || null,
-        d: rec.disabled ? 1 : 0, m: rec.refugee ? 1 : 0, o: oflags,
+        d: rec.disabled ? 1 : 0, m: rec.refugee ? 1 : 0, h: housing || null, o: oflags,
       });
     }
 
@@ -939,7 +987,7 @@ function aggregateRecords(records, qMapsByLang) {
     if (rec.qa && Object.keys(rec.qa).length > 0) {
       result.questionRows.push({
         g: gender || null, a: ageGroup || null, i: income || null, u: urbanRural || null,
-        d: rec.disabled ? 1 : 0, m: rec.refugee ? 1 : 0, q: rec.qa,
+        d: rec.disabled ? 1 : 0, m: rec.refugee ? 1 : 0, h: housing || null, q: rec.qa,
       });
     }
 
@@ -999,6 +1047,7 @@ function buildEmptyResult() {
     byGender: { Male:0, Female:0, Other:0 },
     byIncome: { B40:0, M40:0, T20:0, "Not stated":0 },
     byUrbanRural: { Urban:0, "Peri-urban":0, Rural:0 },
+    byHousing: { "High-rise flat/PPR":0, "Apartment":0, "Condominium":0, "Terrace/link":0, "Semi-detached":0, "Bungalow":0, "Kampung":0, "Shop house":0, "Employer quarters":0, "Not stated":0 },
     ethnicityByIncome: {}, ethnicityByAge: {}, incomeByAge: {}, incomeByGender: {},
     vulnerableGroups: { "Refugees / undocumented":0, "Children with disability":0, "Single-parent households":0, "Institutional care":0 },
     byDateByDistrict: {}, byDateByEthnicity: {}, byDateByIncome: {},
