@@ -319,6 +319,29 @@ const DOMAIN_LABELS = {
 const DOMAIN_ORDER = ["OS","TR","HO","SP","RI","CP","CI","HS"];
 
 // Build the catalog (labels/type/options/rows) from the English survey question map.
+// Build the canonical ordered question list (raw survey order, ALL questions incl.
+// demographics) with a module tag per position. Demographic/opening questions that
+// precede the first branch question are part of the parent "trunk". Used by the
+// completion-funnel tab. Returns [{pos, engId, module, label}].
+function buildFunnelOrder(engQMap) {
+  const order = [];
+  let pos = 0;
+  const BRANCH = new Set(["pregnant", "under10", "child"]);
+  let seenBranch = false;
+  for (const engId of Object.keys(engQMap)) {
+    const q = engQMap[engId] || {};
+    let mod = CATALOG_MODULE[engId] || null;
+    // Demographic/opening questions have no catalog module. Before any branch
+    // question appears they belong to the parent trunk; classify as "parent".
+    if (!mod) mod = seenBranch ? "other" : "parent";
+    if (BRANCH.has(mod)) seenBranch = true;
+    const label = (q.heading || "").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim().slice(0, 90) || `Q${pos + 1}`;
+    order.push({ pos, engId, module: mod, label });
+    pos++;
+  }
+  return order;
+}
+
 function buildQuestionCatalog(engQMap) {
   const cat = {};
   for (const [engId, mod] of Object.entries(CATALOG_MODULE)) {
@@ -784,13 +807,21 @@ function classifyOneResponse(r, language, qMap, questionIds, outcomeIds, catalog
     const posById = {};
     let i = 0;
     for (const qId of Object.keys(qMap)) posById[qId] = i++;
+    // Track the set of answered question POSITIONS (compact) so the funnel can be
+    // built module-aware. The survey is fixed-order with a single branch at the end
+    // of the parent trunk, so furthest-position + answered-set is sufficient.
+    const answeredPos = [];
     for (const page of (r.pages || [])) {
       for (const q of (page.questions || [])) {
         const pos = posById[q.id];
-        if (pos !== undefined && pos > maxPos && (q.answers || []).length > 0) maxPos = pos;
+        if (pos !== undefined && (q.answers || []).length > 0) {
+          answeredPos.push(pos);
+          if (pos > maxPos) maxPos = pos;
+        }
       }
     }
     rec.dropPos = maxPos;
+    rec.answeredPos = answeredPos;   // compact list of answered question indices
     return rec;
   }
 
@@ -869,6 +900,26 @@ function classifyOneResponse(r, language, qMap, questionIds, outcomeIds, catalog
 
   // Coded answers for the question-by-question browser (only if a catalog is supplied)
   if (catalogForSurvey) rec.qa = codeAnswers(r, catalogForSurvey);
+
+  // Which branch did this completed response take? (pregnant / under10 / child)
+  // Determined by which branch module's questions it actually answered. Used by the
+  // completion-funnel tab so completed responses count toward their branch's reach.
+  {
+    const answeredIds = new Set();
+    for (const page of (r.pages || [])) for (const q of (page.questions || [])) {
+      if ((q.answers || []).length > 0) answeredIds.add(q.id);
+    }
+    // Map answered English-equivalent modules via position-anchored catalog
+    let branch = null;
+    if (catalogForSurvey) {
+      for (const [engId, c] of Object.entries(catalogForSurvey)) {
+        if (!c.qid || !answeredIds.has(c.qid)) continue;
+        const mod = CATALOG_MODULE[engId];
+        if (mod === "pregnant" || mod === "under10" || mod === "child") { branch = mod; break; }
+      }
+    }
+    rec.branch = branch;
+  }
 
   return rec;
 }
@@ -1031,6 +1082,83 @@ function aggregateRecords(records, qMapsByLang) {
     }
   }
   console.log("=== END DROP-OFF ===\n");
+
+  // ─── Completion funnel (trunk + branches) ─────────────────────────────────────
+  // Canonical order from the English survey; each position tagged with a module.
+  // Trunk = parent (incl. demographics); branches = pregnant / under10 / child.
+  const engQMapF = qMapsByLang && (qMapsByLang.English || qMapsByLang.english);
+  if (engQMapF) {
+    const order = buildFunnelOrder(engQMapF);              // [{pos,engId,module,label}]
+    const LANGS = ["English", "Malay", "Mandarin", "Tamil"];
+    const trunkPositions = order.filter(o => o.module === "parent").map(o => o.pos);
+    const branchMods = ["pregnant", "under10", "child"];
+    const branchPositions = {};
+    for (const b of branchMods) branchPositions[b] = order.filter(o => o.module === b).map(o => o.pos);
+
+    // reached[lang][pos] = # of started responses (partial or completed) that answered
+    // at least one question at position >= this within the same module segment.
+    // Trunk: everyone flows through in fixed order, so a partial with furthest pos P
+    // reached every trunk position <= P; a completed response reached all trunk pos.
+    // Branch: only responses in that branch count; completed-in-branch reached all of
+    // it; partials reached up to their furthest answered position within the branch.
+    const reached = {};
+    const trunkStarters = {};   // per lang, # started (denominator for trunk)
+    const branchEntrants = {};  // per lang, per branch, # who entered
+    for (const lang of LANGS) {
+      reached[lang] = {};
+      for (const o of order) reached[lang][o.pos] = 0;
+      trunkStarters[lang] = 0;
+      branchEntrants[lang] = { pregnant: 0, under10: 0, child: 0 };
+    }
+
+    const maxTrunkPos = trunkPositions.length ? Math.max(...trunkPositions) : -1;
+
+    for (const rec of records) {
+      if (!rec || !reached[rec.lang]) continue;
+      const isCompleted = rec.status === "completed";
+      // ---- Trunk reach ----
+      if (isCompleted) {
+        // reached all trunk questions
+        for (const p of trunkPositions) reached[rec.lang][p]++;
+      } else {
+        const ap = rec.answeredPos || [];
+        const answeredSet = new Set(ap);
+        for (const p of trunkPositions) if (answeredSet.has(p)) reached[rec.lang][p]++;
+      }
+      trunkStarters[rec.lang]++;
+      // ---- Branch reach ----
+      if (isCompleted) {
+        const b = rec.branch;
+        if (b && branchPositions[b]) {
+          for (const p of branchPositions[b]) reached[rec.lang][p]++;
+          branchEntrants[rec.lang][b]++;
+        }
+      } else {
+        // partial: find which branch (if any) it entered, via answered positions
+        const answeredSet = new Set(rec.answeredPos || []);
+        for (const b of branchMods) {
+          const bp = branchPositions[b];
+          const entered = bp.some(p => answeredSet.has(p));
+          if (entered) {
+            for (const p of bp) if (answeredSet.has(p)) reached[rec.lang][p]++;
+            branchEntrants[rec.lang][b]++;
+            break; // a response belongs to one branch
+          }
+        }
+      }
+    }
+
+    result.funnel = {
+      order,                              // ordered questions with module + label
+      modules: ["parent", "pregnant", "under10", "child"],
+      moduleLabels: { parent:"Parent (trunk)", pregnant:"Pregnant branch", under10:"Under-10 branch", child:"Child branch" },
+      langs: LANGS,
+      reached,                            // reached[lang][pos]
+      trunkStarters,                      // denominator for trunk %
+      branchEntrants,                     // denominator for each branch %
+    };
+    console.log(`Funnel built: ${order.length} questions ordered; trunk ${trunkPositions.length}, branches pregnant/under10/child = ${branchPositions.pregnant.length}/${branchPositions.under10.length}/${branchPositions.child.length}`);
+  }
 
   return result;
 }
