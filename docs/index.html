@@ -1776,12 +1776,22 @@ function CFPDashboard() {
             if (v > maxV) maxV = v;
           }
           if (isPct) maxV = 100;
+          // max combined total across questions (for the all-languages bar scaling)
+          let maxTotal = 1;
+          for (const q of questions) {
+            const t = activeLangs.reduce((s,l)=>s+val(l,q.pos),0);
+            if (t > maxTotal) maxTotal = t;
+          }
           return (
             <div style={{...s.card,padding:16,marginBottom:14}}>
               <div style={{marginBottom:4,fontSize:13,fontWeight:700,color:"#0f172a"}}>{title}</div>
               <div style={{fontSize:11,color:"#64748b",marginBottom:12}}>{subtitle}</div>
               {/* legend */}
               <div style={{display:"flex",gap:14,marginBottom:10,flexWrap:"wrap"}}>
+                <div style={{display:"flex",alignItems:"center",gap:5}}>
+                  <span style={{width:10,height:3,background:"#334155",display:"inline-block",borderRadius:2}}/>
+                  <span style={{fontSize:11,fontWeight:700,color:"#334155"}}>All languages <span style={{color:"#94a3b8",fontWeight:400}}>(n={activeLangs.reduce((s,l)=>s+denomFn(l),0).toLocaleString()})</span></span>
+                </div>
                 {activeLangs.map(l=>(
                   <div key={l} style={{display:"flex",alignItems:"center",gap:5}}>
                     <span style={{width:10,height:3,background:LANG_COLORS[l],display:"inline-block",borderRadius:2}}/>
@@ -1791,10 +1801,23 @@ function CFPDashboard() {
               </div>
               {/* per-question rows */}
               {questions.map((q,qi)=>{
+                const totalRaw = activeLangs.reduce((s,l)=>s+val(l,q.pos),0);
+                const totalDenom = activeLangs.reduce((s,l)=>s+denomFn(l),0);
+                const totalPv = totalDenom ? totalRaw/totalDenom*100 : 0;
+                const totalW = Math.max(0, Math.min(100, isPct ? totalPv : (totalRaw/(isPct?1:maxTotal)*100)));
                 return (
-                  <div key={q.pos} style={{marginBottom:7}}>
-                    <div style={{fontSize:10,color:"#334155",marginBottom:2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}} title={q.label}>
+                  <div key={q.pos} style={{marginBottom:9}}>
+                    <div style={{fontSize:10,color:"#334155",marginBottom:3,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}} title={q.label}>
                       <span style={{color:"#94a3b8",fontVariantNumeric:"tabular-nums"}}>{String(qi+1).padStart(2,"0")}</span> {q.label}
+                    </div>
+                    {/* combined all-languages total */}
+                    <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3}}>
+                      <div style={{flex:1,height:12,background:"#eef2f7",borderRadius:2,overflow:"hidden"}}>
+                        <div style={{width:totalW+"%",height:"100%",background:"#334155",borderRadius:2}}/>
+                      </div>
+                      <span style={{fontSize:10,fontWeight:800,color:"#0f172a",width:isPct?34:52,textAlign:"right",fontVariantNumeric:"tabular-nums"}}>
+                        {isPct? totalPv.toFixed(0)+"%" : totalRaw.toLocaleString()}
+                      </span>
                     </div>
                     <div style={{display:"flex",flexDirection:"column",gap:2}}>
                       {activeLangs.map(l=>{
@@ -1808,7 +1831,7 @@ function CFPDashboard() {
                             <div style={{flex:1,height:9,background:"#f1f5f9",borderRadius:2,overflow:"hidden"}}>
                               <div style={{width:w+"%",height:"100%",background:LANG_COLORS[l],borderRadius:2,opacity:0.85}}/>
                             </div>
-                            <span style={{fontSize:9,color:"#64748b",width:isPct?34:44,textAlign:"right",fontVariantNumeric:"tabular-nums"}}>
+                            <span style={{fontSize:9,color:"#64748b",width:isPct?34:52,textAlign:"right",fontVariantNumeric:"tabular-nums"}}>
                               {isPct? pv.toFixed(0)+"%" : raw.toLocaleString()}
                             </span>
                           </div>
