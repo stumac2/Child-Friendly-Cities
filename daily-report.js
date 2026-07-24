@@ -320,21 +320,27 @@ const DOMAIN_ORDER = ["OS","TR","HO","SP","RI","CP","CI","HS"];
 
 // Build the catalog (labels/type/options/rows) from the English survey question map.
 // Build the canonical ordered question list (raw survey order, ALL questions incl.
-// demographics) with a module tag per position. Demographic/opening questions that
-// precede the first branch question are part of the parent "trunk". Used by the
-// completion-funnel tab. Returns [{pos, engId, module, label}].
-function buildFunnelOrder(engQMap) {
+// demographics) with a module tag per position. Trunk = the parent module: all
+// demographic questions plus parent-tagged substantive questions. Branches =
+// pregnant / under10 / child. We tag demographics explicitly (via detected IDs)
+// rather than by position, because some branch-tagged questions (e.g. the child
+// disability matrix) are physically asked inside the parent section and would
+// otherwise corrupt a positional heuristic.
+function buildFunnelOrder(engQMap, demogIds) {
   const order = [];
   let pos = 0;
   const BRANCH = new Set(["pregnant", "under10", "child"]);
-  let seenBranch = false;
+  const demog = demogIds instanceof Set ? demogIds : new Set(demogIds || []);
   for (const engId of Object.keys(engQMap)) {
     const q = engQMap[engId] || {};
-    let mod = CATALOG_MODULE[engId] || null;
-    // Demographic/opening questions have no catalog module. Before any branch
-    // question appears they belong to the parent trunk; classify as "parent".
-    if (!mod) mod = seenBranch ? "other" : "parent";
-    if (BRANCH.has(mod)) seenBranch = true;
+    let mod;
+    if (demog.has(engId)) {
+      mod = "parent";                              // demographic question = trunk
+    } else {
+      const catMod = CATALOG_MODULE[engId];        // catalogued substantive question
+      if (catMod) mod = catMod;
+      else mod = "skip";                           // uncatalogued & non-demographic (e.g. free-text, intro) - not plotted
+    }
     const label = (q.heading || "").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim().slice(0, 90) || `Q${pos + 1}`;
     order.push({ pos, engId, module: mod, label });
     pos++;
@@ -1088,7 +1094,14 @@ function aggregateRecords(records, qMapsByLang) {
   // Trunk = parent (incl. demographics); branches = pregnant / under10 / child.
   const engQMapF = qMapsByLang && (qMapsByLang.English || qMapsByLang.english);
   if (engQMapF) {
-    const order = buildFunnelOrder(engQMapF);              // [{pos,engId,module,label}]
+    // Detect the English demographic question IDs so they are tagged as trunk
+    // (parent), independent of survey position or catalog branch tags.
+    const engQ = identifyQuestions(engQMapF);
+    const demogIds = new Set([
+      engQ.income, engQ.housing, engQ.childGender, engQ.parentGender, engQ.ethnicity,
+      engQ.childAge, engQ.marital, engQ.status, engQ.dunIsland, engQ.dunSeberang,
+    ].filter(Boolean));
+    const order = buildFunnelOrder(engQMapF, demogIds);   // [{pos,engId,module,label}]
     const LANGS = ["English", "Malay", "Mandarin", "Tamil"];
     const trunkPositions = order.filter(o => o.module === "parent").map(o => o.pos);
     const branchMods = ["pregnant", "under10", "child"];
