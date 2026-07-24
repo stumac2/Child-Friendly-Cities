@@ -283,6 +283,7 @@ function CFPDashboard() {
   const [qModule, setQModule]     = useState("parent"); // active module on the By-Question tab
   const [dunDistrict, setDunDistrict] = useState("All"); // district filter on Local Gaps tab
   const [dunMeasure, setDunMeasure]   = useState("count"); // 'count' or 'pct' (of DUN under-18)
+  const [funnelMeasure, setFunnelMeasure] = useState("count"); // 'count' or 'pct' (completion funnel)
   const [rollupAxis, setRollupAxis] = useState("domain"); // 'domain' or 'objective' on Rollup tab
   const [scanDir, setScanDir]       = useState("con");    // 'con' or 'fav' - which extreme to rank
   const [scanMinN, setScanMinN]     = useState(30);       // min base size to surface
@@ -385,7 +386,7 @@ function CFPDashboard() {
 
       {/* Page toggle */}
       <div style={{display:"flex",gap:4,marginBottom:14,background:"#e2e8f0",borderRadius:8,padding:3,width:"fit-content"}}>
-        {[{id:"overview",label:"Survey Overview"},{id:"crg",label:"Child Reference Group"},{id:"findings_ro",label:"Findings: Research Objectives"},{id:"findings_afc",label:"Findings: AFC Domains"},{id:"findings_q",label:"Findings: By Question"},{id:"rollup",label:"Rollup"},{id:"scanner",label:"Disparity Scanner"},{id:"voices",label:"Voices"},{id:"local_gaps",label:"Local Gaps"}].map(p=>(
+        {[{id:"overview",label:"Survey Overview"},{id:"crg",label:"Child Reference Group"},{id:"findings_ro",label:"Findings: Research Objectives"},{id:"findings_afc",label:"Findings: AFC Domains"},{id:"findings_q",label:"Findings: By Question"},{id:"rollup",label:"Rollup"},{id:"scanner",label:"Disparity Scanner"},{id:"voices",label:"Voices"},{id:"local_gaps",label:"Local Gaps"},{id:"completion",label:"Completion"}].map(p=>(
           <button key={p.id} onClick={()=>setPage(p.id)}
             style={{padding:"7px 16px",fontSize:12,fontWeight:600,borderRadius:6,border:"none",cursor:"pointer",
               background:page===p.id?"#fff":"transparent",color:page===p.id?"#0e4a6e":"#64748b",
@@ -1740,10 +1741,150 @@ function CFPDashboard() {
         );
       })()}
 
-      {/* Footer */}
-      <div style={{textAlign:"center",padding:"16px 0 8px",fontSize:10,color:"#94a3b8"}}>
-        Child Friendly Penang - UNICEF Child-Friendly City Initiative - Think City / MBPP / MBSP - Data updates every 2 hours
-      </div>
+      {page === "completion" && (() => {
+        const f = data.funnel;
+        if (!f) return (
+          <div style={{...s.card,padding:24,textAlign:"center",color:"#94a3b8",fontSize:13}}>
+            Completion-funnel data isn't in this dataset yet. It populates on the next pipeline run after the funnel update.
+          </div>
+        );
+        const LANG_COLORS = { English:"#0e4a6e", Malay:"#16a34a", Mandarin:"#ca8a04", Tamil:"#dc2626" };
+        const isPct = funnelMeasure === "pct";
+        const order = f.order || [];
+        const reached = f.reached || {};
+        const langs = f.langs || [];
+
+        // Segment the ordered questions into trunk + each branch
+        const seg = (mod) => order.filter(o => o.module === mod);
+        const trunk = seg("parent");
+        const branches = [["pregnant",seg("pregnant")],["under10",seg("under10")],["child",seg("child")]];
+
+        // denominator for a given lang + segment
+        const denomTrunk = (lang) => f.trunkStarters?.[lang] || 0;
+        const denomBranch = (lang,b) => f.branchEntrants?.[lang]?.[b] || 0;
+
+        const val = (lang,pos) => (reached[lang] && reached[lang][pos]) || 0;
+
+        // Render one funnel segment (trunk or a branch) as a small-multiples row of
+        // per-question bars, one sub-row per language, plus a combined line-ish view.
+        const renderSegment = (title, subtitle, questions, denomFn, activeLangs) => {
+          if (!questions.length) return null;
+          // max for scaling
+          let maxV = 1;
+          for (const q of questions) for (const l of activeLangs) {
+            const v = isPct ? (denomFn(l)? val(l,q.pos)/denomFn(l)*100 : 0) : val(l,q.pos);
+            if (v > maxV) maxV = v;
+          }
+          if (isPct) maxV = 100;
+          return (
+            <div style={{...s.card,padding:16,marginBottom:14}}>
+              <div style={{marginBottom:4,fontSize:13,fontWeight:700,color:"#0f172a"}}>{title}</div>
+              <div style={{fontSize:11,color:"#64748b",marginBottom:12}}>{subtitle}</div>
+              {/* legend */}
+              <div style={{display:"flex",gap:14,marginBottom:10,flexWrap:"wrap"}}>
+                {activeLangs.map(l=>(
+                  <div key={l} style={{display:"flex",alignItems:"center",gap:5}}>
+                    <span style={{width:10,height:3,background:LANG_COLORS[l],display:"inline-block",borderRadius:2}}/>
+                    <span style={{fontSize:11,color:"#475569"}}>{l} <span style={{color:"#94a3b8"}}>(n={denomFn(l).toLocaleString()})</span></span>
+                  </div>
+                ))}
+              </div>
+              {/* per-question rows */}
+              {questions.map((q,qi)=>{
+                return (
+                  <div key={q.pos} style={{marginBottom:7}}>
+                    <div style={{fontSize:10,color:"#334155",marginBottom:2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}} title={q.label}>
+                      <span style={{color:"#94a3b8",fontVariantNumeric:"tabular-nums"}}>{String(qi+1).padStart(2,"0")}</span> {q.label}
+                    </div>
+                    <div style={{display:"flex",flexDirection:"column",gap:2}}>
+                      {activeLangs.map(l=>{
+                        const raw = val(l,q.pos);
+                        const d = denomFn(l);
+                        const pv = d ? raw/d*100 : 0;
+                        const shown = isPct ? pv : raw;
+                        const w = Math.max(0, Math.min(100, isPct ? pv : (raw/maxV*100)));
+                        return (
+                          <div key={l} style={{display:"flex",alignItems:"center",gap:6}}>
+                            <div style={{flex:1,height:9,background:"#f1f5f9",borderRadius:2,overflow:"hidden"}}>
+                              <div style={{width:w+"%",height:"100%",background:LANG_COLORS[l],borderRadius:2,opacity:0.85}}/>
+                            </div>
+                            <span style={{fontSize:9,color:"#64748b",width:isPct?34:44,textAlign:"right",fontVariantNumeric:"tabular-nums"}}>
+                              {isPct? pv.toFixed(0)+"%" : raw.toLocaleString()}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        };
+
+        // Biggest single-step drops in the trunk (where consecutive questions lose the most)
+        const drops = [];
+        for (let i=1;i<trunk.length;i++){
+          let totPrev=0, totCur=0;
+          for (const l of langs){ totPrev+=val(l,trunk[i-1].pos); totCur+=val(l,trunk[i].pos); }
+          const lost = totPrev-totCur;
+          if (lost>0) drops.push({ from:trunk[i-1], to:trunk[i], lost, pctLost: totPrev? lost/totPrev*100:0 });
+        }
+        drops.sort((a,b)=>b.lost-a.lost);
+        const topDrops = drops.slice(0,6);
+
+        const activeLangs = langs.filter(l => denomTrunk(l) > 0);
+
+        return (
+          <>
+            <div style={{...s.card,padding:"12px 16px",marginBottom:14,fontSize:12,color:"#475569",lineHeight:1.5}}>
+              <b>Completion funnel.</b> How far respondents get through the survey, question by question, by language. The survey is a fixed-order <b>parent trunk</b> that everyone answers, then branches once into <b>pregnant</b>, <b>under-10</b>, or <b>child</b> modules. Each segment is shown separately: the trunk against all who started, each branch against only those who entered it. Bars show respondents who reached each question (partials included) - so this reveals how much usable partial data exists and exactly where people drop off.
+            </div>
+
+            {/* measure toggle */}
+            <div style={{...s.card,padding:"10px 14px",marginBottom:14,display:"flex",alignItems:"center",gap:12}}>
+              <span style={{fontSize:11,fontWeight:700,color:"#94a3b8",letterSpacing:"0.05em",textTransform:"uppercase"}}>Measure</span>
+              <div style={{display:"flex",gap:6}}>
+                {[["count","Reached (count)"],["pct","Reached (% of segment)"]].map(([m,lab])=>(
+                  <button key={m} onClick={()=>setFunnelMeasure(m)} style={{
+                    padding:"5px 12px",fontSize:12,borderRadius:6,cursor:"pointer",fontWeight:funnelMeasure===m?700:400,
+                    border:"1px solid "+(funnelMeasure===m?"#0e4a6e":"#e2e8f0"),background:funnelMeasure===m?"#0e4a6e":"#fff",color:funnelMeasure===m?"#fff":"#475569",
+                  }}>{lab}</button>
+                ))}
+              </div>
+            </div>
+
+            {/* biggest drops */}
+            {topDrops.length>0 && (
+              <div style={{...s.card,padding:16,marginBottom:14}}>
+                <div style={{fontSize:13,fontWeight:700,color:"#0f172a",marginBottom:2}}>Biggest drop-off points (parent trunk)</div>
+                <div style={{fontSize:11,color:"#64748b",marginBottom:10}}>Consecutive questions losing the most respondents (all languages combined).</div>
+                {topDrops.map((d,i)=>(
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"6px 0",borderBottom:i<topDrops.length-1?"1px solid #f1f5f9":"none"}}>
+                    <span style={{fontSize:12,fontWeight:800,color:"#dc2626",width:70,textAlign:"right",fontVariantNumeric:"tabular-nums"}}>-{d.lost.toLocaleString()}</span>
+                    <span style={{fontSize:11,color:"#94a3b8",width:44}}>{d.pctLost.toFixed(0)}%</span>
+                    <span style={{fontSize:11,color:"#334155",flex:1,minWidth:0,overflow:"hidden",textOverflow:"ellipsis"}} title={d.to.label}>
+                      after &ldquo;{d.from.label}&rdquo; &rarr; {d.to.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {renderSegment("Parent module (trunk)", "Every respondent flows through these in fixed order. Denominator = all who started, per language.", trunk, denomTrunk, activeLangs)}
+
+            {branches.map(([b,qs])=> qs.length ? (
+              <div key={b}>
+                {renderSegment(f.moduleLabels[b]||b, `Only respondents who branched into the ${b} module. Denominator = entrants to this branch, per language.`, qs, (l)=>denomBranch(l,b), activeLangs)}
+              </div>
+            ) : null)}
+
+            <div style={{fontSize:10,color:"#94a3b8",textAlign:"center",padding:"8px 0"}}>
+              &ldquo;Reached&rdquo; = answered that question (or further within the segment). Trunk is fixed-order so its curve is exact; branch curves count only that branch&rsquo;s entrants. Partials are included, which is the point - they hold usable data.
+            </div>
+          </>
+        );
+      })()}
     </div>
   );
 }
