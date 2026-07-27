@@ -1101,6 +1101,15 @@ function aggregateRecords(records, qMapsByLang) {
       engQ.income, engQ.housing, engQ.childGender, engQ.parentGender, engQ.ethnicity,
       engQ.childAge, engQ.marital, engQ.status, engQ.dunIsland, engQ.dunSeberang,
     ].filter(Boolean));
+    // Heading-based fallback: some demographic questions (e.g. income placed late in
+    // the survey) may not be picked up by option-based detection. Tag any question
+    // whose heading clearly names a demographic as trunk too. These are always part
+    // of the parent module regardless of where they physically sit.
+    const DEMOG_HEADING = /household.{0,20}income|monthly income|total.{0,10}income|combining all earners|pendapatan|type of housing|housing.{0,10}live in|level of education|highest.{0,10}education|ethnic group|your gender|marital|describes your household|which.*district|age of your child|ages and genders/i;
+    for (const engId of Object.keys(engQMapF)) {
+      const hd = (engQMapF[engId] && engQMapF[engId].heading || "").replace(/<[^>]+>/g, "");
+      if (DEMOG_HEADING.test(hd)) demogIds.add(engId);
+    }
     const order = buildFunnelOrder(engQMapF, demogIds);   // [{pos,engId,module,label}]
     const LANGS = ["English", "Malay", "Mandarin", "Tamil"];
     const trunkPositions = order.filter(o => o.module === "parent").map(o => o.pos);
