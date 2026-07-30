@@ -3664,7 +3664,7 @@
     "Bertam": 96,
     "Pulau Betong": 47,
     "Penaga": 64,
-    "Permatang Berangan": 73,
+    "Permatang Berangan": 74,
     "Permatang Pasir": 193,
     "Jawi": 52,
     "Pengkalan Kota": 26,
@@ -3673,7 +3673,7 @@
     "Sungai Acheh": 5,
     "Sungai Puyu": 80,
     "Teluk Air Tawar": 39,
-    "Pinang Tunggal": 34
+    "Pinang Tunggal": 33
   },
   "migration": {
     "total": 4,
@@ -810623,7 +810623,7 @@
       }
     }
   },
-  "updatedAt": "2026-07-30T02:12:42.354Z",
+  "updatedAt": "2026-07-30T03:57:24.123Z",
   "surveyQuestions": {
     "289909815": {
       "module": "parent",
