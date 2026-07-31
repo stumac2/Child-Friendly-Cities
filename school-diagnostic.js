@@ -64,6 +64,38 @@ function findSchoolQ(qmap) {
   return null;
 }
 
+// Detect the parent rights-awareness question (Q815 "have you heard of child rights").
+// Parent module, single-choice yes/no-ish. Content-anchored across languages.
+function findRightsQ(qmap) {
+  for (const [qid, q] of Object.entries(qmap)) {
+    const h = (q.heading || "").toLowerCase();
+    if (/heard of.*child.{0,5}rights|child.{0,5}rights.*heard|aware of.*child.{0,5}rights|hak kanak|pernah dengar.*hak|mendengar.*hak kanak|儿童权利|听说过.*权利|குழந்தை உரிமை/i.test(h)
+        && /single_choice|single|multiple_choice/i.test(q.family || "")) {
+      return qid;
+    }
+  }
+  return null;
+}
+
+// Score Q815: concerning (NOT aware) if the chosen answer is a "no / haven't heard".
+// Mirrors the pipeline's definition. Returns "aware" | "unaware" | null.
+function scoreRights(resp, qid) {
+  if (!qid) return null;
+  for (const page of (resp.pages || [])) {
+    for (const q of (page.questions || [])) {
+      if (q.id === qid) {
+        for (const a of (q.answers || [])) {
+          const t = (a.text || a.simple_text || "").trim();
+          if (!t) continue;
+          if (/^no\b|^tidak|没有|^不|இல்லை|not heard|never heard|belum pernah|tak pernah/i.test(t)) return "unaware";
+          return "aware"; // any non-"no" chosen answer = has heard
+        }
+      }
+    }
+  }
+  return null; // not answered
+}
+
 // ── Five-way classifier ──────────────────────────────────────────────────────
 // national | chinese_medium | tamil_medium | private_international | learning_centre
 function classifySchool(raw) {
@@ -125,17 +157,22 @@ function answerText(resp, qid) {
   const report = { generatedAt: new Date().toISOString(), byLanguage: {}, totals: {}, samples: {}, unclassifiedSamples: [] };
   const TYPES = ["national","chinese_medium","tamil_medium","private_international","learning_centre","unclassified","blank"];
   const grand = Object.fromEntries(TYPES.map(t => [t, 0]));
+  const grandRights = {}; // schoolType -> {aware, unaware}
 
   for (const [lang, sid] of Object.entries(SURVEYS)) {
     console.log(`\n=== ${lang} (${sid}) ===`);
     const qmap = await getQMap(sid);
     const schoolQ = findSchoolQ(qmap);
+    const rightsQ = findRightsQ(qmap);
     if (!schoolQ) { console.log("  School question NOT found by heading."); report.byLanguage[lang] = { error: "school question not detected" }; continue; }
     console.log(`  School question: ${schoolQ} - "${qmap[schoolQ].heading.slice(0,70)}"`);
+    console.log(`  Rights question: ${rightsQ ? rightsQ + ' - "' + qmap[rightsQ].heading.slice(0,60) + '"' : "NOT FOUND"}`);
     const responses = await getResponses(sid);
     const counts = Object.fromEntries(TYPES.map(t => [t, 0]));
     const samplesByType = {};
     let answered = 0;
+    // rights-awareness crosstab: schoolType -> {aware, unaware}
+    const rightsByType = {};
     for (const r of responses) {
       const txt = answerText(r, schoolQ);
       const cls = classifySchool(txt);
@@ -144,13 +181,28 @@ function answerText(resp, qid) {
       if (!samplesByType[cls]) samplesByType[cls] = [];
       if (txt && samplesByType[cls].length < 8) samplesByType[cls].push(txt.slice(0, 50));
       if (cls === "unclassified" && txt && report.unclassifiedSamples.length < 60) report.unclassifiedSamples.push(txt.slice(0, 60));
+      // rights-awareness cross-tab (only for classified school types)
+      const aware = scoreRights(r, rightsQ);
+      if (aware && ["national","chinese_medium","tamil_medium","private_international","learning_centre"].includes(cls)) {
+        if (!rightsByType[cls]) rightsByType[cls] = { aware: 0, unaware: 0 };
+        rightsByType[cls][aware]++;
+        if (!grandRights[cls]) grandRights[cls] = { aware: 0, unaware: 0 };
+        grandRights[cls][aware]++;
+      }
     }
-    report.byLanguage[lang] = { schoolQ, heading: qmap[schoolQ].heading, total: responses.length, answered, counts };
+    report.byLanguage[lang] = { schoolQ, rightsQ, heading: qmap[schoolQ].heading, total: responses.length, answered, counts, rightsByType };
     report.samples[lang] = samplesByType;
     console.log(`  responses: ${responses.length}, answered school: ${answered}`);
     for (const t of TYPES) if (counts[t]) console.log(`    ${t}: ${counts[t]}`);
   }
   report.totals = grand;
+  report.rightsAwarenessBySchoolType = grandRights;
+  // compute unaware % per type
+  report.rightsHeadline = {};
+  for (const [t, v] of Object.entries(grandRights)) {
+    const n = v.aware + v.unaware;
+    report.rightsHeadline[t] = { n, unawarePct: n ? Math.round(v.unaware / n * 100) : null, awarePct: n ? Math.round(v.aware / n * 100) : null };
+  }
   const classifiable = TYPES.filter(t => !["unclassified","blank"].includes(t)).reduce((s,t)=>s+grand[t],0);
   const nonBlank = classifiable + grand.unclassified;
   report.summary = {
@@ -162,6 +214,10 @@ function answerText(resp, qid) {
   console.log("\n=== GRAND TOTALS ===");
   for (const t of TYPES) console.log(`  ${t}: ${grand[t]}`);
   console.log(`\nClassifiable rate (of non-blank answers): ${report.summary.classifiableRateOfAnswered}%`);
+  console.log("\n=== RIGHTS AWARENESS BY SCHOOL TYPE (parents who named their school) ===");
+  for (const [t, h] of Object.entries(report.rightsHeadline)) {
+    console.log(`  ${t}: ${h.unawarePct}% haven't heard of child rights (n=${h.n})`);
+  }
   fs.writeFileSync(OUTPUT, JSON.stringify(report, null, 2));
   console.log(`\nWrote ${OUTPUT}`);
 })();
