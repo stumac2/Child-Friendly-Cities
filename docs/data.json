@@ -1,5 +1,5 @@
 {
-  "totalStarted": 9327,
+  "totalStarted": 9328,
   "totalCompleted": 4667,
   "byDate": {
     "2026-06-15": {
@@ -183,7 +183,7 @@
       "completed": 6
     },
     "2026-07-30": {
-      "started": 10,
+      "started": 11,
       "completed": 6
     }
   },
@@ -197,7 +197,7 @@
       "completed": 1871
     },
     "Mandarin": {
-      "started": 3127,
+      "started": 3128,
       "completed": 1635
     },
     "Tamil": {
@@ -811511,7 +811511,7 @@
     "trunkStarters": {
       "English": 2248,
       "Malay": 3816,
-      "Mandarin": 3127,
+      "Mandarin": 3128,
       "Tamil": 136
     },
     "branchEntrants": {
@@ -811537,7 +811537,7 @@
       }
     }
   },
-  "updatedAt": "2026-07-30T19:23:45.934Z",
+  "updatedAt": "2026-07-31T02:41:09.556Z",
   "surveyQuestions": {
     "289909815": {
       "module": "parent",
