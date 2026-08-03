@@ -284,6 +284,7 @@ function CFPDashboard() {
   const [dunDistrict, setDunDistrict] = useState("All"); // district filter on Local Gaps tab
   const [dunMeasure, setDunMeasure]   = useState("count"); // 'count' or 'pct' (of DUN under-18)
   const [funnelMeasure, setFunnelMeasure] = useState("count"); // 'count' or 'pct' (completion funnel)
+  const [moduleLens, setModuleLens] = useState("none"); // under-10 lens: none|income|housing|urbanRural|disability
   const [rollupAxis, setRollupAxis] = useState("domain"); // 'domain' or 'objective' on Rollup tab
   const [scanDir, setScanDir]       = useState("con");    // 'con' or 'fav' - which extreme to rank
   const [scanMinN, setScanMinN]     = useState(30);       // min base size to surface
@@ -386,7 +387,7 @@ function CFPDashboard() {
 
       {/* Page toggle */}
       <div style={{display:"flex",gap:4,marginBottom:14,background:"#e2e8f0",borderRadius:8,padding:3,width:"fit-content"}}>
-        {[{id:"overview",label:"Survey Overview"},{id:"crg",label:"Child Reference Group"},{id:"findings_ro",label:"Findings: Research Objectives"},{id:"findings_afc",label:"Findings: AFC Domains"},{id:"findings_q",label:"Findings: By Question"},{id:"rollup",label:"Rollup"},{id:"scanner",label:"Disparity Scanner"},{id:"voices",label:"Voices"},{id:"local_gaps",label:"Local Gaps"},{id:"completion",label:"Completion"}].map(p=>(
+        {[{id:"overview",label:"Survey Overview"},{id:"crg",label:"Child Reference Group"},{id:"findings_ro",label:"Findings: Research Objectives"},{id:"findings_afc",label:"Findings: AFC Domains"},{id:"findings_q",label:"Findings: By Question"},{id:"rollup",label:"Rollup"},{id:"scanner",label:"Disparity Scanner"},{id:"voices",label:"Voices"},{id:"local_gaps",label:"Local Gaps"},{id:"completion",label:"Completion"},{id:"modules",label:"Pregnant & Under-10"}].map(p=>(
           <button key={p.id} onClick={()=>setPage(p.id)}
             style={{padding:"7px 16px",fontSize:12,fontWeight:600,borderRadius:6,border:"none",cursor:"pointer",
               background:page===p.id?"#fff":"transparent",color:page===p.id?"#0e4a6e":"#64748b",
@@ -1904,6 +1905,124 @@ function CFPDashboard() {
 
             <div style={{fontSize:10,color:"#94a3b8",textAlign:"center",padding:"8px 0"}}>
               &ldquo;Reached&rdquo; = answered that question (or further within the segment). Trunk is fixed-order so its curve is exact; branch curves count only that branch&rsquo;s entrants. Partials are included, which is the point - they hold usable data.
+            </div>
+          </>
+        );
+      })()}
+
+      {page === "modules" && (() => {
+        const ma = data.moduleAnalysis;
+        if (!ma) return (
+          <div style={{...s.card,padding:24,textAlign:"center",color:"#94a3b8",fontSize:13}}>
+            Module analysis isn't in this dataset yet. It populates on the next pipeline run after the module-analysis update.
+          </div>
+        );
+        const pregnant = Object.values(ma.pregnant || {});
+        const under10 = Object.values(ma.under10 || {});
+        const pregN = pregnant.reduce((m,q)=>Math.max(m,q.total||0),0);
+        const u10N = under10.reduce((m,q)=>Math.max(m,q.total||0),0);
+
+        // distribution bar row
+        const distRow = (label, count, total, color, isConcern) => {
+          const pct = total ? Math.round(count/total*100) : 0;
+          return (
+            <div key={label} style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+              <span style={{fontSize:11,color:"#334155",width:170,flexShrink:0,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}} title={label}>{label}</span>
+              <div style={{flex:1,height:14,background:"#f1f5f9",borderRadius:3,overflow:"hidden"}}>
+                <div style={{width:pct+"%",height:"100%",background:color,borderRadius:3}}/>
+              </div>
+              <span style={{fontSize:10,color:"#64748b",width:74,textAlign:"right",fontVariantNumeric:"tabular-nums",flexShrink:0}}>{count.toLocaleString()} · {pct}%</span>
+            </div>
+          );
+        };
+
+        // one question card: distribution + (under-10) optional lens breakdown
+        const qCard = (q, showLens) => {
+          const opts = (q.options && q.options.length) ? q.options : Object.keys(q.dist);
+          const concernColor = "#c2410c", favColor = "#0e7490", descColor = "#5b7683";
+          return (
+            <div key={q.id} style={{...s.card,padding:16,marginBottom:12}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:2,gap:10}}>
+                <div style={{fontSize:13,fontWeight:700,color:"#0f172a"}}>{q.short}</div>
+                <div style={{fontSize:10,color:"#94a3b8",whiteSpace:"nowrap"}}>{q.domain} · n={q.total}</div>
+              </div>
+              {q.scored && (
+                <div style={{fontSize:11,color:"#c2410c",marginBottom:8}}>
+                  {q.total? Math.round(q.concerning/q.total*100):0}% concerning ({q.concerning} of {q.total})
+                </div>
+              )}
+              {!q.scored && <div style={{fontSize:11,color:"#5b7683",marginBottom:8,fontStyle:"italic"}}>Distribution (no concerning-rate — this asks which matters most)</div>}
+              <div style={{marginTop:4}}>
+                {opts.map(opt=>{
+                  const c = q.dist[opt] || 0;
+                  // colour: concerning options in orange for scored, else theme colour
+                  return distRow(opt, c, q.total, q.scored ? concernColor : descColor, false);
+                })}
+              </div>
+              {showLens && moduleLens !== "none" && q.scored && q.byLens && q.byLens[moduleLens] && (
+                <div style={{marginTop:12,paddingTop:10,borderTop:"1px solid #f1f5f9"}}>
+                  <div style={{fontSize:10,fontWeight:700,color:"#94a3b8",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6}}>Concerning rate by {moduleLens==="urbanRural"?"urban/rural":moduleLens}</div>
+                  {Object.entries(q.byLens[moduleLens]).sort((a,b)=>b[1].total-a[1].total).map(([val,v])=>{
+                    const thin = v.total < 30;
+                    const pct = v.total? Math.round(v.concerning/v.total*100):0;
+                    return (
+                      <div key={val} style={{display:"flex",alignItems:"center",gap:8,marginBottom:3,opacity:thin?0.45:1}}>
+                        <span style={{fontSize:10,color:"#475569",width:150,flexShrink:0,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{val}</span>
+                        <div style={{flex:1,height:10,background:"#f1f5f9",borderRadius:2,overflow:"hidden"}}>
+                          <div style={{width:pct+"%",height:"100%",background:"#c2410c",borderRadius:2}}/>
+                        </div>
+                        <span style={{fontSize:9,color:"#64748b",width:80,textAlign:"right",fontVariantNumeric:"tabular-nums",flexShrink:0}}>{pct}%{thin?" (n<30)":` · n=${v.total}`}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        };
+
+        return (
+          <>
+            <div style={{...s.card,padding:"12px 16px",marginBottom:14,fontSize:12,color:"#475569",lineHeight:1.5}}>
+              <b>Pregnant & Under-10 modules.</b> Two branch modules most respondents never reach. <b>Under-10</b> ({u10N} respondents) has enough data for lens breakdowns. <b>Pregnant</b> ({pregN} respondents) is shown descriptively only — the sample is too small to slice by subgroup without misleading cell sizes.
+            </div>
+
+            {/* UNDER-10 */}
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+              <span style={{fontFamily:"monospace",fontSize:12,color:"#0e7490"}}>01</span>
+              <h2 style={{fontSize:18,fontWeight:700,color:"#0f172a",margin:0}}>Under-10 module</h2>
+              <span style={{flex:1,height:1,background:"#e2e8f0"}}/>
+              <span style={{fontSize:11,color:"#94a3b8"}}>n≈{u10N}</span>
+            </div>
+            {/* lens selector */}
+            <div style={{...s.card,padding:"10px 14px",marginBottom:12,display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
+              <span style={{fontSize:11,fontWeight:700,color:"#94a3b8",letterSpacing:"0.05em",textTransform:"uppercase"}}>Break down by</span>
+              <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                {[["none","None"],["income","Income"],["housing","Housing"],["urbanRural","Urban/Rural"],["disability","Disability"]].map(([k,lab])=>(
+                  <button key={k} onClick={()=>setModuleLens(k)} style={{
+                    padding:"5px 12px",fontSize:12,borderRadius:6,cursor:"pointer",fontWeight:moduleLens===k?700:400,
+                    border:"1px solid "+(moduleLens===k?"#0e7490":"#e2e8f0"),background:moduleLens===k?"#0e7490":"#fff",color:moduleLens===k?"#fff":"#475569",
+                  }}>{lab}</button>
+                ))}
+              </div>
+              {moduleLens!=="none" && <span style={{fontSize:10,color:"#94a3b8"}}>Lens shows concerning-rate for scored questions; subgroups with n&lt;30 are dimmed.</span>}
+            </div>
+            {under10.map(q=>qCard(q, true))}
+
+            {/* PREGNANT */}
+            <div style={{display:"flex",alignItems:"center",gap:10,margin:"22px 0 10px"}}>
+              <span style={{fontFamily:"monospace",fontSize:12,color:"#0e7490"}}>02</span>
+              <h2 style={{fontSize:18,fontWeight:700,color:"#0f172a",margin:0}}>Pregnant module</h2>
+              <span style={{flex:1,height:1,background:"#e2e8f0"}}/>
+              <span style={{fontSize:11,color:"#94a3b8"}}>n≈{pregN}</span>
+            </div>
+            <div style={{...s.card,padding:"10px 14px",marginBottom:12,fontSize:11,color:"#b45309",background:"#fffbeb",border:"1px solid #fde68a"}}>
+              <b>Small sample ({pregN}).</b> Shown as descriptive distributions only. Percentages are indicative; treat any single figure with caution and do not read subgroup differences into this module.
+            </div>
+            {pregnant.map(q=>qCard(q, false))}
+
+            <div style={{fontSize:10,color:"#94a3b8",textAlign:"center",padding:"10px 0"}}>
+              Concerning-rate definitions match the situational-analysis scoring. Descriptive questions (priorities/needs) show distributions only. Pregnant module is descriptive-only due to sample size.
             </div>
           </>
         );
