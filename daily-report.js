@@ -233,7 +233,90 @@ const SCORED_OUTCOMES = [
   // Wellbeing (child)
   { id:"911742", module:"child", ro:5, domain:"Health Services & Community Support", short:"Screen time 4+ hours",
     concerning:t => /4\+|4 or more|more than 4|4-5|5\+|lebih 4|4小时以上|4\+? மணி/i.test(t||"") },
+
+  // ── UNDER-10 module (scored) ──────────────────────────────────────────────
+  { id:"891", module:"under10", ro:4, domain:"Outdoor Spaces & Buildings", short:"Safe free play (under-10)",
+    concerning:t => /rarely|never|jarang|tidak pernah|很少|从不|அரிதாக|ஒருபோதும்/i.test(t||"") },
+  { id:"893", module:"under10", ro:4, domain:"Outdoor Spaces & Buildings", short:"Public spaces suit young children",
+    // concerning = "No" only; "Somewhat"/"Not sure" excluded (neutral)
+    concerning:t => /^no$|^tidak$|^不$|^没有$|^இல்லை$/i.test((t||"").trim()) },
+  { id:"896", module:"under10", ro:5, domain:"Climate", short:"Routine disrupted by climate (under-10)",
+    // signed off: Often + Sometimes = concerning
+    concerning:t => /often|sometimes|kerap|kadang|经常|有时|அடிக்கடி|சில நேரம்/i.test(t||"") },
+  { id:"889", module:"under10", ro:2, domain:"Health Services & Community Support", short:"Early-childhood support need unmet",
+    // concerning = needed support but insufficient / could not access
+    concerning:t => /insufficient|could not access|tidak mencukupi|tidak dapat|tidak cukup|不足|无法获得|无法取得|போதவில்லை|அணுக முடியவில்லை/i.test(t||"") },
+
+  // ── PREGNANT module (scored; descriptive-only in the UI, ~91 n) ────────────
+  { id:"908", module:"pregnant", ro:2, domain:"Health Services & Community Support", short:"Clear info on pregnancy support",
+    concerning:t => /^no$|^tidak$|^不$|^没有$|^இல்லை$/i.test((t||"").trim()) },
+  { id:"911", module:"pregnant", ro:2, domain:"Health Services & Community Support", short:"Health needs supported in pregnancy",
+    concerning:t => /^no$|^tidak$|^不$|^没有$|^இல்லை$/i.test((t||"").trim()) },
+  { id:"913", module:"pregnant", ro:2, domain:"Health Services & Community Support", short:"Providers listen to concerns",
+    concerning:t => /rarely|never|jarang|tidak pernah|很少|从不|அரிதாக|ஒருபோதும்/i.test(t||"") },
+  { id:"915", module:"pregnant", ro:4, domain:"Housing", short:"Housing suitable for newborn",
+    // concerning = "No" OR "Some concerns"
+    concerning:t => /^no$|^tidak$|^不$|^没有$|^இல்லை$|some concern|beberapa kebimbangan|kebimbangan|一些顾虑|有顾虑|சில கவலை/i.test((t||"").trim()) },
+  { id:"918", module:"pregnant", ro:5, domain:"Climate", short:"Environment affected pregnancy",
+    concerning:t => /^yes$|^ya$|^是$|^ஆம்$/i.test((t||"").trim()) },
+  { id:"910", module:"pregnant", ro:2, domain:"Health Services & Community Support", short:"Difficulty accessing antenatal care",
+    // multi-select: concerning if ANY "Yes -" option chosen (i.e. text is not solely "No")
+    concerning:t => /yes|ya|是|ஆம்|cost|transport|waiting|documentation|kos|pengangkutan|menunggu|dokumen|费用|交通|等候|文件|செலவு|போக்குவரத்து/i.test(t||"") },
 ];
+
+// Descriptive (unscored) module questions - shown as answer distributions only,
+// no concerning-rate (they ask "which matters most", not "how bad"). Rendered on
+// the Pregnant & Under-10 tab as distribution bars.
+const DESCRIPTIVE_OUTCOMES = [
+  { id:"887", module:"under10", short:"Most important right for young children", domain:"Respect & Social Inclusion" },
+  { id:"894", module:"under10", short:"Biggest environmental concern (under-10)", domain:"Climate" },
+  { id:"916", module:"pregnant", short:"What would improve readiness to care for baby", domain:"Health Services & Community Support" },
+];
+
+// Canonical English option labels per module question, in survey order. The chosen
+// option's POSITION maps to the label here, so answers aggregate across the four
+// languages (options are in identical order across surveys). Multi-select questions
+// list all options; a response may map to several.
+const MODULE_OPTIONS = {
+  // under-10
+  "887": ["Safe play","Early learning opportunities","Protection from harm","Health and nutrition","Being listened to","Not sure"],
+  "889": ["Yes – received enough support","Yes – but support was insufficient","Yes – but could not access support","No"],
+  "891": ["Daily","A few times a week","Rarely","Never"],
+  "893": ["Yes","Somewhat","No","Not sure"],
+  "894": ["Traffic","Lack of safe play space","Heat","Flooding","Cleanliness","Crime/safety","Other"],
+  "896": ["Often","Sometimes","Rarely","Never"],
+  // pregnant
+  "908": ["Yes","Somewhat","No"],
+  "910": ["No","Yes – cost","Yes – transport","Yes – long waiting times","Yes – documentation issues","Other"],
+  "911": ["Yes","Somewhat","No"],
+  "913": ["Always","Often","Sometimes","Rarely","Never"],
+  "915": ["Yes","Some concerns","No"],
+  "916": ["Financial support","Parenting information","Safer housing","Community support","Childcare access","Other","Family-friendly policies"],
+  "918": ["Yes","No"],
+};
+
+// Map a response's chosen option(s) for a module question to canonical English
+// label(s) by position. Single-select returns one label; multi-select returns a
+// "; "-joined set. Position-anchored: reads the choice index against the English
+// option order, so translated answers land on the right label.
+function canonicalModuleOption(shortId, r, qid, qMap) {
+  const labels = MODULE_OPTIONS[shortId];
+  if (!labels) return null;
+  const q = qMap[qid] || {};
+  const idxById = {}; Object.keys(q.choices || {}).forEach((id, i) => { idxById[id] = i; });
+  const chosen = [];
+  for (const page of (r.pages || [])) {
+    for (const qq of (page.questions || [])) {
+      if (qq.id !== qid) continue;
+      for (const a of (qq.answers || [])) {
+        const idx = idxById[a.choice_id];
+        if (idx !== undefined && idx >= 0 && idx < labels.length) chosen.push(labels[idx]);
+      }
+    }
+  }
+  if (!chosen.length) return null;
+  return [...new Set(chosen)].join("; ");
+}
 
 // Parallel question pairs (parent id <-> child id) for parent-child disparity
 const PARALLEL_PAIRS = [
@@ -885,6 +968,22 @@ function classifyOneResponse(r, language, qMap, questionIds, outcomeIds, catalog
   }
   rec.o = o;
 
+  // Raw answers for pregnant/under-10 module questions (for the module-analysis tab's
+  // answer-distribution bars). Captures the chosen option label, position-anchored to
+  // English via a canonical map so options aggregate across languages.
+  const modAns = {};
+  for (const def of [...SCORED_OUTCOMES, ...DESCRIPTIVE_OUTCOMES]) {
+    if (def.module !== "pregnant" && def.module !== "under10") continue;
+    const qid = outcomeIds?.[def.id];
+    if (!qid) continue;
+    const ans = getAnswerText(r, qid, qMap);
+    if (ans == null || ans === "") continue;
+    // canonical option: map the chosen answer to its English-position label
+    const opt = canonicalModuleOption(def.id, r, qid, qMap);
+    modAns[def.id] = opt || "(other)";
+  }
+  rec.modAns = modAns;
+
   // Parent-child disparity flags per parallel theme
   const disp = {};
   for (const p of PARALLEL_PAIRS) {
@@ -1182,10 +1281,62 @@ function aggregateRecords(records, qMapsByLang) {
     console.log(`Funnel built: ${order.length} questions ordered; trunk ${trunkPositions.length}, branches pregnant/under10/child = ${branchPositions.pregnant.length}/${branchPositions.under10.length}/${branchPositions.child.length}`);
   }
 
+  // ── Pregnant & Under-10 module analysis ───────────────────────────────────
+  // For each module question: answer distribution (counts per canonical option),
+  // total answered, concerning count (scored only), and for UNDER-10 lens
+  // breakdowns (income/housing/urbanRural/disability). Pregnant is descriptive
+  // only - no lens slices (n too small).
+  {
+    const scoredById = Object.fromEntries(SCORED_OUTCOMES.map(o => [o.id, o]));
+    const modDefs = [...SCORED_OUTCOMES, ...DESCRIPTIVE_OUTCOMES].filter(d => d.module === "pregnant" || d.module === "under10");
+    const MOD_LENSES = { i:"income", h:"housing", u:"urbanRural", d:"disability" };
+    const ma = { pregnant: {}, under10: {} };
+    for (const def of modDefs) {
+      const isScored = !!scoredById[def.id];
+      const entry = {
+        id: def.id, short: def.short, domain: def.domain, module: def.module,
+        scored: isScored, options: MODULE_OPTIONS[def.id] || [],
+        dist: {}, total: 0, concerning: 0,
+        byLens: def.module === "under10" ? { income:{}, housing:{}, urbanRural:{}, disability:{} } : null,
+      };
+      ma[def.module][def.id] = entry;
+    }
+    for (const rec of records) {
+      if (!rec || !rec.modAns) continue;
+      for (const [id, ansLabel] of Object.entries(rec.modAns)) {
+        const def = scoredById[id] || DESCRIPTIVE_OUTCOMES.find(d => d.id === id);
+        if (!def) continue;
+        const entry = ma[def.module] && ma[def.module][id];
+        if (!entry) continue;
+        // distribution: split multi-select on "; "
+        const parts = String(ansLabel).split("; ");
+        for (const part of parts) entry.dist[part] = (entry.dist[part] || 0) + 1;
+        entry.total++;
+        // concerning flag (from rec.o computed earlier)
+        if (entry.scored && rec.o && rec.o[id] === 1) entry.concerning++;
+        // under-10 lens breakdown
+        if (entry.byLens) {
+          const lensVal = {
+            income: rec.income, housing: rec.housing,
+            urbanRural: rec.urbanRural, disability: rec.disabled ? "Disabled" : "Not disabled",
+          };
+          for (const [lensName, v] of Object.entries(lensVal)) {
+            if (!v) continue;
+            if (!entry.byLens[lensName][v]) entry.byLens[lensName][v] = { total:0, concerning:0 };
+            entry.byLens[lensName][v].total++;
+            if (entry.scored && rec.o && rec.o[id] === 1) entry.byLens[lensName][v].concerning++;
+          }
+        }
+      }
+    }
+    result.moduleAnalysis = ma;
+    const pn = Object.values(ma.pregnant)[0]?.total || 0;
+    const un = Object.values(ma.under10)[0]?.total || 0;
+    console.log(`Module analysis: pregnant questions answered by ~${pn}, under-10 by ~${un}.`);
+  }
+
   return result;
 }
-
-// ─── Shared empty-result builder (used by both aggregation paths) ───────────────
 function buildEmptyResult() {
   const result = {
     totalStarted: 0, totalCompleted: 0,
@@ -1499,6 +1650,12 @@ async function main() {
           sd.outcomeIds[eid] = engPos == null ? null : (sd.language === "English" ? engId : (idByPos[engPos] || null));
         }
       }
+    }
+    // Resolve descriptive (unscored) module question ids for distribution capture
+    for (const dq of DESCRIPTIVE_OUTCOMES) {
+      const engId = engQuestionId(dq.id);
+      const engPos = engPosById[engId];
+      sd.outcomeIds[dq.id] = engPos == null ? null : (sd.language === "English" ? engId : (idByPos[engPos] || null));
     }
   }
   const engOutcomeFound = SCORED_OUTCOMES.filter(o => engData?.outcomeIds?.[o.id]).length;
