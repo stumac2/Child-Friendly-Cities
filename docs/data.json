@@ -1,5 +1,5 @@
 {
-  "totalStarted": 9654,
+  "totalStarted": 9655,
   "totalCompleted": 4867,
   "byDate": {
     "2026-06-15": {
@@ -213,11 +213,15 @@
     "2026-08-06": {
       "started": 12,
       "completed": 8
+    },
+    "2026-08-07": {
+      "started": 1,
+      "completed": 0
     }
   },
   "byLanguage": {
     "English": {
-      "started": 2439,
+      "started": 2440,
       "completed": 1217
     },
     "Malay": {
@@ -851992,9 +851996,9 @@
         "1": 0,
         "2": 0,
         "3": 2117,
-        "4": 2154,
+        "4": 2155,
         "5": 0,
-        "6": 2143,
+        "6": 2144,
         "7": 2059,
         "8": 2008,
         "9": 2058,
@@ -852489,7 +852493,7 @@
       }
     },
     "trunkStarters": {
-      "English": 2439,
+      "English": 2440,
       "Malay": 3820,
       "Mandarin": 3259,
       "Tamil": 136
@@ -853257,7 +853261,7 @@
       }
     }
   },
-  "updatedAt": "2026-08-07T03:49:44.037Z",
+  "updatedAt": "2026-08-07T07:12:54.774Z",
   "surveyQuestions": {
     "289909815": {
       "module": "parent",
