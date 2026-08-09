@@ -1,6 +1,6 @@
 {
-  "totalStarted": 9665,
-  "totalCompleted": 4872,
+  "totalStarted": 9666,
+  "totalCompleted": 4873,
   "byDate": {
     "2026-06-15": {
       "started": 24,
@@ -223,14 +223,14 @@
       "completed": 1
     },
     "2026-08-09": {
-      "started": 1,
-      "completed": 0
+      "started": 2,
+      "completed": 1
     }
   },
   "byLanguage": {
     "English": {
-      "started": 2446,
-      "completed": 1220
+      "started": 2447,
+      "completed": 1221
     },
     "Malay": {
       "started": 3820,
@@ -248,7 +248,7 @@
   "crossTab": {
     "Timur Laut": {
       "Malay": 392,
-      "Chinese": 761,
+      "Chinese": 762,
       "Indian": 61,
       "Others": 44
     },
@@ -397,13 +397,13 @@
     "Not stated": 0
   },
   "byUrbanRural": {
-    "Urban": 2639,
+    "Urban": 2640,
     "Peri-urban": 1581,
     "Rural": 639
   },
   "byHousing": {
     "High-rise flat/PPR": 583,
-    "Apartment": 741,
+    "Apartment": 742,
     "Condominium": 488,
     "Terrace/link": 1610,
     "Semi-detached": 380,
@@ -491,7 +491,7 @@
   "vulnerableGroups": {
     "Refugees / undocumented": 5,
     "Children with disability": 300,
-    "Single-parent households": 325,
+    "Single-parent households": 326,
     "Institutional care": 0
   },
   "byDateByDistrict": {
@@ -821,6 +821,9 @@
     },
     "2026-08-08": {
       "Timur Laut": 1
+    },
+    "2026-08-09": {
+      "Timur Laut": 1
     }
   },
   "byDateByEthnicity": {
@@ -1103,6 +1106,9 @@
       "Others": 1
     },
     "2026-08-08": {
+      "Chinese": 1
+    },
+    "2026-08-09": {
       "Chinese": 1
     }
   },
@@ -2069,6 +2075,9 @@
     },
     "2026-08-08": {
       "Urban": 1
+    },
+    "2026-08-09": {
+      "Urban": 1
     }
   },
   "noDistrict": 13,
@@ -2120,7 +2129,7 @@
       },
       "overall": {
         "c": 1079,
-        "n": 4823
+        "n": 4824
       },
       "byLens": {
         "gender": {
@@ -2164,7 +2173,7 @@
         "urbanRural": {
           "Urban": {
             "c": 650,
-            "n": 2609
+            "n": 2610
           },
           "Peri-urban": {
             "c": 317,
@@ -2182,7 +2191,7 @@
           },
           "Not disabled": {
             "c": 1024,
-            "n": 4524
+            "n": 4525
           }
         },
         "migration": {
@@ -2192,7 +2201,7 @@
           },
           "Citizen": {
             "c": 1078,
-            "n": 4818
+            "n": 4819
           }
         }
       }
@@ -2207,7 +2216,7 @@
       },
       "overall": {
         "c": 2193,
-        "n": 4831
+        "n": 4832
       },
       "byLens": {
         "gender": {
@@ -2251,7 +2260,7 @@
         "urbanRural": {
           "Urban": {
             "c": 1221,
-            "n": 2611
+            "n": 2612
           },
           "Peri-urban": {
             "c": 687,
@@ -2269,7 +2278,7 @@
           },
           "Not disabled": {
             "c": 2049,
-            "n": 4532
+            "n": 4533
           }
         },
         "migration": {
@@ -2279,7 +2288,7 @@
           },
           "Citizen": {
             "c": 2192,
-            "n": 4826
+            "n": 4827
           }
         }
       }
@@ -2294,7 +2303,7 @@
       },
       "overall": {
         "c": 272,
-        "n": 4792
+        "n": 4793
       },
       "byLens": {
         "gender": {
@@ -2338,7 +2347,7 @@
         "urbanRural": {
           "Urban": {
             "c": 138,
-            "n": 2591
+            "n": 2592
           },
           "Peri-urban": {
             "c": 101,
@@ -2356,7 +2365,7 @@
           },
           "Not disabled": {
             "c": 255,
-            "n": 4494
+            "n": 4495
           }
         },
         "migration": {
@@ -2366,7 +2375,7 @@
           },
           "Citizen": {
             "c": 272,
-            "n": 4787
+            "n": 4788
           }
         }
       }
@@ -2381,7 +2390,7 @@
       },
       "overall": {
         "c": 861,
-        "n": 4813
+        "n": 4814
       },
       "byLens": {
         "gender": {
@@ -2425,7 +2434,7 @@
         "urbanRural": {
           "Urban": {
             "c": 507,
-            "n": 2602
+            "n": 2603
           },
           "Peri-urban": {
             "c": 260,
@@ -2443,7 +2452,7 @@
           },
           "Not disabled": {
             "c": 789,
-            "n": 4513
+            "n": 4514
           }
         },
         "migration": {
@@ -2453,7 +2462,7 @@
           },
           "Citizen": {
             "c": 859,
-            "n": 4808
+            "n": 4809
           }
         }
       }
@@ -2555,7 +2564,7 @@
       },
       "overall": {
         "c": 1300,
-        "n": 4810
+        "n": 4811
       },
       "byLens": {
         "gender": {
@@ -2599,7 +2608,7 @@
         "urbanRural": {
           "Urban": {
             "c": 765,
-            "n": 2604
+            "n": 2605
           },
           "Peri-urban": {
             "c": 391,
@@ -2617,7 +2626,7 @@
           },
           "Not disabled": {
             "c": 1232,
-            "n": 4511
+            "n": 4512
           }
         },
         "migration": {
@@ -2627,7 +2636,7 @@
           },
           "Citizen": {
             "c": 1297,
-            "n": 4805
+            "n": 4806
           }
         }
       }
@@ -2642,7 +2651,7 @@
       },
       "overall": {
         "c": 148,
-        "n": 4803
+        "n": 4804
       },
       "byLens": {
         "gender": {
@@ -2686,7 +2695,7 @@
         "urbanRural": {
           "Urban": {
             "c": 76,
-            "n": 2600
+            "n": 2601
           },
           "Peri-urban": {
             "c": 50,
@@ -2704,7 +2713,7 @@
           },
           "Not disabled": {
             "c": 131,
-            "n": 4507
+            "n": 4508
           }
         },
         "migration": {
@@ -2714,7 +2723,7 @@
           },
           "Citizen": {
             "c": 147,
-            "n": 4798
+            "n": 4799
           }
         }
       }
@@ -2729,7 +2738,7 @@
       },
       "overall": {
         "c": 1084,
-        "n": 4792
+        "n": 4793
       },
       "byLens": {
         "gender": {
@@ -2773,7 +2782,7 @@
         "urbanRural": {
           "Urban": {
             "c": 610,
-            "n": 2592
+            "n": 2593
           },
           "Peri-urban": {
             "c": 343,
@@ -2791,7 +2800,7 @@
           },
           "Not disabled": {
             "c": 987,
-            "n": 4495
+            "n": 4496
           }
         },
         "migration": {
@@ -2801,7 +2810,7 @@
           },
           "Citizen": {
             "c": 1084,
-            "n": 4787
+            "n": 4788
           }
         }
       }
@@ -2815,8 +2824,8 @@
         "short": "Climate worry (eco-anxiety)"
       },
       "overall": {
-        "c": 769,
-        "n": 4783
+        "c": 770,
+        "n": 4784
       },
       "byLens": {
         "gender": {
@@ -2859,8 +2868,8 @@
         },
         "urbanRural": {
           "Urban": {
-            "c": 467,
-            "n": 2592
+            "c": 468,
+            "n": 2593
           },
           "Peri-urban": {
             "c": 235,
@@ -2877,8 +2886,8 @@
             "n": 297
           },
           "Not disabled": {
-            "c": 712,
-            "n": 4486
+            "c": 713,
+            "n": 4487
           }
         },
         "migration": {
@@ -2887,8 +2896,8 @@
             "n": 5
           },
           "Citizen": {
-            "c": 767,
-            "n": 4778
+            "c": 768,
+            "n": 4779
           }
         }
       }
@@ -2903,7 +2912,7 @@
       },
       "overall": {
         "c": 2549,
-        "n": 4801
+        "n": 4802
       },
       "byLens": {
         "gender": {
@@ -2947,7 +2956,7 @@
         "urbanRural": {
           "Urban": {
             "c": 1454,
-            "n": 2596
+            "n": 2597
           },
           "Peri-urban": {
             "c": 806,
@@ -2965,7 +2974,7 @@
           },
           "Not disabled": {
             "c": 2363,
-            "n": 4501
+            "n": 4502
           }
         },
         "migration": {
@@ -2975,7 +2984,7 @@
           },
           "Citizen": {
             "c": 2546,
-            "n": 4796
+            "n": 4797
           }
         }
       }
@@ -2989,8 +2998,8 @@
         "short": "Authorities doing enough on climate"
       },
       "overall": {
-        "c": 1206,
-        "n": 4756
+        "c": 1207,
+        "n": 4757
       },
       "byLens": {
         "gender": {
@@ -3033,8 +3042,8 @@
         },
         "urbanRural": {
           "Urban": {
-            "c": 775,
-            "n": 2579
+            "c": 776,
+            "n": 2580
           },
           "Peri-urban": {
             "c": 321,
@@ -3051,8 +3060,8 @@
             "n": 294
           },
           "Not disabled": {
-            "c": 1131,
-            "n": 4462
+            "c": 1132,
+            "n": 4463
           }
         },
         "migration": {
@@ -3061,8 +3070,8 @@
             "n": 5
           },
           "Citizen": {
-            "c": 1203,
-            "n": 4751
+            "c": 1204,
+            "n": 4752
           }
         }
       }
@@ -3773,7 +3782,7 @@
       },
       "overall": {
         "c": 250,
-        "n": 814
+        "n": 815
       },
       "byLens": {
         "gender": {
@@ -3817,7 +3826,7 @@
         "urbanRural": {
           "Urban": {
             "c": 134,
-            "n": 443
+            "n": 444
           },
           "Peri-urban": {
             "c": 83,
@@ -3835,7 +3844,7 @@
           },
           "Not disabled": {
             "c": 250,
-            "n": 814
+            "n": 815
           }
         },
         "migration": {
@@ -3845,7 +3854,7 @@
           },
           "Citizen": {
             "c": 248,
-            "n": 812
+            "n": 813
           }
         }
       }
@@ -3860,7 +3869,7 @@
       },
       "overall": {
         "c": 261,
-        "n": 819
+        "n": 820
       },
       "byLens": {
         "gender": {
@@ -3904,7 +3913,7 @@
         "urbanRural": {
           "Urban": {
             "c": 149,
-            "n": 445
+            "n": 446
           },
           "Peri-urban": {
             "c": 86,
@@ -3922,7 +3931,7 @@
           },
           "Not disabled": {
             "c": 261,
-            "n": 819
+            "n": 820
           }
         },
         "migration": {
@@ -3932,7 +3941,7 @@
           },
           "Citizen": {
             "c": 260,
-            "n": 817
+            "n": 818
           }
         }
       }
@@ -3947,7 +3956,7 @@
       },
       "overall": {
         "c": 147,
-        "n": 816
+        "n": 817
       },
       "byLens": {
         "gender": {
@@ -3991,7 +4000,7 @@
         "urbanRural": {
           "Urban": {
             "c": 89,
-            "n": 446
+            "n": 447
           },
           "Peri-urban": {
             "c": 45,
@@ -4009,7 +4018,7 @@
           },
           "Not disabled": {
             "c": 147,
-            "n": 816
+            "n": 817
           }
         },
         "migration": {
@@ -4019,7 +4028,7 @@
           },
           "Citizen": {
             "c": 146,
-            "n": 814
+            "n": 815
           }
         }
       }
@@ -4034,7 +4043,7 @@
       },
       "overall": {
         "c": 552,
-        "n": 819
+        "n": 820
       },
       "byLens": {
         "gender": {
@@ -4078,7 +4087,7 @@
         "urbanRural": {
           "Urban": {
             "c": 305,
-            "n": 445
+            "n": 446
           },
           "Peri-urban": {
             "c": 181,
@@ -4096,7 +4105,7 @@
           },
           "Not disabled": {
             "c": 552,
-            "n": 819
+            "n": 820
           }
         },
         "migration": {
@@ -4106,7 +4115,7 @@
           },
           "Citizen": {
             "c": 550,
-            "n": 817
+            "n": 818
           }
         }
       }
@@ -4121,7 +4130,7 @@
       },
       "overall": {
         "c": 7,
-        "n": 92
+        "n": 93
       },
       "byLens": {
         "gender": {
@@ -4165,7 +4174,7 @@
         "urbanRural": {
           "Urban": {
             "c": 4,
-            "n": 45
+            "n": 46
           },
           "Peri-urban": {
             "c": 3,
@@ -4183,7 +4192,7 @@
           },
           "Not disabled": {
             "c": 6,
-            "n": 83
+            "n": 84
           }
         },
         "migration": {
@@ -4193,7 +4202,7 @@
           },
           "Citizen": {
             "c": 7,
-            "n": 92
+            "n": 93
           }
         }
       }
@@ -4207,8 +4216,8 @@
         "short": "Difficulty accessing antenatal care"
       },
       "overall": {
-        "c": 32,
-        "n": 91
+        "c": 33,
+        "n": 92
       },
       "byLens": {
         "gender": {
@@ -4251,8 +4260,8 @@
         },
         "urbanRural": {
           "Urban": {
-            "c": 18,
-            "n": 45
+            "c": 19,
+            "n": 46
           },
           "Peri-urban": {
             "c": 11,
@@ -4269,8 +4278,8 @@
             "n": 9
           },
           "Not disabled": {
-            "c": 29,
-            "n": 82
+            "c": 30,
+            "n": 83
           }
         },
         "migration": {
@@ -4279,8 +4288,8 @@
             "n": 0
           },
           "Citizen": {
-            "c": 32,
-            "n": 91
+            "c": 33,
+            "n": 92
           }
         }
       }
@@ -4295,7 +4304,7 @@
       },
       "overall": {
         "c": 8,
-        "n": 91
+        "n": 92
       },
       "byLens": {
         "gender": {
@@ -4339,7 +4348,7 @@
         "urbanRural": {
           "Urban": {
             "c": 4,
-            "n": 44
+            "n": 45
           },
           "Peri-urban": {
             "c": 4,
@@ -4357,7 +4366,7 @@
           },
           "Not disabled": {
             "c": 7,
-            "n": 82
+            "n": 83
           }
         },
         "migration": {
@@ -4367,7 +4376,7 @@
           },
           "Citizen": {
             "c": 8,
-            "n": 91
+            "n": 92
           }
         }
       }
@@ -4382,7 +4391,7 @@
       },
       "overall": {
         "c": 9,
-        "n": 89
+        "n": 90
       },
       "byLens": {
         "gender": {
@@ -4426,7 +4435,7 @@
         "urbanRural": {
           "Urban": {
             "c": 7,
-            "n": 43
+            "n": 44
           },
           "Peri-urban": {
             "c": 1,
@@ -4444,7 +4453,7 @@
           },
           "Not disabled": {
             "c": 9,
-            "n": 80
+            "n": 81
           }
         },
         "migration": {
@@ -4454,7 +4463,7 @@
           },
           "Citizen": {
             "c": 9,
-            "n": 89
+            "n": 90
           }
         }
       }
@@ -4469,7 +4478,7 @@
       },
       "overall": {
         "c": 12,
-        "n": 90
+        "n": 91
       },
       "byLens": {
         "gender": {
@@ -4513,7 +4522,7 @@
         "urbanRural": {
           "Urban": {
             "c": 5,
-            "n": 43
+            "n": 44
           },
           "Peri-urban": {
             "c": 6,
@@ -4531,7 +4540,7 @@
           },
           "Not disabled": {
             "c": 8,
-            "n": 81
+            "n": 82
           }
         },
         "migration": {
@@ -4541,7 +4550,7 @@
           },
           "Citizen": {
             "c": 12,
-            "n": 90
+            "n": 91
           }
         }
       }
@@ -4555,8 +4564,8 @@
         "short": "Environment affected pregnancy"
       },
       "overall": {
-        "c": 38,
-        "n": 88
+        "c": 39,
+        "n": 89
       },
       "byLens": {
         "gender": {
@@ -4599,8 +4608,8 @@
         },
         "urbanRural": {
           "Urban": {
-            "c": 22,
-            "n": 42
+            "c": 23,
+            "n": 43
           },
           "Peri-urban": {
             "c": 13,
@@ -4617,8 +4626,8 @@
             "n": 8
           },
           "Not disabled": {
-            "c": 36,
-            "n": 80
+            "c": 37,
+            "n": 81
           }
         },
         "migration": {
@@ -4627,8 +4636,8 @@
             "n": 0
           },
           "Citizen": {
-            "c": 38,
-            "n": 88
+            "c": 39,
+            "n": 89
           }
         }
       }
@@ -4725,7 +4734,7 @@
     "Awareness of child rights": {
       "parent": {
         "c": 1079,
-        "n": 4823
+        "n": 4824
       },
       "child": {
         "c": 788,
@@ -4735,7 +4744,7 @@
     "Child can express / is listened to": {
       "parent": {
         "c": 2193,
-        "n": 4831
+        "n": 4832
       },
       "child": {
         "c": 939,
@@ -4745,7 +4754,7 @@
     "Public spaces for children": {
       "parent": {
         "c": 1300,
-        "n": 4810
+        "n": 4811
       },
       "child": {
         "c": 1174,
@@ -4755,7 +4764,7 @@
     "Activity participation": {
       "parent": {
         "c": 272,
-        "n": 4792
+        "n": 4793
       },
       "child": {
         "c": 331,
@@ -4764,8 +4773,8 @@
     },
     "Climate worry": {
       "parent": {
-        "c": 769,
-        "n": 4783
+        "c": 770,
+        "n": 4784
       },
       "child": {
         "c": 1222,
@@ -4775,7 +4784,7 @@
     "Helps protect environment": {
       "parent": {
         "c": 2549,
-        "n": 4801
+        "n": 4802
       },
       "child": {
         "c": 1896,
@@ -4785,7 +4794,7 @@
   },
   "byDUN": {
     "Pulau Tikus": 41,
-    "Sungai Pinang": 145,
+    "Sungai Pinang": 146,
     "Bayan Lepas": 572,
     "Perai": 206,
     "Air Itam": 226,
@@ -140617,6 +140626,37 @@
         "834": 1,
         "836": 0,
         "837": 0
+      }
+    },
+    {
+      "g": null,
+      "a": null,
+      "i": null,
+      "u": "Urban",
+      "d": 0,
+      "m": 0,
+      "h": "Apartment",
+      "o": {
+        "815": 0,
+        "818": 0,
+        "820": 0,
+        "821": 0,
+        "825": 0,
+        "827": 0,
+        "831": 0,
+        "834": 1,
+        "836": 0,
+        "837": 1,
+        "889": 0,
+        "891": 0,
+        "893": 0,
+        "896": 0,
+        "908": 0,
+        "910": 1,
+        "911": 0,
+        "913": 0,
+        "915": 0,
+        "918": 1
       }
     }
   ],
@@ -851964,6 +852004,126 @@
           "2": 2
         }
       }
+    },
+    {
+      "g": null,
+      "a": null,
+      "i": null,
+      "u": "Urban",
+      "d": 0,
+      "m": 0,
+      "h": "Apartment",
+      "q": {
+        "289909815": 0,
+        "289909818": {
+          "0": 1,
+          "1": 1,
+          "2": 1
+        },
+        "289909819": [
+          1,
+          2,
+          4,
+          5
+        ],
+        "289909820": [
+          0,
+          1,
+          2
+        ],
+        "289909821": 1,
+        "289909823": [
+          0,
+          2,
+          4,
+          5,
+          6
+        ],
+        "289909825": 1,
+        "289909826": [
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "289909827": 0,
+        "289909828": {
+          "0": 1,
+          "1": 1
+        },
+        "289909829": [
+          2,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "289909830": 7,
+        "289909831": 1,
+        "289909832": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 0
+        },
+        "289909834": 1,
+        "289909835": [
+          1,
+          9,
+          2,
+          3,
+          4,
+          7
+        ],
+        "289909836": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 2,
+          "4": 2,
+          "5": 1,
+          "6": 1
+        },
+        "289909837": 2,
+        "289909880": [
+          0,
+          1,
+          2,
+          5,
+          7
+        ],
+        "289909887": 0,
+        "289909889": 0,
+        "289909891": 1,
+        "289909893": 0,
+        "289909894": 4,
+        "289909896": 2,
+        "289909908": 0,
+        "289909910": [
+          1
+        ],
+        "289909911": 0,
+        "289909913": 1,
+        "289909915": 0,
+        "289909916": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "289909918": 0,
+        "289909920": {
+          "0": 1
+        },
+        "289909921": {
+          "0": 0,
+          "1": 2,
+          "2": 1
+        }
+      }
     }
   ],
   "outcomeMeta": {
@@ -852912,41 +853072,41 @@
         "0": 0,
         "1": 0,
         "2": 0,
-        "3": 2122,
-        "4": 2160,
+        "3": 2123,
+        "4": 2161,
         "5": 0,
-        "6": 2149,
-        "7": 2064,
-        "8": 2013,
-        "9": 2063,
+        "6": 2150,
+        "7": 2065,
+        "8": 2014,
+        "9": 2064,
         "10": 0,
-        "11": 1470,
+        "11": 1471,
         "12": 0,
         "13": 0,
-        "14": 1460,
-        "15": 1458,
-        "16": 1462,
-        "17": 1459,
+        "14": 1461,
+        "15": 1459,
+        "16": 1463,
+        "17": 1460,
         "18": 0,
-        "19": 1458,
+        "19": 1459,
         "20": 0,
-        "21": 1459,
-        "22": 1457,
-        "23": 1458,
-        "24": 1457,
-        "25": 1458,
-        "26": 1453,
-        "27": 1458,
-        "28": 1455,
+        "21": 1460,
+        "22": 1458,
+        "23": 1459,
+        "24": 1458,
+        "25": 1459,
+        "26": 1454,
+        "27": 1459,
+        "28": 1456,
         "29": 0,
-        "30": 1485,
-        "31": 1454,
-        "32": 1456,
-        "33": 1456,
+        "30": 1486,
+        "31": 1455,
+        "32": 1457,
+        "33": 1457,
         "34": 0,
-        "35": 1349,
+        "35": 1350,
         "36": 982,
-        "37": 1245,
+        "37": 1246,
         "38": 0,
         "39": 0,
         "40": 0,
@@ -852975,7 +853135,7 @@
         "63": 0,
         "64": 0,
         "65": 0,
-        "66": 1712,
+        "66": 1713,
         "67": 0,
         "68": 0,
         "69": 0,
@@ -852985,23 +853145,23 @@
         "73": 0,
         "74": 0,
         "75": 0,
-        "76": 1458,
+        "76": 1459,
         "77": 868,
         "78": 0,
         "79": 0,
-        "80": 1559,
+        "80": 1560,
         "81": 0,
         "82": 0,
-        "83": 226,
+        "83": 227,
         "84": 0,
-        "85": 225,
+        "85": 226,
         "86": 0,
-        "87": 225,
+        "87": 226,
         "88": 0,
-        "89": 225,
-        "90": 226,
+        "89": 226,
+        "90": 227,
         "91": 0,
-        "92": 225,
+        "92": 226,
         "93": 0,
         "94": 0,
         "95": 0,
@@ -853009,7 +853169,7 @@
         "97": 0,
         "98": 0,
         "99": 0,
-        "100": 2064,
+        "100": 2065,
         "101": 868,
         "102": 0,
         "103": 0,
@@ -853025,11 +853185,11 @@
         "113": 0,
         "114": 20,
         "115": 0,
-        "116": 1466,
-        "117": 1460,
+        "116": 1467,
+        "117": 1461,
         "118": 0,
         "119": 0,
-        "120": 1389,
+        "120": 1390,
         "121": 868,
         "122": 980
       },
@@ -853410,7 +853570,7 @@
       }
     },
     "trunkStarters": {
-      "English": 2446,
+      "English": 2447,
       "Malay": 3820,
       "Mandarin": 3263,
       "Tamil": 136
@@ -853418,7 +853578,7 @@
     "branchEntrants": {
       "English": {
         "pregnant": 20,
-        "under10": 227,
+        "under10": 228,
         "child": 982
       },
       "Malay": {
@@ -853452,11 +853612,11 @@
           "No"
         ],
         "dist": {
-          "Yes": 59,
+          "Yes": 60,
           "No": 11,
           "Somewhat": 22
         },
-        "total": 92,
+        "total": 93,
         "concerning": 7,
         "byLens": null
       },
@@ -853477,11 +853637,11 @@
         "dist": {
           "Yes – long waiting times": 10,
           "No": 60,
-          "Yes – cost": 19,
+          "Yes – cost": 20,
           "Yes – transport": 8
         },
-        "total": 91,
-        "concerning": 32,
+        "total": 92,
+        "concerning": 33,
         "byLens": null
       },
       "911": {
@@ -853498,9 +853658,9 @@
         "dist": {
           "No": 8,
           "Somewhat": 21,
-          "Yes": 62
+          "Yes": 63
         },
-        "total": 91,
+        "total": 92,
         "concerning": 8,
         "byLens": null
       },
@@ -853519,12 +853679,12 @@
         ],
         "dist": {
           "Always": 45,
-          "Often": 14,
+          "Often": 15,
           "Sometimes": 21,
           "Never": 4,
           "Rarely": 5
         },
-        "total": 89,
+        "total": 90,
         "concerning": 9,
         "byLens": null
       },
@@ -853540,11 +853700,11 @@
           "No"
         ],
         "dist": {
-          "Yes": 76,
+          "Yes": 77,
           "Some concerns": 10,
           "No": 4
         },
-        "total": 90,
+        "total": 91,
         "concerning": 12,
         "byLens": null
       },
@@ -853564,15 +853724,15 @@
           "Family-friendly policies"
         ],
         "dist": {
-          "Financial support": 68,
-          "Parenting information": 33,
-          "Safer housing": 34,
-          "Community support": 15,
-          "Childcare access": 26,
+          "Financial support": 69,
+          "Parenting information": 34,
+          "Safer housing": 35,
+          "Community support": 16,
+          "Childcare access": 27,
           "Family-friendly policies": 36,
           "(other)": 1
         },
-        "total": 91,
+        "total": 92,
         "concerning": 0,
         "byLens": null
       },
@@ -853588,10 +853748,10 @@
         ],
         "dist": {
           "No": 50,
-          "Yes": 38
+          "Yes": 39
         },
-        "total": 88,
-        "concerning": 38,
+        "total": 89,
+        "concerning": 39,
         "byLens": null
       }
     },
@@ -853613,12 +853773,12 @@
         "dist": {
           "Early learning opportunities": 118,
           "Protection from harm": 224,
-          "Safe play": 300,
+          "Safe play": 301,
           "Being listened to": 76,
           "Health and nutrition": 77,
           "Not sure": 25
         },
-        "total": 820,
+        "total": 821,
         "concerning": 0,
         "byLens": {
           "income": {
@@ -853641,7 +853801,7 @@
               "concerning": 0
             },
             "Apartment": {
-              "total": 126,
+              "total": 127,
               "concerning": 0
             },
             "Semi-detached": {
@@ -853675,7 +853835,7 @@
           },
           "urbanRural": {
             "Urban": {
-              "total": 443,
+              "total": 444,
               "concerning": 0
             },
             "Peri-urban": {
@@ -853689,7 +853849,7 @@
           },
           "disability": {
             "Not disabled": {
-              "total": 820,
+              "total": 821,
               "concerning": 0
             }
           }
@@ -853709,11 +853869,11 @@
         ],
         "dist": {
           "No": 257,
-          "Yes – received enough support": 305,
+          "Yes – received enough support": 306,
           "Yes – but support was insufficient": 197,
           "Yes – but could not access support": 55
         },
-        "total": 814,
+        "total": 815,
         "concerning": 250,
         "byLens": {
           "income": {
@@ -853736,7 +853896,7 @@
               "concerning": 34
             },
             "Apartment": {
-              "total": 124,
+              "total": 125,
               "concerning": 36
             },
             "Semi-detached": {
@@ -853770,7 +853930,7 @@
           },
           "urbanRural": {
             "Urban": {
-              "total": 443,
+              "total": 444,
               "concerning": 134
             },
             "Peri-urban": {
@@ -853784,7 +853944,7 @@
           },
           "disability": {
             "Not disabled": {
-              "total": 814,
+              "total": 815,
               "concerning": 250
             }
           }
@@ -853804,11 +853964,11 @@
         ],
         "dist": {
           "Daily": 221,
-          "A few times a week": 337,
+          "A few times a week": 338,
           "Rarely": 244,
           "Never": 17
         },
-        "total": 819,
+        "total": 820,
         "concerning": 261,
         "byLens": {
           "income": {
@@ -853831,7 +853991,7 @@
               "concerning": 29
             },
             "Apartment": {
-              "total": 126,
+              "total": 127,
               "concerning": 49
             },
             "Semi-detached": {
@@ -853865,7 +854025,7 @@
           },
           "urbanRural": {
             "Urban": {
-              "total": 445,
+              "total": 446,
               "concerning": 149
             },
             "Peri-urban": {
@@ -853879,7 +854039,7 @@
           },
           "disability": {
             "Not disabled": {
-              "total": 819,
+              "total": 820,
               "concerning": 261
             }
           }
@@ -853898,12 +854058,12 @@
           "Not sure"
         ],
         "dist": {
-          "Yes": 172,
+          "Yes": 173,
           "No": 212,
           "Somewhat": 372,
           "Not sure": 60
         },
-        "total": 816,
+        "total": 817,
         "concerning": 147,
         "byLens": {
           "income": {
@@ -853926,7 +854086,7 @@
               "concerning": 17
             },
             "Apartment": {
-              "total": 126,
+              "total": 127,
               "concerning": 18
             },
             "Semi-detached": {
@@ -853960,7 +854120,7 @@
           },
           "urbanRural": {
             "Urban": {
-              "total": 446,
+              "total": 447,
               "concerning": 89
             },
             "Peri-urban": {
@@ -853974,7 +854134,7 @@
           },
           "disability": {
             "Not disabled": {
-              "total": 816,
+              "total": 817,
               "concerning": 147
             }
           }
@@ -854001,10 +854161,10 @@
           "Lack of safe play space": 329,
           "Heat": 73,
           "(other)": 16,
-          "Cleanliness": 68,
+          "Cleanliness": 69,
           "Flooding": 1
         },
-        "total": 792,
+        "total": 793,
         "concerning": 0,
         "byLens": {
           "income": {
@@ -854027,7 +854187,7 @@
               "concerning": 0
             },
             "Apartment": {
-              "total": 124,
+              "total": 125,
               "concerning": 0
             },
             "Semi-detached": {
@@ -854061,7 +854221,7 @@
           },
           "urbanRural": {
             "Urban": {
-              "total": 430,
+              "total": 431,
               "concerning": 0
             },
             "Peri-urban": {
@@ -854075,7 +854235,7 @@
           },
           "disability": {
             "Not disabled": {
-              "total": 792,
+              "total": 793,
               "concerning": 0
             }
           }
@@ -854094,12 +854254,12 @@
           "Never"
         ],
         "dist": {
-          "Rarely": 220,
+          "Rarely": 221,
           "Sometimes": 442,
           "Never": 44,
           "Often": 113
         },
-        "total": 819,
+        "total": 820,
         "concerning": 552,
         "byLens": {
           "income": {
@@ -854122,7 +854282,7 @@
               "concerning": 55
             },
             "Apartment": {
-              "total": 125,
+              "total": 126,
               "concerning": 86
             },
             "Semi-detached": {
@@ -854156,7 +854316,7 @@
           },
           "urbanRural": {
             "Urban": {
-              "total": 445,
+              "total": 446,
               "concerning": 305
             },
             "Peri-urban": {
@@ -854170,7 +854330,7 @@
           },
           "disability": {
             "Not disabled": {
-              "total": 819,
+              "total": 820,
               "concerning": 552
             }
           }
@@ -854178,7 +854338,7 @@
       }
     }
   },
-  "updatedAt": "2026-08-09T01:37:24.452Z",
+  "updatedAt": "2026-08-09T03:02:25.532Z",
   "surveyQuestions": {
     "289909815": {
       "module": "parent",
