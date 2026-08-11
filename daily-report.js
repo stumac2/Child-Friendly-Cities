@@ -1811,10 +1811,12 @@ async function main() {
   console.log("\n--- REPORT PREVIEW ---\n" + report.slice(0, 600) + "...\n");
 
   const utcHour = new Date().getUTCHours();
-  if (utcHour === 1) {
+  // Daily email disabled (dashboard still refreshes every run). To re-enable,
+  // restore the condition to: if (utcHour === 1)
+  if (false) {
     await sendEmail(report);
   } else {
-    console.log(`Skipping email (UTC hour ${utcHour}, only sends at 01:00 UTC / 9am MYT)`);
+    console.log("Email disabled (dashboard data still updated).");
   }
 
   console.log(`[${new Date().toISOString()}] Done.`);
