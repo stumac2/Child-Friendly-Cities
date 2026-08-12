@@ -1,504 +1,660 @@
 {
- "updatedAt": "2026-07-17T00:00:00Z",
- "note": "Free-text thematic analysis (snapshot). Questions 817/833/838 of 6. Themes machine-coded from translated comments; quotes PII-scrubbed, vetted before publishing.",
+ "updatedAt": "2026-08-12T07:23:59.319Z",
+ "note": "Free-text thematic analysis (final, survey complete). All 6 open-text questions. Themes machine-coded from translated comments; quotes PII-scrubbed, vet before publishing.",
  "questions": {
   "289909817": {
    "short": "What needs to change to make your area better for children",
    "module": "parent",
-   "total": 1485,
+   "total": 1612,
    "themes": [
     {
      "label": "Safety (general/crime)",
      "desc": "",
-     "count": 479,
+     "count": 515,
      "quotes": [
       "Safety, protection of their identity, social media exposure need to be controlled."
      ],
      "byLens": {
       "d": {
-       "0": 451,
-       "1": 28
+       "0": 486,
+       "1": 29
       },
       "m": {
-       "0": 479
+       "0": 515
+      },
+      "h": {
+       "Condominium": 57,
+       "Terrace/link": 156,
+       "Semi-detached": 41,
+       "Apartment": 64,
+       "Kampung": 68,
+       "High-rise flat/PPR": 78,
+       "Employer quarters": 25,
+       "Bungalow": 11,
+       "Shop house": 2
       },
       "g": {
-       "Male": 165,
-       "Female": 187
+       "Male": 179,
+       "Female": 202
       },
       "a": {
-       "10-12": 205,
-       "13-16": 125,
-       "17": 22
+       "10-12": 220,
+       "13-16": 138,
+       "17": 23
       },
       "w": {
-       "0": 207,
-       "1": 144
+       "0": 224,
+       "1": 156
       },
       "i": {
-       "B40": 261,
-       "M40": 171
+       "B40": 271,
+       "M40": 188
       }
      }
     },
     {
      "label": "Playgrounds & play spaces",
      "desc": "",
-     "count": 446,
+     "count": 482,
      "quotes": [
       "Build more child-friendly parks, recreation areas, in every neighbourhood.",
       "Make it spacious for children playground"
      ],
      "byLens": {
       "i": {
-       "B40": 210,
-       "M40": 191
+       "B40": 226,
+       "M40": 207
       },
       "d": {
-       "0": 428,
-       "1": 18
+       "0": 462,
+       "1": 20
       },
       "m": {
-       "0": 446
+       "0": 482
+      },
+      "h": {
+       "Condominium": 47,
+       "Terrace/link": 169,
+       "Apartment": 71,
+       "Semi-detached": 25,
+       "Bungalow": 19,
+       "High-rise flat/PPR": 58,
+       "Kampung": 72,
+       "Shop house": 1,
+       "Employer quarters": 10
       },
       "g": {
-       "Male": 159,
-       "Female": 149
+       "Male": 175,
+       "Female": 160
       },
       "a": {
-       "10-12": 188,
-       "17": 22,
-       "13-16": 99
+       "10-12": 206,
+       "17": 24,
+       "13-16": 106
       },
       "w": {
-       "1": 128,
-       "0": 181
+       "1": 138,
+       "0": 198
       }
      }
     },
     {
      "label": "Activities & recreation",
      "desc": "",
-     "count": 402,
+     "count": 440,
      "quotes": [
       "public community areas for recreation"
      ],
      "byLens": {
       "g": {
-       "Male": 149,
-       "Female": 147
+       "Male": 162,
+       "Female": 161
       },
       "a": {
-       "10-12": 186,
-       "17": 22,
-       "13-16": 88
+       "10-12": 193,
+       "17": 23,
+       "13-16": 107
       },
       "d": {
-       "0": 370,
+       "0": 408,
        "1": 32
       },
       "m": {
-       "0": 402
+       "0": 440
       },
       "w": {
-       "1": 130,
-       "0": 166
+       "1": 145,
+       "0": 178
+      },
+      "h": {
+       "Condominium": 49,
+       "Semi-detached": 35,
+       "Kampung": 49,
+       "Terrace/link": 159,
+       "High-rise flat/PPR": 55,
+       "Bungalow": 13,
+       "Apartment": 60,
+       "Employer quarters": 9
       },
       "i": {
-       "M40": 172,
-       "B40": 184
-      }
-     }
-    },
-    {
-     "label": "Education & learning",
-     "desc": "",
-     "count": 320,
-     "quotes": [
-      "Every child has access to education"
-     ],
-     "byLens": {
-      "g": {
-       "Male": 119,
-       "Female": 114
-      },
-      "a": {
-       "10-12": 144,
-       "17": 20,
-       "13-16": 69
-      },
-      "d": {
-       "0": 292,
-       "1": 28
-      },
-      "m": {
-       "0": 318,
-       "1": 2
-      },
-      "w": {
-       "0": 111,
-       "1": 122
-      },
-      "i": {
-       "M40": 141,
-       "B40": 137
+       "M40": 190,
+       "B40": 197
       }
      }
     },
     {
      "label": "Parenting, family & community",
      "desc": "",
-     "count": 319,
+     "count": 348,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 125,
-       "Female": 117
+       "Male": 137,
+       "Female": 125
       },
       "a": {
-       "10-12": 136,
-       "13-16": 90,
-       "17": 16
+       "10-12": 144,
+       "13-16": 100,
+       "17": 18
       },
       "d": {
-       "0": 300,
-       "1": 19
+       "0": 328,
+       "1": 20
       },
       "m": {
-       "0": 319
+       "0": 348
       },
       "w": {
-       "0": 132,
-       "1": 110
+       "0": 144,
+       "1": 118
+      },
+      "h": {
+       "Terrace/link": 114,
+       "Apartment": 51,
+       "Condominium": 30,
+       "Semi-detached": 26,
+       "Kampung": 48,
+       "High-rise flat/PPR": 44,
+       "Bungalow": 11,
+       "Shop house": 2,
+       "Employer quarters": 13
       },
       "i": {
-       "B40": 159,
-       "M40": 124
+       "B40": 170,
+       "M40": 138
+      }
+     }
+    },
+    {
+     "label": "Education & learning",
+     "desc": "",
+     "count": 340,
+     "quotes": [
+      "Every child has access to education"
+     ],
+     "byLens": {
+      "g": {
+       "Male": 128,
+       "Female": 122
+      },
+      "a": {
+       "10-12": 153,
+       "17": 20,
+       "13-16": 77
+      },
+      "d": {
+       "0": 310,
+       "1": 30
+      },
+      "m": {
+       "0": 338,
+       "1": 2
+      },
+      "w": {
+       "0": 117,
+       "1": 133
+      },
+      "h": {
+       "Terrace/link": 117,
+       "Condominium": 42,
+       "Apartment": 64,
+       "Kampung": 40,
+       "High-rise flat/PPR": 27,
+       "Semi-detached": 22,
+       "Bungalow": 11,
+       "Shop house": 1,
+       "Employer quarters": 10
+      },
+      "i": {
+       "M40": 150,
+       "B40": 142
       }
      }
     },
     {
      "label": "Facilities & amenities",
      "desc": "",
-     "count": 203,
+     "count": 220,
      "quotes": [],
      "byLens": {
       "g": {
-       "Female": 79,
-       "Male": 80
+       "Female": 83,
+       "Male": 89
       },
       "a": {
-       "10-12": 105,
-       "17": 11,
-       "13-16": 45
+       "10-12": 111,
+       "17": 12,
+       "13-16": 51
       },
       "i": {
-       "M40": 85,
-       "B40": 86
+       "M40": 93,
+       "B40": 90
       },
       "d": {
-       "0": 188,
-       "1": 15
+       "0": 204,
+       "1": 16
       },
       "m": {
-       "0": 203
+       "0": 220
       },
       "w": {
-       "1": 64,
-       "0": 96
+       "1": 68,
+       "0": 105
+      },
+      "h": {
+       "Kampung": 18,
+       "Apartment": 40,
+       "Terrace/link": 87,
+       "Semi-detached": 23,
+       "Condominium": 20,
+       "High-rise flat/PPR": 20,
+       "Bungalow": 4,
+       "Employer quarters": 7
       }
      }
     },
     {
      "label": "Road & traffic safety",
      "desc": "",
-     "count": 147,
+     "count": 158,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 54,
-       "Female": 59
+       "Male": 57,
+       "Female": 64
       },
       "a": {
-       "10-12": 69,
-       "13-16": 36,
+       "10-12": 75,
+       "13-16": 38,
        "17": 8
       },
       "d": {
-       "0": 140,
+       "0": 151,
        "1": 7
       },
       "m": {
-       "0": 147
+       "0": 158
       },
       "w": {
-       "0": 62,
-       "1": 51
+       "0": 65,
+       "1": 56
+      },
+      "h": {
+       "Terrace/link": 60,
+       "Condominium": 21,
+       "Semi-detached": 14,
+       "Bungalow": 2,
+       "Apartment": 19,
+       "High-rise flat/PPR": 15,
+       "Kampung": 20,
+       "Employer quarters": 4,
+       "Shop house": 1
       },
       "i": {
-       "B40": 66,
-       "M40": 60
+       "B40": 68,
+       "M40": 66
       }
      }
     },
     {
      "label": "Cleanliness & maintenance",
      "desc": "",
-     "count": 99,
+     "count": 109,
      "quotes": [],
      "byLens": {
       "d": {
-       "0": 94,
-       "1": 5
+       "0": 103,
+       "1": 6
       },
       "m": {
-       "0": 99
+       "0": 109
+      },
+      "h": {
+       "Condominium": 10,
+       "Terrace/link": 40,
+       "Kampung": 11,
+       "Apartment": 13,
+       "High-rise flat/PPR": 20,
+       "Bungalow": 3,
+       "Semi-detached": 9,
+       "Employer quarters": 1,
+       "Shop house": 1
       },
       "g": {
-       "Female": 35,
-       "Male": 31
+       "Female": 40,
+       "Male": 33
       },
       "a": {
        "17": 3,
-       "10-12": 36,
-       "13-16": 27
+       "10-12": 40,
+       "13-16": 30
       },
       "i": {
-       "M40": 39,
-       "B40": 50
+       "M40": 44,
+       "B40": 52
       },
       "w": {
-       "0": 43,
-       "1": 23
+       "0": 45,
+       "1": 28
       }
      }
     },
     {
      "label": "Child rights, protection & awareness",
      "desc": "",
-     "count": 95,
+     "count": 106,
      "quotes": [],
      "byLens": {
       "i": {
-       "B40": 48,
-       "M40": 36
+       "B40": 49,
+       "M40": 44
       },
       "d": {
-       "0": 89,
+       "0": 100,
        "1": 6
       },
       "m": {
-       "0": 94,
+       "0": 105,
        "1": 1
       },
+      "h": {
+       "Terrace/link": 21,
+       "Condominium": 18,
+       "Semi-detached": 14,
+       "Bungalow": 4,
+       "Apartment": 17,
+       "Employer quarters": 6,
+       "Kampung": 9,
+       "High-rise flat/PPR": 13
+      },
       "g": {
-       "Male": 31,
-       "Female": 41
+       "Male": 35,
+       "Female": 46
       },
       "a": {
-       "13-16": 29,
+       "13-16": 38,
        "10-12": 35,
        "17": 8
       },
       "w": {
-       "0": 39,
-       "1": 33
+       "0": 43,
+       "1": 38
       }
      }
     },
     {
      "label": "Child participation & voice",
      "desc": "",
-     "count": 94,
+     "count": 102,
      "quotes": [
       "Listening to children's voices"
      ],
      "byLens": {
       "g": {
-       "Male": 40,
-       "Female": 34
+       "Male": 43,
+       "Female": 35
       },
       "a": {
-       "10-12": 46,
-       "13-16": 23,
+       "10-12": 47,
+       "13-16": 26,
        "17": 5
       },
       "i": {
        "M40": 32,
-       "B40": 51
+       "B40": 56
       },
       "d": {
-       "0": 84,
-       "1": 10
+       "0": 91,
+       "1": 11
       },
       "m": {
-       "0": 94
+       "0": 102
       },
       "w": {
-       "0": 44,
-       "1": 30
+       "0": 46,
+       "1": 32
+      },
+      "h": {
+       "Terrace/link": 34,
+       "Bungalow": 2,
+       "Condominium": 9,
+       "Apartment": 14,
+       "Kampung": 13,
+       "Employer quarters": 2,
+       "Semi-detached": 4,
+       "High-rise flat/PPR": 21,
+       "Shop house": 1
       }
      }
     },
     {
      "label": "Equality, fairness & inclusion",
      "desc": "",
-     "count": 82,
+     "count": 85,
      "quotes": [],
      "byLens": {
       "i": {
-       "M40": 36,
-       "B40": 33
+       "M40": 38,
+       "B40": 34
       },
       "d": {
-       "0": 75,
+       "0": 78,
        "1": 7
       },
       "m": {
-       "0": 80,
+       "0": 83,
        "1": 2
       },
+      "h": {
+       "Condominium": 8,
+       "High-rise flat/PPR": 14,
+       "Bungalow": 4,
+       "Terrace/link": 27,
+       "Semi-detached": 6,
+       "Kampung": 6,
+       "Apartment": 16,
+       "Employer quarters": 1
+      },
       "g": {
-       "Male": 28,
-       "Female": 29
+       "Male": 29,
+       "Female": 30
       },
       "a": {
-       "10-12": 34,
-       "13-16": 20,
+       "10-12": 35,
+       "13-16": 21,
        "17": 3
       },
       "w": {
-       "0": 30,
-       "1": 27
+       "0": 31,
+       "1": 28
       }
      }
     },
     {
      "label": "Health & wellbeing",
      "desc": "",
-     "count": 68,
+     "count": 73,
      "quotes": [],
      "byLens": {
       "i": {
-       "M40": 37,
-       "B40": 22
+       "M40": 39,
+       "B40": 23
       },
       "d": {
-       "0": 65,
+       "0": 70,
        "1": 3
       },
       "m": {
-       "0": 68
+       "0": 73
+      },
+      "h": {
+       "Semi-detached": 9,
+       "Terrace/link": 27,
+       "Kampung": 6,
+       "Apartment": 13,
+       "Condominium": 5,
+       "Bungalow": 3,
+       "High-rise flat/PPR": 7,
+       "Employer quarters": 2
       },
       "g": {
-       "Male": 24,
-       "Female": 26
+       "Male": 25,
+       "Female": 29
       },
       "a": {
-       "13-16": 11,
+       "13-16": 15,
        "17": 7,
        "10-12": 32
       },
       "w": {
-       "0": 28,
-       "1": 22
+       "0": 29,
+       "1": 25
       }
      }
     },
     {
      "label": "Foreigners / refugees / migrants concern",
      "desc": "",
-     "count": 56,
+     "count": 58,
      "quotes": [
       "Removing illegal immigrants to make the environment safe for kids to play around"
      ],
      "byLens": {
       "g": {
        "Male": 18,
-       "Female": 24
+       "Female": 26
       },
       "a": {
-       "13-16": 12,
-       "10-12": 27,
+       "13-16": 13,
+       "10-12": 28,
        "17": 3
       },
       "i": {
-       "M40": 16,
+       "M40": 18,
        "B40": 37
       },
       "d": {
-       "0": 53,
+       "0": 55,
        "1": 3
       },
       "m": {
-       "0": 56
+       "0": 58
       },
       "w": {
-       "1": 25,
-       "0": 17
+       "1": 26,
+       "0": 18
+      },
+      "h": {
+       "High-rise flat/PPR": 15,
+       "Terrace/link": 13,
+       "Bungalow": 4,
+       "Condominium": 3,
+       "Apartment": 4,
+       "Kampung": 11,
+       "Semi-detached": 3,
+       "Shop house": 1
       }
      }
     },
     {
      "label": "Green / natural spaces",
      "desc": "",
-     "count": 47,
+     "count": 53,
      "quotes": [],
      "byLens": {
       "i": {
-       "M40": 23,
-       "B40": 15
+       "M40": 26,
+       "B40": 17
       },
       "d": {
-       "0": 45,
+       "0": 51,
        "1": 2
       },
       "m": {
-       "0": 47
+       "0": 53
+      },
+      "h": {
+       "Terrace/link": 14,
+       "Semi-detached": 6,
+       "Condominium": 9,
+       "Bungalow": 1,
+       "High-rise flat/PPR": 5,
+       "Apartment": 13,
+       "Kampung": 4
       },
       "g": {
-       "Female": 17,
-       "Male": 14
+       "Female": 18,
+       "Male": 17
       },
       "a": {
-       "13-16": 8,
-       "10-12": 24
+       "13-16": 9,
+       "10-12": 25,
+       "17": 2
       },
       "w": {
-       "0": 19,
-       "1": 12
+       "0": 20,
+       "1": 15
       }
      }
     },
     {
      "label": "Bullying & discipline",
      "desc": "",
-     "count": 42,
+     "count": 45,
      "quotes": [],
      "byLens": {
       "i": {
-       "M40": 21,
-       "B40": 16
+       "M40": 23,
+       "B40": 17
       },
       "d": {
-       "0": 40,
+       "0": 43,
        "1": 2
       },
       "m": {
-       "0": 42
+       "0": 45
+      },
+      "h": {
+       "Condominium": 8,
+       "Terrace/link": 13,
+       "Semi-detached": 6,
+       "Apartment": 7,
+       "Bungalow": 1,
+       "High-rise flat/PPR": 3,
+       "Kampung": 4
       },
       "g": {
-       "Male": 13,
-       "Female": 17
+       "Male": 14,
+       "Female": 18
       },
       "a": {
        "10-12": 20,
-       "13-16": 5,
+       "13-16": 7,
        "17": 5
       },
       "w": {
-       "0": 17,
-       "1": 13
+       "0": 18,
+       "1": 14
       }
      }
     },
@@ -517,6 +673,14 @@
       },
       "m": {
        "0": 22
+      },
+      "h": {
+       "Terrace/link": 9,
+       "Condominium": 3,
+       "Kampung": 2,
+       "Apartment": 3,
+       "Semi-detached": 1,
+       "High-rise flat/PPR": 4
       },
       "g": {
        "Female": 11,
@@ -538,526 +702,686 @@
   "289909833": {
    "short": "What would improve safety for your children",
    "module": "parent",
-   "total": 1250,
+   "total": 1376,
    "themes": [
     {
      "label": "Policing / enforcement / surveillance",
      "desc": "",
-     "count": 396,
+     "count": 432,
      "quotes": [
       "no violence video, more police patrol, no gangster"
      ],
      "byLens": {
       "g": {
-       "Male": 148,
-       "Female": 156
+       "Male": 161,
+       "Female": 170
       },
       "a": {
-       "10-12": 167,
-       "13-16": 116,
-       "17": 21
+       "10-12": 177,
+       "13-16": 133,
+       "17": 22
       },
       "d": {
-       "0": 368,
-       "1": 28
+       "0": 403,
+       "1": 29
       },
       "m": {
-       "0": 395,
+       "0": 431,
        "1": 1
       },
       "w": {
-       "0": 171,
-       "1": 133
+       "0": 184,
+       "1": 147
+      },
+      "h": {
+       "Terrace/link": 143,
+       "Condominium": 42,
+       "Kampung": 66,
+       "Semi-detached": 31,
+       "Bungalow": 10,
+       "High-rise flat/PPR": 60,
+       "Apartment": 53,
+       "Employer quarters": 17
       },
       "i": {
-       "M40": 150,
-       "B40": 207
+       "M40": 164,
+       "B40": 219
       }
      }
     },
     {
      "label": "Online / social media / device safety",
      "desc": "",
-     "count": 350,
+     "count": 385,
      "quotes": [
       "Being able to block YouTube shorts and certain channels",
       "Stop all the social media... just like us when young, only SMS or call"
      ],
      "byLens": {
       "g": {
-       "Male": 129,
-       "Female": 135
+       "Male": 143,
+       "Female": 152
       },
       "a": {
-       "10-12": 152,
-       "17": 18,
-       "13-16": 94
+       "10-12": 165,
+       "17": 20,
+       "13-16": 110
       },
       "d": {
-       "0": 331,
-       "1": 19
+       "0": 364,
+       "1": 21
       },
       "m": {
-       "0": 348,
+       "0": 383,
        "1": 2
       },
       "w": {
-       "0": 157,
-       "1": 107
+       "0": 170,
+       "1": 125
+      },
+      "h": {
+       "Terrace/link": 131,
+       "Condominium": 65,
+       "Semi-detached": 30,
+       "Kampung": 40,
+       "High-rise flat/PPR": 30,
+       "Bungalow": 13,
+       "Employer quarters": 9,
+       "Apartment": 59,
+       "Shop house": 4
       },
       "i": {
-       "M40": 143,
-       "B40": 159
+       "M40": 163,
+       "B40": 167
       }
      }
     },
     {
      "label": "Community / parental supervision",
      "desc": "",
-     "count": 343,
+     "count": 365,
      "quotes": [],
      "byLens": {
       "i": {
-       "M40": 129,
-       "B40": 179
+       "M40": 134,
+       "B40": 191
       },
       "d": {
-       "0": 319,
-       "1": 24
+       "0": 339,
+       "1": 26
       },
       "m": {
-       "0": 342,
+       "0": 364,
        "1": 1
       },
+      "h": {
+       "Condominium": 33,
+       "Semi-detached": 24,
+       "Kampung": 65,
+       "Bungalow": 10,
+       "Terrace/link": 110,
+       "High-rise flat/PPR": 57,
+       "Apartment": 50,
+       "Employer quarters": 10
+      },
       "g": {
-       "Male": 126,
-       "Female": 143
+       "Male": 133,
+       "Female": 152
       },
       "a": {
-       "10-12": 142,
-       "13-16": 111,
+       "10-12": 148,
+       "13-16": 121,
        "17": 16
       },
       "w": {
-       "0": 157,
-       "1": 112
+       "0": 161,
+       "1": 124
       }
      }
     },
     {
      "label": "General safe environment / vigilance",
      "desc": "",
-     "count": 326,
+     "count": 349,
      "quotes": [],
      "byLens": {
       "g": {
-       "Female": 136,
-       "Male": 117
+       "Female": 142,
+       "Male": 130
       },
       "a": {
-       "10-12": 147,
-       "13-16": 88,
-       "17": 18
+       "10-12": 157,
+       "13-16": 95,
+       "17": 20
       },
       "i": {
-       "B40": 187,
-       "M40": 113
+       "B40": 197,
+       "M40": 122
       },
       "d": {
-       "0": 308,
-       "1": 18
+       "0": 330,
+       "1": 19
       },
       "m": {
-       "0": 326
+       "0": 349
       },
       "w": {
-       "0": 144,
-       "1": 109
+       "0": 151,
+       "1": 121
+      },
+      "h": {
+       "Employer quarters": 13,
+       "Apartment": 44,
+       "High-rise flat/PPR": 62,
+       "Condominium": 22,
+       "Kampung": 56,
+       "Terrace/link": 118,
+       "Bungalow": 7,
+       "Semi-detached": 17,
+       "Shop house": 1
       }
      }
     },
     {
      "label": "Education / awareness on safety",
      "desc": "",
-     "count": 273,
+     "count": 311,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 112,
-       "Female": 95
+       "Male": 125,
+       "Female": 114
       },
       "a": {
-       "10-12": 127,
-       "13-16": 64,
-       "17": 16
+       "10-12": 141,
+       "13-16": 80,
+       "17": 19
       },
       "d": {
-       "0": 258,
-       "1": 15
+       "0": 291,
+       "1": 20
       },
       "m": {
-       "0": 273
+       "0": 311
       },
       "w": {
-       "0": 109,
-       "1": 98
+       "0": 119,
+       "1": 121
+      },
+      "h": {
+       "Terrace/link": 104,
+       "Semi-detached": 20,
+       "Kampung": 37,
+       "Condominium": 44,
+       "Bungalow": 9,
+       "Apartment": 55,
+       "High-rise flat/PPR": 28,
+       "Employer quarters": 6
       },
       "i": {
-       "M40": 112,
-       "B40": 124
+       "M40": 126,
+       "B40": 135
       }
      }
     },
     {
      "label": "School safety specifically",
      "desc": "",
-     "count": 253,
+     "count": 280,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 90,
-       "Female": 98
+       "Male": 97,
+       "Female": 113
       },
       "a": {
-       "10-12": 98,
-       "13-16": 78,
+       "10-12": 111,
+       "13-16": 87,
        "17": 13
       },
       "d": {
-       "0": 232,
-       "1": 21
+       "0": 255,
+       "1": 25
       },
       "m": {
-       "0": 252,
+       "0": 279,
        "1": 1
       },
       "w": {
-       "0": 96,
-       "1": 92
+       "0": 107,
+       "1": 103
+      },
+      "h": {
+       "Terrace/link": 91,
+       "Semi-detached": 23,
+       "Condominium": 29,
+       "Apartment": 48,
+       "High-rise flat/PPR": 37,
+       "Kampung": 34,
+       "Bungalow": 5,
+       "Employer quarters": 6,
+       "Shop house": 1
       },
       "i": {
-       "M40": 97,
-       "B40": 126
+       "M40": 109,
+       "B40": 135
       }
      }
     },
     {
      "label": "Road & traffic safety",
      "desc": "",
-     "count": 220,
+     "count": 244,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 82,
-       "Female": 82
+       "Male": 93,
+       "Female": 88
       },
       "a": {
-       "10-12": 92,
-       "13-16": 60,
+       "10-12": 103,
+       "13-16": 67,
        "17": 12
       },
       "i": {
-       "M40": 85,
-       "B40": 107
+       "M40": 93,
+       "B40": 116
       },
       "d": {
-       "0": 205,
-       "1": 15
+       "0": 228,
+       "1": 16
       },
       "m": {
-       "0": 220
+       "0": 244
       },
       "w": {
-       "0": 91,
-       "1": 73
+       "0": 100,
+       "1": 81
+      },
+      "h": {
+       "Terrace/link": 77,
+       "High-rise flat/PPR": 27,
+       "Condominium": 31,
+       "Kampung": 37,
+       "Apartment": 34,
+       "Bungalow": 7,
+       "Semi-detached": 18,
+       "Employer quarters": 4,
+       "Shop house": 2
       }
      }
     },
     {
      "label": "Bullying / violence / harassment",
      "desc": "",
-     "count": 121,
+     "count": 135,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 44,
-       "Female": 47
+       "Male": 49,
+       "Female": 54
       },
       "a": {
-       "10-12": 52,
-       "13-16": 35,
+       "10-12": 59,
+       "13-16": 40,
        "17": 4
       },
       "d": {
-       "0": 111,
-       "1": 10
+       "0": 123,
+       "1": 12
       },
       "m": {
-       "0": 121
+       "0": 135
       },
       "w": {
-       "0": 52,
-       "1": 39
+       "0": 58,
+       "1": 45
+      },
+      "h": {
+       "Terrace/link": 37,
+       "Condominium": 19,
+       "High-rise flat/PPR": 8,
+       "Employer quarters": 3,
+       "Semi-detached": 16,
+       "Kampung": 17,
+       "Apartment": 29,
+       "Bungalow": 1
       },
       "i": {
-       "M40": 51,
-       "B40": 59
+       "M40": 57,
+       "B40": 62
       }
      }
     },
     {
      "label": "Lighting / infrastructure",
      "desc": "",
-     "count": 105,
+     "count": 111,
      "quotes": [],
      "byLens": {
       "g": {
-       "Female": 45,
-       "Male": 40
+       "Female": 47,
+       "Male": 42
       },
       "a": {
-       "10-12": 51,
+       "10-12": 54,
        "17": 8,
-       "13-16": 26
+       "13-16": 28
       },
       "i": {
        "M40": 37,
-       "B40": 56
+       "B40": 60
       },
       "d": {
-       "0": 98,
+       "0": 104,
        "1": 7
       },
       "m": {
-       "0": 105
+       "0": 111
       },
       "w": {
-       "1": 40,
-       "0": 45
+       "1": 41,
+       "0": 48
+      },
+      "h": {
+       "Semi-detached": 8,
+       "Bungalow": 4,
+       "Condominium": 9,
+       "Apartment": 15,
+       "High-rise flat/PPR": 10,
+       "Terrace/link": 43,
+       "Employer quarters": 2,
+       "Kampung": 18,
+       "Shop house": 1
       }
      }
     },
     {
      "label": "Safe public spaces & playgrounds",
      "desc": "",
-     "count": 89,
+     "count": 99,
      "quotes": [],
      "byLens": {
       "d": {
-       "0": 82,
+       "0": 92,
        "1": 7
       },
       "m": {
-       "0": 89
+       "0": 99
+      },
+      "h": {
+       "Condominium": 10,
+       "Kampung": 13,
+       "Terrace/link": 45,
+       "Bungalow": 3,
+       "High-rise flat/PPR": 11,
+       "Semi-detached": 4,
+       "Apartment": 7,
+       "Employer quarters": 2
       },
       "i": {
-       "B40": 48,
-       "M40": 34
+       "B40": 51,
+       "M40": 37
       },
       "g": {
-       "Male": 36,
-       "Female": 33
+       "Male": 39,
+       "Female": 39
       },
       "a": {
-       "13-16": 25,
-       "10-12": 40,
+       "13-16": 31,
+       "10-12": 43,
        "17": 4
       },
       "w": {
-       "0": 38,
-       "1": 31
+       "0": 43,
+       "1": 35
       }
      }
     },
     {
      "label": "Freedom / independent mobility",
      "desc": "",
-     "count": 55,
+     "count": 58,
      "quotes": [],
      "byLens": {
       "i": {
-       "B40": 33,
+       "B40": 36,
        "M40": 21
       },
       "d": {
-       "0": 52,
+       "0": 55,
        "1": 3
       },
       "m": {
-       "0": 54,
+       "0": 57,
        "1": 1
       },
+      "h": {
+       "Apartment": 7,
+       "Bungalow": 2,
+       "Condominium": 4,
+       "Semi-detached": 3,
+       "Terrace/link": 18,
+       "High-rise flat/PPR": 10,
+       "Kampung": 10,
+       "Employer quarters": 1
+      },
       "g": {
-       "Male": 18,
-       "Female": 25
+       "Male": 19,
+       "Female": 26
       },
       "a": {
-       "10-12": 23,
+       "10-12": 25,
        "13-16": 17,
        "17": 3
       },
       "w": {
-       "0": 29,
-       "1": 13
+       "0": 30,
+       "1": 14
       }
      }
     },
     {
      "label": "Stranger danger / child protection",
      "desc": "",
-     "count": 37,
+     "count": 44,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 15,
-       "Female": 12
-      },
-      "a": {
-       "13-16": 13,
-       "10-12": 13,
-       "17": 1
-      },
-      "i": {
-       "M40": 15,
-       "B40": 14
-      },
-      "d": {
-       "0": 34,
-       "1": 3
-      },
-      "m": {
-       "0": 37
-      },
-      "w": {
-       "0": 14,
-       "1": 13
-      }
-     }
-    },
-    {
-     "label": "Self-defence / self-protection skills",
-     "desc": "",
-     "count": 28,
-     "quotes": [
-      "Every student must understand self-confidence and self-defence."
-     ],
-     "byLens": {
-      "g": {
-       "Male": 7,
+       "Male": 20,
        "Female": 13
       },
       "a": {
-       "13-16": 7,
-       "10-12": 13
+       "13-16": 16,
+       "10-12": 16,
+       "17": 1
       },
       "i": {
-       "M40": 10,
-       "B40": 10
+       "M40": 17,
+       "B40": 15
       },
       "d": {
-       "0": 25,
+       "0": 41,
        "1": 3
       },
       "m": {
-       "0": 28
+       "0": 44
       },
       "w": {
-       "1": 11,
-       "0": 9
+       "0": 16,
+       "1": 17
+      },
+      "h": {
+       "Condominium": 7,
+       "Semi-detached": 8,
+       "Kampung": 4,
+       "Apartment": 10,
+       "Terrace/link": 7,
+       "High-rise flat/PPR": 6,
+       "Bungalow": 1
       }
      }
     },
     {
      "label": "Health / hygiene / food safety",
      "desc": "",
-     "count": 28,
+     "count": 32,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 12,
-       "Female": 12
+       "Male": 14,
+       "Female": 13
       },
       "a": {
-       "10-12": 15,
-       "13-16": 6,
-       "17": 3
+       "10-12": 16,
+       "13-16": 7,
+       "17": 4
       },
       "i": {
-       "M40": 15,
-       "B40": 10
+       "M40": 17,
+       "B40": 12
       },
       "d": {
-       "0": 28
+       "0": 32
       },
       "m": {
-       "0": 28
+       "0": 32
       },
       "w": {
-       "0": 11,
-       "1": 13
+       "0": 12,
+       "1": 15
+      },
+      "h": {
+       "Condominium": 4,
+       "Semi-detached": 3,
+       "Terrace/link": 11,
+       "Kampung": 3,
+       "Apartment": 7,
+       "High-rise flat/PPR": 2,
+       "Bungalow": 1
       }
      }
     },
     {
-     "label": "Foreigners / migrants concern",
+     "label": "Self-defence / self-protection skills",
      "desc": "",
-     "count": 27,
-     "quotes": [],
+     "count": 31,
+     "quotes": [
+      "Every student must understand self-confidence and self-defence."
+     ],
      "byLens": {
-      "i": {
-       "B40": 17,
-       "M40": 8
-      },
-      "d": {
-       "0": 25,
-       "1": 2
-      },
-      "m": {
-       "0": 27
-      },
       "g": {
-       "Female": 11,
-       "Male": 10
+       "Male": 8,
+       "Female": 14
       },
       "a": {
-       "13-16": 7,
-       "10-12": 12,
-       "17": 2
+       "13-16": 8,
+       "10-12": 14
+      },
+      "i": {
+       "M40": 11,
+       "B40": 11
+      },
+      "d": {
+       "0": 28,
+       "1": 3
+      },
+      "m": {
+       "0": 31
       },
       "w": {
-       "0": 13,
-       "1": 8
+       "1": 13,
+       "0": 9
+      },
+      "h": {
+       "Bungalow": 1,
+       "Semi-detached": 3,
+       "Terrace/link": 8,
+       "Condominium": 4,
+       "Kampung": 1,
+       "Apartment": 7,
+       "Employer quarters": 1,
+       "High-rise flat/PPR": 3
       }
      }
     },
     {
      "label": "Drugs / vaping / substances",
      "desc": "",
-     "count": 26,
+     "count": 30,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 11,
-       "Female": 10
+       "Male": 13,
+       "Female": 12
       },
       "a": {
-       "10-12": 11,
-       "13-16": 7,
-       "17": 3
+       "10-12": 13,
+       "13-16": 8,
+       "17": 4
       },
       "i": {
-       "M40": 9,
-       "B40": 14
+       "M40": 10,
+       "B40": 16
       },
       "d": {
-       "0": 26
+       "0": 30
       },
       "m": {
-       "0": 26
+       "0": 30
       },
       "w": {
-       "0": 15,
+       "0": 19,
        "1": 6
+      },
+      "h": {
+       "Condominium": 4,
+       "Terrace/link": 9,
+       "Apartment": 6,
+       "Kampung": 7,
+       "Bungalow": 1,
+       "High-rise flat/PPR": 2
+      }
+     }
+    },
+    {
+     "label": "Foreigners / migrants concern",
+     "desc": "",
+     "count": 29,
+     "quotes": [],
+     "byLens": {
+      "i": {
+       "B40": 18,
+       "M40": 8
+      },
+      "d": {
+       "0": 27,
+       "1": 2
+      },
+      "m": {
+       "0": 29
+      },
+      "h": {
+       "Terrace/link": 7,
+       "Apartment": 5,
+       "Condominium": 2,
+       "High-rise flat/PPR": 6,
+       "Employer quarters": 3,
+       "Kampung": 3,
+       "Bungalow": 2
+      },
+      "g": {
+       "Female": 11,
+       "Male": 11
+      },
+      "a": {
+       "13-16": 8,
+       "10-12": 12,
+       "17": 2
+      },
+      "w": {
+       "0": 14,
+       "1": 8
       }
      }
     }
@@ -1066,496 +1390,643 @@
   "289909838": {
    "short": "Environmental changes most worried about",
    "module": "parent",
-   "total": 1179,
+   "total": 1296,
    "themes": [
     {
      "label": "Heat / rising temperatures",
      "desc": "",
-     "count": 329,
+     "count": 364,
      "quotes": [
       "Rising temperatures and more frequent heatwaves make outdoor play harder"
      ],
      "byLens": {
       "g": {
-       "Female": 125,
-       "Male": 123
+       "Female": 139,
+       "Male": 138
       },
       "a": {
-       "13-16": 100,
-       "10-12": 141,
+       "13-16": 113,
+       "10-12": 157,
        "17": 7
       },
       "i": {
-       "M40": 141,
-       "B40": 144
+       "M40": 155,
+       "B40": 157
       },
       "d": {
-       "0": 312,
-       "1": 17
+       "0": 346,
+       "1": 18
       },
       "m": {
-       "0": 328,
+       "0": 363,
        "1": 1
       },
       "w": {
-       "1": 108,
-       "0": 140
-      }
-     }
-    },
-    {
-     "label": "Social environment / peers / gadgets / safety",
-     "desc": "",
-     "count": 231,
-     "quotes": [],
-     "byLens": {
-      "i": {
-       "B40": 138,
-       "M40": 78
+       "1": 123,
+       "0": 154
       },
-      "d": {
-       "0": 214,
-       "1": 17
-      },
-      "m": {
-       "0": 231
-      },
-      "g": {
-       "Male": 81,
-       "Female": 95
-      },
-      "a": {
-       "13-16": 61,
-       "17": 16,
-       "10-12": 101
-      },
-      "w": {
-       "0": 100,
-       "1": 76
+      "h": {
+       "Terrace/link": 110,
+       "Condominium": 61,
+       "Apartment": 38,
+       "Semi-detached": 33,
+       "Bungalow": 15,
+       "Kampung": 47,
+       "High-rise flat/PPR": 40,
+       "Employer quarters": 11,
+       "Shop house": 3
       }
      }
     },
     {
      "label": "Air pollution / haze / open burning",
      "desc": "",
-     "count": 201,
+     "count": 286,
+     "quotes": [],
+     "byLens": {
+      "g": {
+       "Female": 108,
+       "Male": 115
+      },
+      "a": {
+       "13-16": 77,
+       "10-12": 134,
+       "17": 12
+      },
+      "i": {
+       "M40": 120,
+       "B40": 128
+      },
+      "d": {
+       "0": 273,
+       "1": 13
+      },
+      "m": {
+       "0": 286
+      },
+      "w": {
+       "1": 104,
+       "0": 119
+      },
+      "h": {
+       "Terrace/link": 114,
+       "Condominium": 35,
+       "Semi-detached": 20,
+       "High-rise flat/PPR": 28,
+       "Apartment": 31,
+       "Bungalow": 7,
+       "Kampung": 36,
+       "Employer quarters": 9,
+       "Shop house": 1
+      }
+     }
+    },
+    {
+     "label": "Social environment / peers / gadgets / safety",
+     "desc": "",
+     "count": 244,
      "quotes": [],
      "byLens": {
       "i": {
-       "B40": 86,
-       "M40": 85
+       "B40": 148,
+       "M40": 80
       },
       "d": {
-       "0": 192,
-       "1": 9
+       "0": 226,
+       "1": 18
       },
       "m": {
-       "0": 201
+       "0": 244
+      },
+      "h": {
+       "Condominium": 18,
+       "Terrace/link": 75,
+       "High-rise flat/PPR": 44,
+       "Kampung": 45,
+       "Bungalow": 5,
+       "Apartment": 33,
+       "Semi-detached": 10,
+       "Employer quarters": 7
       },
       "g": {
-       "Male": 81,
-       "Female": 80
+       "Male": 88,
+       "Female": 97
       },
       "a": {
-       "10-12": 98,
-       "13-16": 56,
-       "17": 7
+       "13-16": 63,
+       "17": 18,
+       "10-12": 107
       },
       "w": {
-       "0": 87,
-       "1": 74
+       "0": 106,
+       "1": 79
       }
      }
     },
     {
      "label": "Climate change (general)",
      "desc": "",
-     "count": 192,
+     "count": 218,
      "quotes": [],
      "byLens": {
       "i": {
-       "B40": 92,
-       "M40": 79
+       "B40": 104,
+       "M40": 90
       },
       "d": {
-       "0": 183,
+       "0": 209,
        "1": 9
       },
       "m": {
-       "0": 191,
+       "0": 217,
        "1": 1
       },
+      "h": {
+       "Apartment": 31,
+       "Terrace/link": 68,
+       "Semi-detached": 16,
+       "Condominium": 28,
+       "Kampung": 32,
+       "Bungalow": 10,
+       "High-rise flat/PPR": 24,
+       "Shop house": 1,
+       "Employer quarters": 6
+      },
       "g": {
-       "Female": 96,
-       "Male": 57
+       "Female": 104,
+       "Male": 70
       },
       "a": {
-       "13-16": 57,
-       "10-12": 88,
-       "17": 8
+       "13-16": 65,
+       "10-12": 99,
+       "17": 10
       },
       "w": {
-       "1": 71,
-       "0": 82
+       "1": 81,
+       "0": 93
       }
      }
     },
     {
      "label": "Traffic / vehicle emissions / noise / road",
      "desc": "",
-     "count": 167,
+     "count": 177,
      "quotes": [],
      "byLens": {
       "i": {
-       "M40": 68,
-       "B40": 77
+       "M40": 71,
+       "B40": 82
       },
       "d": {
-       "0": 157,
-       "1": 10
+       "0": 166,
+       "1": 11
       },
       "m": {
-       "0": 167
+       "0": 177
+      },
+      "h": {
+       "Semi-detached": 12,
+       "Kampung": 24,
+       "Condominium": 15,
+       "High-rise flat/PPR": 18,
+       "Apartment": 35,
+       "Terrace/link": 57,
+       "Bungalow": 4,
+       "Employer quarters": 4,
+       "Shop house": 1
       },
       "g": {
-       "Female": 63,
-       "Male": 64
+       "Female": 67,
+       "Male": 69
       },
       "a": {
-       "13-16": 43,
-       "10-12": 76,
+       "13-16": 47,
+       "10-12": 81,
        "17": 8
       },
       "w": {
-       "1": 57,
-       "0": 70
+       "1": 63,
+       "0": 73
       }
      }
     },
     {
      "label": "Deforestation / loss of green space / tree cutting",
      "desc": "",
-     "count": 162,
+     "count": 174,
      "quotes": [
       "Keep on chopping trees for LRT",
       "The disappearing hills to make accommodations and development"
      ],
      "byLens": {
       "i": {
-       "B40": 66,
-       "M40": 65
+       "B40": 69,
+       "M40": 71
       },
       "d": {
-       "0": 149,
+       "0": 161,
        "1": 13
       },
       "m": {
-       "0": 162
+       "0": 174
+      },
+      "h": {
+       "Condominium": 29,
+       "Terrace/link": 56,
+       "Apartment": 33,
+       "Kampung": 15,
+       "Semi-detached": 16,
+       "Bungalow": 5,
+       "High-rise flat/PPR": 18
       },
       "g": {
-       "Female": 63,
-       "Male": 53
+       "Female": 70,
+       "Male": 55
       },
       "a": {
-       "13-16": 35,
-       "10-12": 72,
+       "13-16": 41,
+       "10-12": 75,
        "17": 9
       },
       "w": {
-       "0": 63,
-       "1": 53
+       "0": 67,
+       "1": 58
       }
      }
     },
     {
      "label": "Overdevelopment / construction / high-rise",
      "desc": "",
-     "count": 144,
+     "count": 153,
      "quotes": [
       "a lot of high-rise apartments being built, less greenery, no proper recycling bin"
      ],
      "byLens": {
       "d": {
-       "0": 131,
+       "0": 140,
        "1": 13
       },
       "m": {
-       "0": 144
+       "0": 153
+      },
+      "h": {
+       "Condominium": 25,
+       "High-rise flat/PPR": 13,
+       "Terrace/link": 48,
+       "Apartment": 32,
+       "Semi-detached": 9,
+       "Bungalow": 2,
+       "Employer quarters": 10,
+       "Kampung": 8
       },
       "g": {
-       "Female": 51,
-       "Male": 60
+       "Female": 56,
+       "Male": 63
       },
       "a": {
-       "13-16": 30,
-       "10-12": 72,
+       "13-16": 34,
+       "10-12": 76,
        "17": 9
       },
       "i": {
-       "B40": 45,
-       "M40": 81
+       "B40": 47,
+       "M40": 86
       },
       "w": {
-       "0": 60,
-       "1": 51
-      }
-     }
-    },
-    {
-     "label": "Foreigners / migrants concern",
-     "desc": "",
-     "count": 117,
-     "quotes": [
-      "getting more and more refugees around in my area",
-      "Foreigners involve in our area, especially without any documentation"
-     ],
-     "byLens": {
-      "g": {
-       "Female": 51,
-       "Male": 38
-      },
-      "a": {
-       "13-16": 35,
-       "10-12": 49,
-       "17": 5
-      },
-      "i": {
-       "M40": 44,
-       "B40": 58
-      },
-      "d": {
-       "0": 104,
-       "1": 13
-      },
-      "m": {
-       "0": 117
-      },
-      "w": {
-       "1": 39,
-       "0": 50
+       "0": 63,
+       "1": 56
       }
      }
     },
     {
      "label": "Health impacts",
      "desc": "",
-     "count": 117,
+     "count": 124,
      "quotes": [],
      "byLens": {
       "i": {
-       "M40": 51,
-       "B40": 56
+       "M40": 53,
+       "B40": 61
       },
       "d": {
-       "0": 109,
+       "0": 116,
        "1": 8
       },
       "m": {
-       "0": 115,
+       "0": 122,
        "1": 2
       },
+      "h": {
+       "Condominium": 16,
+       "Terrace/link": 46,
+       "Semi-detached": 7,
+       "Bungalow": 1,
+       "Kampung": 21,
+       "Apartment": 12,
+       "High-rise flat/PPR": 12,
+       "Employer quarters": 6,
+       "Shop house": 1
+      },
       "g": {
-       "Male": 45,
-       "Female": 48
+       "Male": 46,
+       "Female": 52
       },
       "a": {
-       "10-12": 60,
-       "13-16": 23,
-       "17": 10
+       "10-12": 62,
+       "13-16": 25,
+       "17": 11
       },
       "w": {
-       "0": 51,
-       "1": 42
+       "0": 53,
+       "1": 45
+      }
+     }
+    },
+    {
+     "label": "Foreigners / migrants concern",
+     "desc": "",
+     "count": 122,
+     "quotes": [
+      "getting more and more refugees around in my area",
+      "Foreigners involve in our area, especially without any documentation"
+     ],
+     "byLens": {
+      "g": {
+       "Female": 53,
+       "Male": 40
+      },
+      "a": {
+       "13-16": 37,
+       "10-12": 51,
+       "17": 5
+      },
+      "i": {
+       "M40": 45,
+       "B40": 60
+      },
+      "d": {
+       "0": 109,
+       "1": 13
+      },
+      "m": {
+       "0": 122
+      },
+      "w": {
+       "1": 41,
+       "0": 52
+      },
+      "h": {
+       "Terrace/link": 42,
+       "Condominium": 10,
+       "Kampung": 16,
+       "Bungalow": 6,
+       "High-rise flat/PPR": 21,
+       "Semi-detached": 7,
+       "Apartment": 15,
+       "Employer quarters": 2
       }
      }
     },
     {
      "label": "Waste / litter / dirtiness / recycling",
      "desc": "",
-     "count": 107,
+     "count": 117,
      "quotes": [],
      "byLens": {
       "d": {
-       "0": 101,
+       "0": 111,
        "1": 6
       },
       "m": {
-       "0": 107
+       "0": 117
+      },
+      "h": {
+       "Condominium": 6,
+       "Terrace/link": 54,
+       "Apartment": 15,
+       "Kampung": 11,
+       "High-rise flat/PPR": 18,
+       "Employer quarters": 3,
+       "Semi-detached": 4,
+       "Shop house": 3,
+       "Bungalow": 1
       },
       "g": {
-       "Male": 32,
-       "Female": 46
+       "Male": 36,
+       "Female": 50
       },
       "a": {
-       "13-16": 25,
-       "10-12": 51,
-       "17": 3
+       "13-16": 26,
+       "10-12": 57,
+       "17": 4
       },
       "i": {
-       "B40": 51,
-       "M40": 37
+       "B40": 56,
+       "M40": 41
       },
       "w": {
-       "0": 37,
-       "1": 42
+       "0": 40,
+       "1": 47
       }
      }
     },
     {
      "label": "Flooding / flash floods",
      "desc": "",
-     "count": 94,
+     "count": 106,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 35,
-       "Female": 39
+       "Male": 40,
+       "Female": 44
       },
       "a": {
-       "10-12": 45,
-       "13-16": 24,
+       "10-12": 49,
+       "13-16": 30,
        "17": 5
       },
       "d": {
-       "0": 90,
-       "1": 4
+       "0": 101,
+       "1": 5
       },
       "m": {
-       "0": 94
+       "0": 106
       },
       "w": {
-       "0": 40,
-       "1": 34
+       "0": 47,
+       "1": 37
+      },
+      "h": {
+       "Terrace/link": 38,
+       "Condominium": 12,
+       "Bungalow": 3,
+       "Apartment": 11,
+       "Semi-detached": 9,
+       "Kampung": 15,
+       "High-rise flat/PPR": 16,
+       "Employer quarters": 1
       },
       "i": {
-       "M40": 41,
-       "B40": 43
+       "M40": 45,
+       "B40": 49
       }
      }
     },
     {
      "label": "Lack of facilities / parks / activities",
      "desc": "",
-     "count": 54,
+     "count": 57,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 25,
-       "Female": 18
+       "Male": 26,
+       "Female": 19
       },
       "a": {
-       "10-12": 30,
-       "13-16": 9,
+       "10-12": 31,
+       "13-16": 10,
        "17": 4
       },
       "i": {
-       "M40": 28,
-       "B40": 17
+       "M40": 30,
+       "B40": 18
       },
       "d": {
-       "0": 48,
+       "0": 51,
        "1": 6
       },
       "m": {
-       "0": 54
+       "0": 57
       },
       "w": {
-       "0": 17,
-       "1": 26
+       "0": 18,
+       "1": 27
+      },
+      "h": {
+       "Terrace/link": 23,
+       "Bungalow": 2,
+       "Condominium": 4,
+       "Apartment": 15,
+       "Kampung": 4,
+       "Semi-detached": 4,
+       "Employer quarters": 1,
+       "High-rise flat/PPR": 2
       }
      }
     },
     {
      "label": "Water quality / shortage / dirty water",
      "desc": "",
-     "count": 20,
+     "count": 23,
      "quotes": [],
      "byLens": {
       "d": {
-       "0": 17,
+       "0": 20,
        "1": 3
       },
       "m": {
-       "0": 20
+       "0": 23
+      },
+      "h": {
+       "Condominium": 5,
+       "Apartment": 2,
+       "Kampung": 1,
+       "Terrace/link": 10,
+       "Semi-detached": 2,
+       "Employer quarters": 1,
+       "High-rise flat/PPR": 1,
+       "Bungalow": 1
       },
       "g": {
-       "Male": 7,
+       "Male": 10,
        "Female": 6
       },
       "a": {
-       "13-16": 5,
-       "10-12": 8
+       "13-16": 6,
+       "10-12": 10
       },
       "i": {
-       "M40": 9,
-       "B40": 7
+       "M40": 10,
+       "B40": 8
       },
       "w": {
-       "0": 5,
-       "1": 8
+       "0": 7,
+       "1": 9
       }
      }
     },
     {
      "label": "Loss of animals / biodiversity",
      "desc": "",
-     "count": 11,
+     "count": 14,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 7,
+       "Male": 9,
        "Female": 1
       },
       "a": {
-       "10-12": 4,
-       "13-16": 3,
+       "10-12": 5,
+       "13-16": 4,
        "17": 1
       },
       "d": {
-       "0": 10,
+       "0": 13,
        "1": 1
       },
       "m": {
-       "0": 11
+       "0": 14
       },
       "w": {
-       "0": 2,
+       "0": 4,
        "1": 6
+      },
+      "h": {
+       "Terrace/link": 7,
+       "Semi-detached": 2,
+       "Bungalow": 1,
+       "High-rise flat/PPR": 1,
+       "Kampung": 2
       },
       "i": {
        "B40": 4,
-       "M40": 4
+       "M40": 6
       }
      }
     },
     {
      "label": "Education pressure / schooling",
      "desc": "",
-     "count": 7,
+     "count": 8,
      "quotes": [],
      "byLens": {
       "g": {
        "Female": 3,
-       "Male": 3
+       "Male": 4
       },
       "a": {
-       "17": 1,
+       "17": 2,
        "13-16": 2,
        "10-12": 3
       },
       "i": {
-       "M40": 2,
+       "M40": 3,
        "B40": 2
       },
       "d": {
-       "0": 6,
+       "0": 7,
        "1": 1
       },
       "m": {
-       "0": 7
+       "0": 8
       },
       "w": {
-       "0": 6
+       "0": 7
+      },
+      "h": {
+       "Terrace/link": 3,
+       "Condominium": 2,
+       "Apartment": 3
       }
      }
     }
@@ -1564,563 +2035,739 @@
   "289909824": {
    "short": "What activities would you like to see for children (by age)",
    "module": "parent",
-   "total": 2149,
+   "total": 2349,
    "themes": [
     {
      "label": "Sports & physical activity",
      "desc": "",
-     "count": 938,
+     "count": 1022,
      "quotes": [
       "free sports activities, like pingpong, badminton, karate"
      ],
      "byLens": {
       "g": {
-       "Male": 375,
-       "Female": 344
+       "Male": 414,
+       "Female": 373
       },
       "a": {
-       "10-12": 412,
-       "13-16": 258,
-       "17": 50
+       "10-12": 436,
+       "13-16": 298,
+       "17": 54
       },
       "i": {
-       "B40": 495,
-       "M40": 360
+       "B40": 519,
+       "M40": 396
       },
       "d": {
-       "0": 891,
-       "1": 47
+       "0": 974,
+       "1": 48
       },
       "m": {
-       "0": 936,
+       "0": 1020,
        "1": 2
       },
       "w": {
-       "0": 427,
-       "1": 292
+       "0": 462,
+       "1": 325
+      },
+      "h": {
+       "Employer quarters": 38,
+       "Kampung": 170,
+       "Condominium": 115,
+       "Terrace/link": 300,
+       "Semi-detached": 71,
+       "Apartment": 134,
+       "High-rise flat/PPR": 142,
+       "Bungalow": 30,
+       "Shop house": 5
       }
      }
     },
     {
      "label": "Community / volunteering / social",
      "desc": "",
-     "count": 688,
+     "count": 754,
      "quotes": [
       "Get together to know each other, Social Harmony based programs"
      ],
      "byLens": {
       "g": {
-       "Male": 262,
-       "Female": 268
+       "Male": 292,
+       "Female": 296
       },
       "a": {
-       "10-12": 307,
-       "13-16": 191,
-       "17": 33
+       "10-12": 332,
+       "13-16": 222,
+       "17": 35
       },
       "i": {
-       "M40": 285,
-       "B40": 336
+       "M40": 317,
+       "B40": 354
       },
       "d": {
-       "0": 648,
-       "1": 40
+       "0": 713,
+       "1": 41
       },
       "m": {
-       "0": 686,
+       "0": 752,
        "1": 2
       },
       "w": {
-       "0": 305,
-       "1": 225
+       "0": 336,
+       "1": 252
+      },
+      "h": {
+       "Kampung": 114,
+       "Apartment": 110,
+       "Terrace/link": 248,
+       "Semi-detached": 64,
+       "Condominium": 89,
+       "High-rise flat/PPR": 75,
+       "Bungalow": 21,
+       "Employer quarters": 20,
+       "Shop house": 2
       }
      }
     },
     {
      "label": "Educational / academic / tuition",
      "desc": "",
-     "count": 651,
+     "count": 705,
      "quotes": [],
      "byLens": {
       "g": {
-       "Female": 264,
-       "Male": 228
+       "Female": 286,
+       "Male": 254
       },
       "a": {
-       "13-16": 176,
-       "10-12": 285,
-       "17": 34
+       "13-16": 208,
+       "10-12": 300,
+       "17": 37
       },
       "i": {
-       "M40": 259,
-       "B40": 319
+       "M40": 285,
+       "B40": 334
       },
       "d": {
-       "0": 607,
-       "1": 44
+       "0": 659,
+       "1": 46
       },
       "m": {
-       "0": 650,
+       "0": 704,
        "1": 1
       },
       "w": {
-       "1": 227,
-       "0": 265
+       "1": 259,
+       "0": 282
+      },
+      "h": {
+       "Terrace/link": 239,
+       "Condominium": 78,
+       "Semi-detached": 54,
+       "Kampung": 98,
+       "Bungalow": 21,
+       "High-rise flat/PPR": 89,
+       "Apartment": 99,
+       "Employer quarters": 17,
+       "Shop house": 2
       }
      }
     },
     {
      "label": "Arts, crafts & creative",
      "desc": "",
-     "count": 471,
+     "count": 513,
      "quotes": [],
      "byLens": {
       "g": {
-       "Female": 194,
-       "Male": 152
+       "Female": 216,
+       "Male": 165
       },
       "a": {
-       "13-16": 120,
-       "10-12": 205,
-       "17": 21
+       "13-16": 141,
+       "10-12": 217,
+       "17": 23
       },
       "i": {
-       "M40": 187,
-       "B40": 242
+       "M40": 204,
+       "B40": 260
       },
       "d": {
-       "0": 446,
-       "1": 25
+       "0": 487,
+       "1": 26
       },
       "m": {
-       "0": 471
+       "0": 513
       },
       "w": {
-       "1": 149,
-       "0": 196
+       "1": 170,
+       "0": 210
+      },
+      "h": {
+       "Terrace/link": 159,
+       "High-rise flat/PPR": 75,
+       "Semi-detached": 33,
+       "Condominium": 60,
+       "Kampung": 69,
+       "Apartment": 72,
+       "Bungalow": 14,
+       "Employer quarters": 18
       }
      }
     },
     {
      "label": "Camps / interest classes / holiday programmes",
      "desc": "",
-     "count": 459,
+     "count": 488,
      "quotes": [],
      "byLens": {
       "g": {
-       "Female": 181,
-       "Male": 179
+       "Female": 195,
+       "Male": 191
       },
       "a": {
-       "13-16": 128,
-       "10-12": 211,
-       "17": 25
+       "13-16": 144,
+       "10-12": 219,
+       "17": 27
       },
       "i": {
-       "M40": 208,
-       "B40": 209
+       "M40": 222,
+       "B40": 220
       },
       "d": {
-       "0": 431,
-       "1": 28
+       "0": 459,
+       "1": 29
       },
       "m": {
-       "0": 459
+       "0": 488
       },
       "w": {
-       "1": 158,
-       "0": 205
+       "1": 171,
+       "0": 218
+      },
+      "h": {
+       "Terrace/link": 166,
+       "Semi-detached": 38,
+       "Condominium": 45,
+       "Apartment": 64,
+       "High-rise flat/PPR": 56,
+       "Bungalow": 15,
+       "Kampung": 72,
+       "Employer quarters": 23,
+       "Shop house": 4
       }
      }
     },
     {
      "label": "Technology / AI / coding / STEM",
      "desc": "",
-     "count": 407,
+     "count": 438,
      "quotes": [
       "AI classes",
       "public speaking, AI involvement, self-presenting skill, nutrition education"
      ],
      "byLens": {
       "g": {
-       "Male": 155,
-       "Female": 157
+       "Male": 171,
+       "Female": 166
       },
       "a": {
-       "10-12": 177,
-       "13-16": 116,
-       "17": 19
+       "10-12": 185,
+       "13-16": 132,
+       "17": 20
       },
       "i": {
-       "M40": 183,
-       "B40": 189
+       "M40": 202,
+       "B40": 194
       },
       "d": {
-       "0": 387,
+       "0": 418,
        "1": 20
       },
       "m": {
-       "0": 406,
+       "0": 437,
        "1": 1
       },
       "w": {
-       "0": 175,
-       "1": 137
+       "0": 189,
+       "1": 148
+      },
+      "h": {
+       "Kampung": 54,
+       "Condominium": 63,
+       "Terrace/link": 151,
+       "Semi-detached": 32,
+       "Apartment": 54,
+       "Bungalow": 14,
+       "Employer quarters": 17,
+       "High-rise flat/PPR": 43
       }
      }
     },
     {
      "label": "Outdoor / nature / adventure",
      "desc": "",
-     "count": 391,
+     "count": 420,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 138,
-       "Female": 157
+       "Male": 149,
+       "Female": 168
       },
       "a": {
-       "10-12": 171,
-       "17": 25,
-       "13-16": 101
+       "10-12": 178,
+       "17": 26,
+       "13-16": 115
       },
       "i": {
-       "M40": 170,
-       "B40": 186
+       "M40": 183,
+       "B40": 196
       },
       "d": {
-       "0": 365,
-       "1": 26
+       "0": 393,
+       "1": 27
       },
       "m": {
-       "0": 391
+       "0": 420
       },
       "w": {
-       "0": 162,
-       "1": 134
+       "0": 170,
+       "1": 148
+      },
+      "h": {
+       "Kampung": 55,
+       "Terrace/link": 154,
+       "Semi-detached": 28,
+       "Condominium": 54,
+       "High-rise flat/PPR": 41,
+       "Apartment": 60,
+       "Bungalow": 10,
+       "Shop house": 2,
+       "Employer quarters": 9
       }
      }
     },
     {
      "label": "Play / games / recreation",
      "desc": "",
-     "count": 356,
+     "count": 386,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 125,
-       "Female": 143
+       "Male": 135,
+       "Female": 159
       },
       "a": {
-       "10-12": 154,
-       "13-16": 100,
-       "17": 15
+       "10-12": 167,
+       "13-16": 112,
+       "17": 16
       },
       "i": {
-       "M40": 134,
-       "B40": 192
+       "M40": 143,
+       "B40": 206
       },
       "d": {
-       "0": 333,
-       "1": 23
+       "0": 360,
+       "1": 26
       },
       "m": {
-       "0": 356
+       "0": 386
       },
       "w": {
-       "0": 158,
-       "1": 110
+       "0": 169,
+       "1": 125
+      },
+      "h": {
+       "Kampung": 65,
+       "Apartment": 62,
+       "High-rise flat/PPR": 57,
+       "Semi-detached": 23,
+       "Condominium": 34,
+       "Terrace/link": 108,
+       "Bungalow": 11,
+       "Shop house": 2,
+       "Employer quarters": 12
       }
      }
     },
     {
      "label": "Public speaking / communication / confidence",
      "desc": "",
-     "count": 346,
+     "count": 377,
      "quotes": [],
      "byLens": {
       "g": {
-       "Female": 143,
-       "Male": 116
+       "Female": 157,
+       "Male": 128
       },
       "a": {
-       "13-16": 95,
-       "10-12": 155,
-       "17": 9
+       "13-16": 112,
+       "10-12": 162,
+       "17": 11
       },
       "i": {
-       "M40": 173,
-       "B40": 128
+       "M40": 190,
+       "B40": 132
       },
       "d": {
-       "0": 327,
-       "1": 19
+       "0": 356,
+       "1": 21
       },
       "m": {
-       "0": 344,
+       "0": 375,
        "1": 2
       },
       "w": {
-       "1": 128,
-       "0": 130
+       "1": 138,
+       "0": 146
+      },
+      "h": {
+       "Terrace/link": 128,
+       "Condominium": 79,
+       "Semi-detached": 30,
+       "Bungalow": 10,
+       "Apartment": 54,
+       "High-rise flat/PPR": 31,
+       "Kampung": 34,
+       "Employer quarters": 6,
+       "Shop house": 1
       }
      }
     },
     {
      "label": "Reading / library / storytelling",
      "desc": "",
-     "count": 238,
+     "count": 262,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 84,
-       "Female": 91
+       "Male": 94,
+       "Female": 99
       },
       "a": {
-       "10-12": 107,
-       "13-16": 60,
-       "17": 10
+       "10-12": 113,
+       "13-16": 70,
+       "17": 12
       },
       "d": {
-       "0": 219,
-       "1": 19
+       "0": 241,
+       "1": 21
       },
       "m": {
-       "0": 238
+       "0": 262
       },
       "w": {
-       "1": 92,
-       "0": 84
+       "1": 101,
+       "0": 93
+      },
+      "h": {
+       "Condominium": 33,
+       "Terrace/link": 83,
+       "Kampung": 34,
+       "Semi-detached": 23,
+       "High-rise flat/PPR": 31,
+       "Bungalow": 6,
+       "Apartment": 42,
+       "Shop house": 1,
+       "Employer quarters": 5
       },
       "i": {
-       "B40": 109,
-       "M40": 104
+       "B40": 118,
+       "M40": 114
       }
      }
     },
     {
      "label": "Life skills & practical",
      "desc": "",
-     "count": 196,
+     "count": 211,
      "quotes": [
       "Camping to increase independence, learning of nature"
      ],
      "byLens": {
       "i": {
-       "M40": 88,
-       "B40": 92
+       "M40": 94,
+       "B40": 97
       },
       "d": {
-       "0": 191,
-       "1": 5
+       "0": 205,
+       "1": 6
       },
       "m": {
-       "0": 196
+       "0": 211
+      },
+      "h": {
+       "Condominium": 25,
+       "Semi-detached": 14,
+       "Terrace/link": 70,
+       "Apartment": 26,
+       "High-rise flat/PPR": 23,
+       "Kampung": 33,
+       "Employer quarters": 12,
+       "Bungalow": 8
       },
       "g": {
-       "Male": 70,
-       "Female": 78
+       "Male": 78,
+       "Female": 82
       },
       "a": {
-       "13-16": 58,
+       "13-16": 65,
        "17": 10,
-       "10-12": 80
+       "10-12": 85
       },
       "w": {
-       "0": 81,
-       "1": 67
+       "0": 84,
+       "1": 76
       }
      }
     },
     {
      "label": "Entrepreneurship / financial / career",
      "desc": "",
-     "count": 191,
+     "count": 206,
      "quotes": [],
      "byLens": {
       "g": {
-       "Female": 87,
-       "Male": 69
+       "Female": 94,
+       "Male": 74
       },
       "a": {
-       "13-16": 59,
-       "10-12": 84,
+       "13-16": 68,
+       "10-12": 87,
        "17": 13
       },
       "i": {
-       "B40": 77,
-       "M40": 92
+       "B40": 82,
+       "M40": 99
       },
       "d": {
-       "0": 175,
+       "0": 190,
        "1": 16
       },
       "m": {
-       "0": 189,
+       "0": 204,
        "1": 2
       },
       "w": {
-       "0": 86,
-       "1": 70
+       "0": 92,
+       "1": 76
+      },
+      "h": {
+       "Condominium": 27,
+       "Terrace/link": 78,
+       "Apartment": 29,
+       "Semi-detached": 18,
+       "Kampung": 25,
+       "Bungalow": 3,
+       "Employer quarters": 7,
+       "High-rise flat/PPR": 15
       }
      }
     },
     {
      "label": "Religious / moral / values",
      "desc": "",
-     "count": 133,
+     "count": 142,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 65,
-       "Female": 41
+       "Male": 69,
+       "Female": 43
       },
       "a": {
-       "10-12": 65,
-       "13-16": 32,
+       "10-12": 68,
+       "13-16": 35,
        "17": 10
       },
       "i": {
-       "M40": 55,
-       "B40": 69
+       "M40": 58,
+       "B40": 75
       },
       "d": {
-       "0": 126,
+       "0": 135,
        "1": 7
       },
       "m": {
-       "0": 133
+       "0": 142
       },
       "w": {
-       "0": 65,
-       "1": 41
+       "0": 69,
+       "1": 43
+      },
+      "h": {
+       "Kampung": 31,
+       "Semi-detached": 5,
+       "Condominium": 11,
+       "Apartment": 21,
+       "Terrace/link": 43,
+       "Bungalow": 7,
+       "High-rise flat/PPR": 18,
+       "Employer quarters": 5
       }
      }
     },
     {
      "label": "Cultural / heritage / language",
      "desc": "",
-     "count": 96,
+     "count": 106,
      "quotes": [],
      "byLens": {
       "i": {
-       "M40": 41,
-       "B40": 43
+       "M40": 45,
+       "B40": 47
       },
       "d": {
-       "0": 93,
+       "0": 103,
        "1": 3
       },
       "m": {
-       "0": 96
+       "0": 106
+      },
+      "h": {
+       "Terrace/link": 35,
+       "Condominium": 11,
+       "Apartment": 16,
+       "Bungalow": 3,
+       "Semi-detached": 13,
+       "Kampung": 14,
+       "Employer quarters": 7,
+       "High-rise flat/PPR": 6
       },
       "g": {
-       "Female": 37,
-       "Male": 32
+       "Female": 41,
+       "Male": 36
       },
       "a": {
-       "13-16": 27,
-       "10-12": 35,
+       "13-16": 32,
+       "10-12": 38,
        "17": 7
       },
       "w": {
-       "0": 33,
-       "1": 36
+       "0": 37,
+       "1": 40
       }
      }
     },
     {
      "label": "Parent-child / family activities",
      "desc": "",
-     "count": 77,
+     "count": 81,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 24,
-       "Female": 38
+       "Male": 26,
+       "Female": 40
       },
       "a": {
        "17": 4,
-       "13-16": 17,
-       "10-12": 41
+       "13-16": 19,
+       "10-12": 43
       },
       "i": {
-       "B40": 37,
-       "M40": 27
+       "B40": 38,
+       "M40": 29
       },
       "d": {
-       "0": 66,
-       "1": 11
+       "0": 69,
+       "1": 12
       },
       "m": {
-       "0": 77
+       "0": 81
       },
       "w": {
-       "1": 32,
-       "0": 30
+       "1": 33,
+       "0": 33
+      },
+      "h": {
+       "Semi-detached": 8,
+       "Terrace/link": 31,
+       "Apartment": 16,
+       "Condominium": 5,
+       "High-rise flat/PPR": 9,
+       "Kampung": 11
       }
      }
     },
     {
      "label": "Mental health / wellbeing",
      "desc": "",
-     "count": 76,
+     "count": 81,
      "quotes": [],
      "byLens": {
       "i": {
-       "M40": 34,
-       "B40": 32
+       "M40": 37,
+       "B40": 33
       },
       "d": {
-       "0": 66,
+       "0": 71,
        "1": 10
       },
       "m": {
-       "0": 76
+       "0": 81
+      },
+      "h": {
+       "Condominium": 13,
+       "Semi-detached": 10,
+       "Bungalow": 3,
+       "Terrace/link": 28,
+       "Apartment": 12,
+       "Kampung": 6,
+       "High-rise flat/PPR": 6,
+       "Employer quarters": 1
       },
       "g": {
-       "Male": 28,
-       "Female": 30
+       "Male": 30,
+       "Female": 33
       },
       "a": {
-       "10-12": 38,
-       "13-16": 17,
+       "10-12": 40,
+       "13-16": 20,
        "17": 3
       },
       "w": {
        "0": 25,
-       "1": 33
+       "1": 38
       }
      }
     },
     {
      "label": "More / varied activities (general)",
      "desc": "",
-     "count": 38,
+     "count": 39,
      "quotes": [],
      "byLens": {
       "i": {
-       "M40": 12,
+       "M40": 13,
        "B40": 20
       },
       "d": {
-       "0": 30,
+       "0": 31,
        "1": 8
       },
       "m": {
-       "0": 38
+       "0": 39
+      },
+      "h": {
+       "Apartment": 8,
+       "Condominium": 4,
+       "Employer quarters": 1,
+       "Semi-detached": 3,
+       "High-rise flat/PPR": 3,
+       "Terrace/link": 16,
+       "Bungalow": 2,
+       "Kampung": 2
       },
       "g": {
        "Male": 16,
-       "Female": 12
+       "Female": 13
       },
       "a": {
-       "10-12": 15,
+       "10-12": 16,
        "13-16": 8,
        "17": 5
       },
       "w": {
-       "0": 12,
+       "0": 13,
        "1": 16
       }
      }
@@ -2130,497 +2777,652 @@
   "289909855": {
    "short": "What places or activities would you like in your area (children)",
    "module": "child",
-   "total": 1414,
+   "total": 1540,
    "themes": [
     {
      "label": "Sports & physical activity",
      "desc": "",
-     "count": 526,
+     "count": 574,
      "quotes": [
       "Swimming, badminton, cycling, skating",
       "Free sports practice"
      ],
      "byLens": {
       "g": {
-       "Male": 338,
-       "Female": 188
+       "Male": 370,
+       "Female": 204
       },
       "a": {
-       "10-12": 313,
-       "13-16": 175,
-       "17": 38
+       "10-12": 327,
+       "13-16": 208,
+       "17": 39
       },
       "i": {
-       "B40": 250,
-       "M40": 223
+       "B40": 263,
+       "M40": 244
       },
       "d": {
-       "0": 496,
-       "1": 30
+       "0": 543,
+       "1": 31
       },
       "m": {
-       "0": 526
+       "0": 574
       },
       "w": {
-       "0": 292,
-       "1": 234
+       "0": 324,
+       "1": 250
+      },
+      "h": {
+       "Employer quarters": 20,
+       "Terrace/link": 184,
+       "Semi-detached": 49,
+       "Condominium": 61,
+       "Bungalow": 18,
+       "Kampung": 73,
+       "High-rise flat/PPR": 76,
+       "Apartment": 77,
+       "Shop house": 2
       }
      }
     },
     {
      "label": "Playgrounds & parks",
      "desc": "",
-     "count": 366,
+     "count": 394,
      "quotes": [
       "Playground, field, nature areas"
      ],
      "byLens": {
       "g": {
-       "Female": 208,
-       "Male": 158
+       "Female": 224,
+       "Male": 170
       },
       "a": {
-       "10-12": 242,
-       "13-16": 107,
+       "10-12": 255,
+       "13-16": 122,
        "17": 17
       },
       "i": {
-       "B40": 191,
-       "M40": 133
+       "B40": 201,
+       "M40": 147
       },
       "d": {
-       "0": 352,
+       "0": 380,
        "1": 14
       },
       "m": {
-       "0": 366
+       "0": 394
       },
       "w": {
-       "1": 138,
-       "0": 228
+       "1": 154,
+       "0": 240
+      },
+      "h": {
+       "Terrace/link": 102,
+       "Condominium": 31,
+       "Semi-detached": 25,
+       "High-rise flat/PPR": 59,
+       "Kampung": 83,
+       "Apartment": 59,
+       "Bungalow": 12,
+       "Employer quarters": 17,
+       "Shop house": 1
       }
      }
     },
     {
      "label": "Learning / skills / educational",
      "desc": "",
-     "count": 338,
+     "count": 364,
      "quotes": [],
      "byLens": {
       "g": {
-       "Female": 179,
-       "Male": 156
+       "Female": 196,
+       "Male": 165
       },
       "a": {
-       "13-16": 123,
-       "10-12": 201,
+       "13-16": 138,
+       "10-12": 212,
        "17": 14
       },
       "i": {
-       "B40": 166,
-       "M40": 135
+       "B40": 174,
+       "M40": 145
       },
       "d": {
-       "0": 309,
-       "1": 29
+       "0": 334,
+       "1": 30
       },
       "m": {
-       "0": 337,
+       "0": 363,
        "1": 1
       },
       "w": {
-       "0": 169,
-       "1": 169
+       "0": 180,
+       "1": 184
+      },
+      "h": {
+       "Terrace/link": 139,
+       "Condominium": 36,
+       "High-rise flat/PPR": 45,
+       "Semi-detached": 17,
+       "Apartment": 58,
+       "Bungalow": 9,
+       "Kampung": 43,
+       "Shop house": 1,
+       "Employer quarters": 7
       }
      }
     },
     {
      "label": "Library / reading spaces",
      "desc": "",
-     "count": 254,
+     "count": 272,
      "quotes": [
       "Library, Art class, computer class"
      ],
      "byLens": {
       "g": {
-       "Female": 153,
-       "Male": 101
+       "Female": 165,
+       "Male": 107
       },
       "a": {
        "17": 26,
-       "10-12": 139,
-       "13-16": 89
+       "10-12": 147,
+       "13-16": 99
       },
       "i": {
-       "M40": 100,
-       "B40": 124
+       "M40": 110,
+       "B40": 129
       },
       "d": {
-       "0": 231,
-       "1": 23
+       "0": 247,
+       "1": 25
       },
       "m": {
-       "0": 254
+       "0": 272
       },
       "w": {
-       "0": 135,
-       "1": 119
+       "0": 144,
+       "1": 128
+      },
+      "h": {
+       "Condominium": 20,
+       "Semi-detached": 13,
+       "Apartment": 48,
+       "High-rise flat/PPR": 34,
+       "Terrace/link": 91,
+       "Kampung": 39,
+       "Bungalow": 9,
+       "Employer quarters": 11,
+       "Shop house": 1
       }
      }
     },
     {
      "label": "Fun / making friends / social",
      "desc": "",
-     "count": 188,
+     "count": 207,
      "quotes": [
       "Fun and making friends",
       "Playing with my neighbourhood friends."
      ],
      "byLens": {
       "g": {
-       "Female": 106,
-       "Male": 82
+       "Female": 118,
+       "Male": 89
       },
       "a": {
-       "13-16": 71,
-       "10-12": 108,
+       "13-16": 83,
+       "10-12": 115,
        "17": 9
       },
       "i": {
-       "M40": 78,
-       "B40": 85
+       "M40": 88,
+       "B40": 87
       },
       "d": {
-       "0": 165,
-       "1": 23
+       "0": 183,
+       "1": 24
       },
       "m": {
-       "0": 188
+       "0": 207
       },
       "w": {
-       "1": 100,
-       "0": 88
+       "1": 111,
+       "0": 96
+      },
+      "h": {
+       "Terrace/link": 62,
+       "Condominium": 38,
+       "High-rise flat/PPR": 22,
+       "Semi-detached": 12,
+       "Apartment": 44,
+       "Employer quarters": 5,
+       "Kampung": 17,
+       "Shop house": 2,
+       "Bungalow": 1
       }
      }
     },
     {
      "label": "Arts, crafts, music & creative",
      "desc": "",
-     "count": 134,
+     "count": 148,
      "quotes": [],
      "byLens": {
       "g": {
-       "Female": 100,
-       "Male": 34
+       "Female": 112,
+       "Male": 36
       },
       "a": {
-       "13-16": 52,
-       "10-12": 76,
+       "13-16": 61,
+       "10-12": 81,
        "17": 6
       },
       "i": {
-       "B40": 65,
-       "M40": 53
+       "B40": 72,
+       "M40": 57
       },
       "d": {
-       "0": 123,
+       "0": 137,
        "1": 11
       },
       "m": {
-       "0": 133,
+       "0": 147,
        "1": 1
       },
       "w": {
-       "0": 58,
-       "1": 76
+       "0": 64,
+       "1": 84
+      },
+      "h": {
+       "Semi-detached": 8,
+       "Terrace/link": 47,
+       "Condominium": 18,
+       "Apartment": 24,
+       "Bungalow": 3,
+       "Kampung": 19,
+       "High-rise flat/PPR": 21,
+       "Employer quarters": 4,
+       "Shop house": 1
       }
      }
     },
     {
      "label": "Community / youth centre / volunteering",
      "desc": "",
-     "count": 117,
+     "count": 129,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 67,
-       "Female": 50
+       "Male": 70,
+       "Female": 59
       },
       "a": {
-       "13-16": 45,
-       "10-12": 61,
+       "13-16": 53,
+       "10-12": 65,
        "17": 11
       },
       "i": {
-       "M40": 44,
-       "B40": 65
+       "M40": 50,
+       "B40": 68
       },
       "d": {
-       "0": 109,
+       "0": 121,
        "1": 8
       },
       "m": {
-       "0": 117
+       "0": 129
       },
       "w": {
-       "1": 66,
-       "0": 51
+       "1": 73,
+       "0": 56
+      },
+      "h": {
+       "Terrace/link": 35,
+       "Condominium": 12,
+       "Kampung": 20,
+       "Apartment": 21,
+       "Bungalow": 5,
+       "Semi-detached": 13,
+       "High-rise flat/PPR": 16,
+       "Employer quarters": 5
       }
      }
     },
     {
      "label": "Technology / AI / coding / STEM / robotics",
      "desc": "",
-     "count": 104,
+     "count": 118,
      "quotes": [],
      "byLens": {
       "g": {
-       "Female": 41,
-       "Male": 63
+       "Female": 51,
+       "Male": 67
       },
       "a": {
-       "10-12": 56,
-       "13-16": 39,
+       "10-12": 65,
+       "13-16": 44,
        "17": 9
       },
       "i": {
-       "M40": 47,
-       "B40": 46
+       "M40": 52,
+       "B40": 52
       },
       "d": {
-       "0": 92,
-       "1": 12
+       "0": 105,
+       "1": 13
       },
       "m": {
-       "0": 104
+       "0": 118
       },
       "w": {
-       "1": 48,
-       "0": 56
+       "1": 52,
+       "0": 66
+      },
+      "h": {
+       "Kampung": 18,
+       "Condominium": 14,
+       "Apartment": 17,
+       "Bungalow": 5,
+       "Terrace/link": 39,
+       "High-rise flat/PPR": 15,
+       "Semi-detached": 3,
+       "Employer quarters": 5
       }
      }
     },
     {
      "label": "Nature / outdoor / environment / animals",
      "desc": "",
-     "count": 94,
+     "count": 103,
      "quotes": [],
      "byLens": {
       "g": {
-       "Female": 52,
-       "Male": 42
+       "Female": 58,
+       "Male": 45
       },
       "a": {
        "17": 2,
-       "13-16": 36,
-       "10-12": 56
+       "13-16": 38,
+       "10-12": 63
       },
       "i": {
-       "M40": 31,
-       "B40": 53
+       "M40": 34,
+       "B40": 57
       },
       "d": {
-       "0": 91,
-       "1": 3
+       "0": 98,
+       "1": 5
       },
       "m": {
-       "0": 94
+       "0": 103
       },
       "w": {
-       "0": 47,
-       "1": 47
+       "0": 51,
+       "1": 52
+      },
+      "h": {
+       "Condominium": 18,
+       "Terrace/link": 29,
+       "Semi-detached": 9,
+       "Apartment": 19,
+       "Bungalow": 2,
+       "Kampung": 18,
+       "High-rise flat/PPR": 7
       }
      }
     },
     {
      "label": "Camps / holiday programmes",
      "desc": "",
-     "count": 84,
+     "count": 88,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 48,
-       "Female": 36
+       "Male": 50,
+       "Female": 38
       },
       "a": {
-       "13-16": 34,
-       "10-12": 47,
+       "13-16": 36,
+       "10-12": 49,
        "17": 3
       },
       "i": {
        "M40": 30,
-       "B40": 47
+       "B40": 49
       },
       "d": {
-       "0": 78,
+       "0": 82,
        "1": 6
       },
       "m": {
-       "0": 84
+       "0": 88
       },
       "w": {
-       "0": 46,
+       "0": 50,
        "1": 38
+      },
+      "h": {
+       "Condominium": 6,
+       "Kampung": 21,
+       "Semi-detached": 4,
+       "Terrace/link": 24,
+       "Apartment": 9,
+       "High-rise flat/PPR": 15,
+       "Employer quarters": 3,
+       "Bungalow": 3,
+       "Shop house": 1
       }
      }
     },
     {
      "label": "Safe / clean spaces (quality)",
      "desc": "",
-     "count": 58,
+     "count": 62,
      "quotes": [],
      "byLens": {
       "g": {
-       "Female": 27,
-       "Male": 31
+       "Female": 29,
+       "Male": 33
       },
       "a": {
        "13-16": 19,
-       "10-12": 34,
+       "10-12": 38,
        "17": 5
       },
       "i": {
-       "M40": 22,
-       "B40": 29
+       "M40": 23,
+       "B40": 31
       },
       "d": {
-       "0": 53,
-       "1": 5
+       "0": 56,
+       "1": 6
       },
       "m": {
-       "0": 58
+       "0": 62
       },
       "w": {
-       "0": 32,
-       "1": 26
+       "0": 33,
+       "1": 29
+      },
+      "h": {
+       "Terrace/link": 11,
+       "Condominium": 7,
+       "Kampung": 9,
+       "Bungalow": 1,
+       "Semi-detached": 6,
+       "Apartment": 10,
+       "High-rise flat/PPR": 13,
+       "Employer quarters": 3
       }
      }
     },
     {
      "label": "Indoor / mall / entertainment spaces",
      "desc": "",
-     "count": 54,
+     "count": 60,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 27,
-       "Female": 27
+       "Male": 29,
+       "Female": 31
       },
       "a": {
-       "13-16": 23,
+       "13-16": 28,
        "17": 6,
-       "10-12": 25
+       "10-12": 26
       },
       "i": {
-       "M40": 25,
-       "B40": 21
+       "M40": 28,
+       "B40": 22
       },
       "d": {
-       "0": 49,
+       "0": 55,
        "1": 5
       },
       "m": {
-       "0": 54
+       "0": 60
       },
       "w": {
-       "1": 25,
-       "0": 29
+       "1": 30,
+       "0": 30
+      },
+      "h": {
+       "Terrace/link": 18,
+       "Condominium": 11,
+       "Semi-detached": 6,
+       "Apartment": 10,
+       "High-rise flat/PPR": 5,
+       "Bungalow": 1,
+       "Kampung": 5,
+       "Employer quarters": 2
       }
      }
     },
     {
      "label": "Mental health / wellbeing / relaxation",
      "desc": "",
-     "count": 24,
+     "count": 27,
      "quotes": [],
      "byLens": {
       "g": {
        "Male": 11,
-       "Female": 13
+       "Female": 16
       },
       "a": {
        "13-16": 10,
-       "10-12": 12,
+       "10-12": 15,
        "17": 2
       },
       "i": {
        "M40": 7,
-       "B40": 12
+       "B40": 15
       },
       "d": {
-       "0": 22,
+       "0": 25,
        "1": 2
       },
       "m": {
-       "0": 24
+       "0": 27
       },
       "w": {
-       "1": 14,
-       "0": 10
+       "1": 16,
+       "0": 11
+      },
+      "h": {
+       "Apartment": 5,
+       "Terrace/link": 5,
+       "Semi-detached": 3,
+       "Kampung": 3,
+       "High-rise flat/PPR": 7,
+       "Bungalow": 1,
+       "Condominium": 1,
+       "Employer quarters": 1
       }
      }
     },
     {
      "label": "Public speaking / leadership / confidence",
      "desc": "",
-     "count": 20,
+     "count": 25,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 8,
-       "Female": 12
+       "Male": 11,
+       "Female": 14
       },
       "a": {
-       "13-16": 10,
+       "13-16": 14,
        "17": 3,
-       "10-12": 7
+       "10-12": 8
       },
       "i": {
-       "M40": 8,
-       "B40": 10
+       "M40": 10,
+       "B40": 12
       },
       "d": {
-       "0": 16,
-       "1": 4
+       "0": 20,
+       "1": 5
       },
       "m": {
-       "0": 20
+       "0": 25
       },
       "w": {
-       "0": 8,
-       "1": 12
+       "0": 10,
+       "1": 15
+      },
+      "h": {
+       "Condominium": 3,
+       "Apartment": 3,
+       "Bungalow": 4,
+       "Kampung": 4,
+       "Semi-detached": 1,
+       "Terrace/link": 7,
+       "High-rise flat/PPR": 2,
+       "Employer quarters": 1
       }
      }
     },
     {
      "label": "Religious / moral / cultural",
      "desc": "",
-     "count": 19,
+     "count": 23,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 11,
-       "Female": 8
+       "Male": 12,
+       "Female": 11
       },
       "a": {
-       "13-16": 10,
-       "10-12": 8,
+       "13-16": 11,
+       "10-12": 11,
        "17": 1
       },
       "i": {
        "M40": 8,
-       "B40": 8
+       "B40": 11
       },
       "d": {
-       "1": 6,
-       "0": 13
+       "1": 7,
+       "0": 16
       },
       "m": {
-       "0": 19
+       "0": 23
       },
       "w": {
-       "1": 11,
-       "0": 8
+       "1": 13,
+       "0": 10
+      },
+      "h": {
+       "Terrace/link": 7,
+       "Semi-detached": 3,
+       "Apartment": 2,
+       "High-rise flat/PPR": 4,
+       "Kampung": 5,
+       "Bungalow": 1,
+       "Condominium": 1
       }
      }
     }
@@ -2629,496 +3431,645 @@
   "289909862": {
    "short": "One thing to change to make your area safer (children)",
    "module": "child",
-   "total": 825,
+   "total": 905,
    "themes": [
     {
      "label": "More security / safety (general)",
      "desc": "",
-     "count": 266,
+     "count": 298,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 123,
-       "Female": 143
+       "Male": 137,
+       "Female": 160
       },
       "a": {
-       "10-12": 155,
-       "17": 22,
-       "13-16": 89
+       "10-12": 170,
+       "17": 23,
+       "13-16": 105
       },
       "d": {
-       "0": 242,
-       "1": 24
+       "0": 272,
+       "1": 26
       },
       "m": {
-       "0": 265,
+       "0": 297,
        "1": 1
       },
       "w": {
-       "0": 132,
-       "1": 134
+       "0": 147,
+       "1": 151
+      },
+      "h": {
+       "Terrace/link": 90,
+       "Condominium": 36,
+       "Bungalow": 11,
+       "Kampung": 37,
+       "High-rise flat/PPR": 44,
+       "Semi-detached": 17,
+       "Apartment": 50,
+       "Employer quarters": 9,
+       "Shop house": 1
       },
       "i": {
-       "M40": 100,
-       "B40": 139
+       "M40": 109,
+       "B40": 149
       }
      }
     },
     {
      "label": "Road & traffic safety (crossings, speed, sidewalks)",
      "desc": "",
-     "count": 198,
+     "count": 221,
      "quotes": [
       "Road safety for students and people to cross",
       "Enforcing lower speed limits in areas where children live and study"
      ],
      "byLens": {
       "g": {
-       "Male": 104,
-       "Female": 94
+       "Male": 119,
+       "Female": 102
       },
       "a": {
-       "10-12": 115,
-       "17": 9,
-       "13-16": 74
+       "10-12": 127,
+       "17": 11,
+       "13-16": 83
       },
       "d": {
-       "0": 184,
-       "1": 14
+       "0": 205,
+       "1": 16
       },
       "m": {
-       "0": 198
+       "0": 221
       },
       "w": {
-       "0": 104,
-       "1": 94
+       "0": 115,
+       "1": 106
+      },
+      "h": {
+       "Terrace/link": 78,
+       "High-rise flat/PPR": 19,
+       "Semi-detached": 20,
+       "Bungalow": 6,
+       "Apartment": 26,
+       "Condominium": 36,
+       "Kampung": 33,
+       "Employer quarters": 1,
+       "Shop house": 1
       },
       "i": {
-       "M40": 82,
-       "B40": 86
+       "M40": 93,
+       "B40": 91
       }
      }
     },
     {
      "label": "Security guards / gated / patrols",
      "desc": "",
-     "count": 160,
+     "count": 180,
      "quotes": [
       "More police around the housing area"
      ],
      "byLens": {
       "g": {
-       "Female": 93,
-       "Male": 66
+       "Female": 106,
+       "Male": 73
       },
       "a": {
        "17": 12,
-       "13-16": 55,
-       "10-12": 93
+       "13-16": 66,
+       "10-12": 102
       },
       "i": {
-       "M40": 69,
-       "B40": 78
+       "M40": 76,
+       "B40": 84
       },
       "d": {
-       "0": 148,
+       "0": 168,
        "1": 12
       },
       "m": {
-       "0": 159,
+       "0": 179,
        "1": 1
       },
       "w": {
-       "0": 75,
-       "1": 85
+       "0": 88,
+       "1": 92
+      },
+      "h": {
+       "Condominium": 22,
+       "Terrace/link": 58,
+       "High-rise flat/PPR": 24,
+       "Semi-detached": 9,
+       "Apartment": 34,
+       "Bungalow": 7,
+       "Employer quarters": 6,
+       "Kampung": 16,
+       "Shop house": 1
       }
      }
     },
     {
      "label": "CCTV / cameras / surveillance",
      "desc": "",
-     "count": 122,
+     "count": 131,
      "quotes": [
       "Add safety camera",
       "Frequent patrol and cctv"
      ],
      "byLens": {
       "g": {
-       "Female": 80,
-       "Male": 42
+       "Female": 84,
+       "Male": 47
       },
       "a": {
-       "10-12": 61,
-       "13-16": 50,
-       "17": 11
+       "10-12": 65,
+       "13-16": 54,
+       "17": 12
       },
       "d": {
-       "0": 116,
+       "0": 125,
        "1": 6
       },
       "m": {
-       "0": 122
+       "0": 131
       },
       "w": {
-       "0": 62,
-       "1": 60
+       "0": 64,
+       "1": 67
+      },
+      "h": {
+       "Semi-detached": 7,
+       "Apartment": 25,
+       "Condominium": 13,
+       "Bungalow": 6,
+       "Terrace/link": 45,
+       "Kampung": 14,
+       "Employer quarters": 7,
+       "High-rise flat/PPR": 13
       },
       "i": {
-       "M40": 51,
-       "B40": 51
+       "M40": 58,
+       "B40": 52
       }
      }
     },
     {
      "label": "Playgrounds / parks / safe play spaces",
      "desc": "",
-     "count": 118,
+     "count": 128,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 69,
-       "Female": 49
+       "Male": 75,
+       "Female": 53
       },
       "a": {
-       "10-12": 71,
-       "13-16": 41,
-       "17": 6
+       "10-12": 77,
+       "13-16": 44,
+       "17": 7
       },
       "i": {
-       "B40": 61,
-       "M40": 45
+       "B40": 64,
+       "M40": 51
       },
       "d": {
-       "0": 114,
+       "0": 124,
        "1": 4
       },
       "m": {
-       "0": 118
+       "0": 128
       },
       "w": {
-       "0": 66,
-       "1": 52
+       "0": 73,
+       "1": 55
+      },
+      "h": {
+       "Employer quarters": 4,
+       "Terrace/link": 41,
+       "Condominium": 17,
+       "High-rise flat/PPR": 17,
+       "Bungalow": 3,
+       "Apartment": 16,
+       "Semi-detached": 8,
+       "Kampung": 18,
+       "Shop house": 1
       }
      }
     },
     {
      "label": "Adult supervision / parental / community",
      "desc": "",
-     "count": 79,
+     "count": 88,
      "quotes": [],
      "byLens": {
       "g": {
-       "Female": 44,
-       "Male": 34
+       "Male": 38,
+       "Female": 49
       },
       "a": {
-       "10-12": 48,
-       "13-16": 28,
+       "10-12": 54,
+       "13-16": 31,
        "17": 3
       },
       "i": {
-       "M40": 36,
-       "B40": 35
+       "M40": 42,
+       "B40": 37
       },
       "d": {
-       "0": 72,
-       "1": 7
+       "0": 80,
+       "1": 8
       },
       "m": {
-       "0": 79
+       "0": 88
       },
       "w": {
-       "1": 49,
-       "0": 30
+       "1": 52,
+       "0": 36
+      },
+      "h": {
+       "Condominium": 7,
+       "Apartment": 20,
+       "Bungalow": 4,
+       "Terrace/link": 27,
+       "High-rise flat/PPR": 14,
+       "Employer quarters": 1,
+       "Kampung": 10,
+       "Semi-detached": 3
       }
      }
     },
     {
      "label": "Police / enforcement / authorities",
      "desc": "",
-     "count": 75,
+     "count": 85,
      "quotes": [],
      "byLens": {
       "g": {
-       "Female": 40,
-       "Male": 35
+       "Female": 45,
+       "Male": 40
       },
       "a": {
-       "10-12": 49,
-       "13-16": 25,
+       "10-12": 53,
+       "13-16": 31,
        "17": 1
       },
       "i": {
-       "M40": 41,
-       "B40": 27
+       "M40": 47,
+       "B40": 30
       },
       "d": {
-       "0": 68,
+       "0": 78,
        "1": 7
       },
       "m": {
-       "0": 75
+       "0": 85
       },
       "w": {
-       "1": 37,
-       "0": 38
+       "1": 41,
+       "0": 44
+      },
+      "h": {
+       "Terrace/link": 36,
+       "Condominium": 13,
+       "Apartment": 10,
+       "Bungalow": 1,
+       "Semi-detached": 4,
+       "Kampung": 7,
+       "High-rise flat/PPR": 9,
+       "Employer quarters": 3
       }
      }
     },
     {
      "label": "Lighting / street lamps",
      "desc": "",
-     "count": 63,
+     "count": 70,
      "quotes": [
       "have more light or make more zebra crossing"
      ],
      "byLens": {
       "g": {
-       "Female": 34,
-       "Male": 29
+       "Female": 39,
+       "Male": 31
       },
       "a": {
-       "10-12": 38,
-       "13-16": 23,
+       "10-12": 42,
+       "13-16": 26,
        "17": 2
       },
       "i": {
-       "M40": 26,
-       "B40": 29
+       "M40": 28,
+       "B40": 31
       },
       "d": {
-       "0": 59,
-       "1": 4
+       "0": 65,
+       "1": 5
       },
       "m": {
-       "0": 63
-      },
-      "w": {
-       "1": 32,
-       "0": 31
-      }
-     }
-    },
-    {
-     "label": "Bullying / violence / fighting",
-     "desc": "",
-     "count": 58,
-     "quotes": [],
-     "byLens": {
-      "g": {
-       "Male": 20,
-       "Female": 38
-      },
-      "a": {
-       "10-12": 38,
-       "13-16": 18,
-       "17": 2
-      },
-      "i": {
-       "M40": 17,
-       "B40": 37
-      },
-      "d": {
-       "0": 55,
-       "1": 3
-      },
-      "m": {
-       "0": 58
+       "0": 70
       },
       "w": {
        "1": 35,
-       "0": 23
+       "0": 35
+      },
+      "h": {
+       "Semi-detached": 4,
+       "Condominium": 4,
+       "Bungalow": 1,
+       "Terrace/link": 25,
+       "Apartment": 14,
+       "Kampung": 14,
+       "Employer quarters": 1,
+       "High-rise flat/PPR": 6
       }
      }
     },
     {
      "label": "Drugs / smoking / vaping / alcohol",
      "desc": "",
-     "count": 56,
+     "count": 62,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 31,
-       "Female": 25
+       "Male": 34,
+       "Female": 28
       },
       "a": {
-       "13-16": 20,
-       "17": 8,
-       "10-12": 28
+       "13-16": 24,
+       "17": 9,
+       "10-12": 29
       },
       "i": {
-       "M40": 18,
-       "B40": 32
+       "M40": 22,
+       "B40": 33
       },
       "d": {
-       "0": 52,
+       "0": 58,
        "1": 4
       },
       "m": {
-       "0": 56
+       "0": 62
       },
       "w": {
-       "0": 23,
-       "1": 33
+       "0": 26,
+       "1": 36
+      },
+      "h": {
+       "Terrace/link": 25,
+       "Apartment": 7,
+       "Condominium": 8,
+       "Kampung": 8,
+       "Bungalow": 1,
+       "High-rise flat/PPR": 9,
+       "Employer quarters": 1,
+       "Semi-detached": 1
+      }
+     }
+    },
+    {
+     "label": "Bullying / violence / fighting",
+     "desc": "",
+     "count": 61,
+     "quotes": [],
+     "byLens": {
+      "g": {
+       "Male": 22,
+       "Female": 39
+      },
+      "a": {
+       "10-12": 38,
+       "13-16": 21,
+       "17": 2
+      },
+      "i": {
+       "M40": 19,
+       "B40": 38
+      },
+      "d": {
+       "0": 58,
+       "1": 3
+      },
+      "m": {
+       "0": 61
+      },
+      "w": {
+       "1": 38,
+       "0": 23
+      },
+      "h": {
+       "Condominium": 6,
+       "Semi-detached": 5,
+       "Terrace/link": 14,
+       "Apartment": 11,
+       "Kampung": 10,
+       "High-rise flat/PPR": 9,
+       "Bungalow": 2,
+       "Employer quarters": 1,
+       "Shop house": 1
       }
      }
     },
     {
      "label": "Cleaner / hygiene / environment",
      "desc": "",
-     "count": 28,
+     "count": 30,
      "quotes": [],
      "byLens": {
       "g": {
        "Male": 18,
-       "Female": 10
+       "Female": 12
       },
       "a": {
-       "10-12": 18,
-       "13-16": 8,
+       "10-12": 19,
+       "13-16": 9,
        "17": 2
       },
       "i": {
-       "M40": 9,
+       "M40": 11,
        "B40": 14
       },
       "d": {
-       "0": 25,
+       "0": 27,
        "1": 3
       },
       "m": {
-       "0": 28
+       "0": 30
       },
       "w": {
        "0": 11,
-       "1": 17
-      }
-     }
-    },
-    {
-     "label": "Stranger danger / crime / kidnapping",
-     "desc": "",
-     "count": 27,
-     "quotes": [],
-     "byLens": {
-      "g": {
-       "Female": 16,
-       "Male": 11
+       "1": 19
       },
-      "a": {
-       "13-16": 7,
-       "17": 1,
-       "10-12": 19
-      },
-      "i": {
-       "B40": 8,
-       "M40": 15
-      },
-      "d": {
-       "0": 26,
-       "1": 1
-      },
-      "m": {
-       "0": 27
-      },
-      "w": {
-       "0": 13,
-       "1": 14
+      "h": {
+       "Condominium": 1,
+       "Semi-detached": 3,
+       "Apartment": 5,
+       "Terrace/link": 8,
+       "High-rise flat/PPR": 6,
+       "Kampung": 4,
+       "Employer quarters": 3
       }
      }
     },
     {
      "label": "Foreigners / migrants concern",
      "desc": "",
-     "count": 25,
+     "count": 29,
      "quotes": [],
      "byLens": {
       "g": {
-       "Male": 10,
+       "Male": 14,
        "Female": 15
       },
       "a": {
-       "13-16": 8,
-       "10-12": 14,
+       "13-16": 10,
+       "10-12": 16,
        "17": 3
       },
       "i": {
-       "B40": 12,
+       "B40": 16,
        "M40": 11
       },
       "d": {
-       "0": 21,
+       "0": 25,
        "1": 4
       },
       "m": {
-       "0": 25
+       "0": 29
       },
       "w": {
-       "0": 13,
-       "1": 12
+       "0": 15,
+       "1": 14
+      },
+      "h": {
+       "High-rise flat/PPR": 7,
+       "Kampung": 4,
+       "Employer quarters": 2,
+       "Apartment": 6,
+       "Terrace/link": 5,
+       "Bungalow": 1,
+       "Semi-detached": 1,
+       "Condominium": 2
+      }
+     }
+    },
+    {
+     "label": "Stranger danger / crime / kidnapping",
+     "desc": "",
+     "count": 28,
+     "quotes": [],
+     "byLens": {
+      "g": {
+       "Female": 17,
+       "Male": 11
+      },
+      "a": {
+       "13-16": 8,
+       "17": 1,
+       "10-12": 19
+      },
+      "i": {
+       "B40": 8,
+       "M40": 16
+      },
+      "d": {
+       "0": 27,
+       "1": 1
+      },
+      "m": {
+       "0": 28
+      },
+      "w": {
+       "0": 14,
+       "1": 14
+      },
+      "h": {
+       "Terrace/link": 14,
+       "Apartment": 2,
+       "Bungalow": 1,
+       "Condominium": 4,
+       "Semi-detached": 3,
+       "High-rise flat/PPR": 3,
+       "Kampung": 1
       }
      }
     },
     {
      "label": "Safety education / awareness",
      "desc": "",
-     "count": 20,
+     "count": 24,
      "quotes": [],
      "byLens": {
       "g": {
-       "Female": 11,
-       "Male": 9
+       "Female": 13,
+       "Male": 11
       },
       "a": {
-       "13-16": 11,
-       "10-12": 6,
+       "13-16": 12,
+       "10-12": 9,
        "17": 3
       },
       "i": {
-       "M40": 10,
-       "B40": 10
+       "M40": 12,
+       "B40": 11
       },
       "d": {
-       "0": 16,
-       "1": 4
+       "0": 17,
+       "1": 7
       },
       "m": {
-       "0": 20
+       "0": 24
       },
       "w": {
-       "1": 14,
+       "1": 18,
        "0": 6
+      },
+      "h": {
+       "Semi-detached": 3,
+       "Apartment": 4,
+       "Terrace/link": 9,
+       "High-rise flat/PPR": 2,
+       "Bungalow": 1,
+       "Kampung": 4,
+       "Employer quarters": 1
       }
      }
     },
     {
      "label": "Stray animals / dogs",
      "desc": "",
-     "count": 12,
+     "count": 14,
      "quotes": [],
      "byLens": {
       "g": {
        "Female": 4,
-       "Male": 8
+       "Male": 10
       },
       "a": {
        "17": 2,
-       "13-16": 5,
-       "10-12": 5
+       "13-16": 6,
+       "10-12": 6
       },
       "i": {
        "M40": 5,
-       "B40": 6
+       "B40": 7
       },
       "d": {
-       "0": 12
+       "0": 14
       },
       "m": {
-       "0": 12
+       "0": 14
       },
       "w": {
-       "0": 9,
+       "0": 11,
        "1": 3
+      },
+      "h": {
+       "Condominium": 2,
+       "Semi-detached": 2,
+       "Terrace/link": 6,
+       "High-rise flat/PPR": 3,
+       "Kampung": 1
       }
      }
     },
@@ -3150,6 +4101,12 @@
       "w": {
        "1": 4,
        "0": 2
+      },
+      "h": {
+       "High-rise flat/PPR": 2,
+       "Apartment": 2,
+       "Terrace/link": 1,
+       "Semi-detached": 1
       }
      }
     }
